@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+.pnp.*
+
+# build output
+dist/
+*.tsbuildinfo
+
+# test / coverage
+coverage/
+.vitest/
+
+# local runtime state of the agent
+.lvc/
+!.lvc/config.json
+
+# model weights — never commit GGUF into git
+*.gguf
+models/
+
+# eval artifacts
+eval/runs/
+
+# os / editor
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# env
+.env
+.env.local
