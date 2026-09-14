@@ -1,0 +1,92 @@
+# Инструмент для написания кода
+
+Обзор на 2026-09-14. Инструмент определяет формат обучающих данных: системный промпт, схему инструментов, формат правок. Поэтому выбирается до датасета.
+
+## Критерии
+
+1. Размер системного промпта. На M2 Pro prefill идёт примерно 200–400 токенов/с: промпт на 10k токенов это 30–60 секунд на каждый новый ход. У 9B модели контекст нужен под файлы проекта, а не под инструкции агента.
+2. Минимальный набор инструментов. Чем меньше схем, тем меньше способов у 9B модели ошибиться, и тем компактнее датасет.
+3. Native tool calling через OpenAI-совместимый API, потому что Qwen3.5 обучена именно на нём.
+4. Headless-режим для бенчмарка: запуск из скрипта, машиночитаемый вывод.
+5. Живой проект с открытой лицензией.
+
+## Кандидаты
+
+| Инструмент | Звёзды | Состояние | Системный промпт | Tool calling | Формат правки | Headless | Лицензия |
+|---|---|---|---|---|---|---|---|
+| Pi | 105k | очень активен, открыт в мае 2026 | < 1000 токенов | native JSON, кастомные провайдеры через `models.json`, встроенный llama.cpp router | `edit`: `path` + `edits[{oldText, newText}]`, точное уникальное совпадение | `-p`, `--mode json`, RPC, SDK | MIT |
+| OpenCode | 207k | очень активен | 7–10k токенов | native JSON | `edit` с точной заменой строки + `apply_patch` | `run --format json`, `serve` | MIT |
+| Cline | 68k | активен | компактный режим для локальных моделей, ~10% от полного | native для топовых семейств, текст для остальных | `replace_in_file` с SEARCH/REPLACE | CLI 3.x | Apache 2.0 |
+| Kilo Code | 27k | активен, CLI построен на OpenCode | как OpenCode | как OpenCode | как OpenCode | как OpenCode | Apache 2.0 |
+| Qwen Code | 28k | активен, форк Gemini CLI под Qwen | несколько тысяч токенов | native JSON, парсер под Qwen | `replace` | `qwen -p` | Apache 2.0 |
+| aider | 49k | заглох: последний коммит май 2026, один автор | 2–3k | нет, парсит текст | SEARCH/REPLACE, whole, udiff | `--message` | Apache 2.0 |
+| Codex CLI | 124k | активен | большой | только Responses API, нужен передача reasoning между ходами | `apply_patch` | `codex exec` | Apache 2.0 |
+| Continue | 36k | активен | средний | белый список «агентных» моделей, неизвестные модели не пускает в agent mode | | `cn` | Apache 2.0 |
+| Goose | 54k | активен | большой, ориентирован на MCP | native | | | Apache 2.0 |
+| Roo Code | 24k | архивирован в мае 2026 | | | | | |
+
+## Решение: Pi
+
+Принято 2026-09-14.
+
+- Системный промпт меньше тысячи токенов против 7–10k у OpenCode. Для 9B модели на локальном железе это разница между рабочим и неработающим.
+- Четыре инструмента: `read`, `write`, `edit`, `bash`. Ровно тот минимум, которому нужно учить модель. Датасет это траектории из этих четырёх вызовов.
+- Формат правки `oldText → newText` с точным совпадением. Тот же класс, что у OpenCode, навык переносится.
+- Системный промпт полностью настраиваемый: `customPrompt`, `appendSystemPrompt`, `selectedTools`, файлы контекста проекта. Можно обучать на точно том промпте, который увидит модель в работе.
+- Skills с ленивой загрузкой: документация по стеку подгружается только когда нужна. Это готовый механизм для конфигурации «база + документация в контексте».
+- Headless: `-p`, `--mode json`, RPC, SDK. Бенчмарк пишется поверх SDK.
+- MIT, TypeScript, встроенная поддержка llama.cpp и Ollama через `models.json`.
+
+Риски: проекту четыре месяца в открытом виде, API расширений может меняться. Датасет и бенчмарк не зависят от внутренностей Pi, только от схемы четырёх инструментов, так что риск локализован.
+
+## Что это значит для датасета
+
+Формат обучающего примера это мультиходовой диалог с native tool calls:
+
+```
+system:    промпт Pi + контекст проекта
+user:      задача
+assistant: tool_call read(path)
+tool:      содержимое файла
+assistant: tool_call edit(path, edits[...]) или write(path, content)
+tool:      результат
+assistant: tool_call bash("npm run verify")
+tool:      вывод
+assistant: итоговое сообщение
+```
+
+Одношаговые примеры «задача → write» это частный случай той же схемы. Вопрос про агентские траектории из журнала решений закрывается сам собой: с четырьмя инструментами траектории короткие и их можно синтезировать.
+
+## Первая проверка
+
+До всего остального убедиться, что Qwen3.5-9B в Q4 через Ollama стабильно выдаёт tool calls в формате Pi: без thinking, с `num_ctx` 32k. Если tool calling ломается на базовой модели, это первое, что должен починить файнтюн, и это отдельная метрика бенчмарка.
+
+## Конфигурация Pi для Ollama
+
+`~/.pi/agent/models.json`:
+
+```json
+{
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://localhost:11434/v1",
+      "api": "openai-completions",
+      "apiKey": "ollama",
+      "models": [{ "id": "qwen3.5:9b", "contextWindow": 32768 }]
+    }
+  }
+}
+```
+
+Известные грабли из чужого опыта: thinking выключать через chat template, `num_ctx` ставить явно, иначе Ollama тихо обрезает контекст и tool calling разваливается; при переполнении VRAM модель тихо уезжает на CPU.
+
+## Источники
+
+- [Pi coding agent README](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/README.md), [pi.dev](https://pi.dev/)
+- [InsiderLLM: Pi Agent с локальными моделями](https://insiderllm.com/guides/pi-agent-local-models-ollama/)
+- [Pi vs OpenCode (astradevlabs)](https://www.astradevlabs.com/blog/pi-vs-opencode-picking-an-open-source-coding-agent-in-2026)
+- [OpenCode: CLI](https://opencode.ai/docs/cli/), [OpenCode: Tools](https://opencode.ai/docs/tools/), [OpenCode: Providers](https://opencode.ai/docs/providers/)
+- [Cline: Ollama](https://docs.cline.bot/running-models-locally/ollama), [Cline: local models blog](https://cline.bot/blog/local-models)
+- [aider: edit formats](https://aider.chat/docs/more/edit-formats.html)
+- [Codex CLI + Ollama](https://docs.ollama.com/integrations/codex)
+- [Pinggy: Best Open Source CLI Coding Agents 2026](https://pinggy.io/blog/best_open_source_cli_coding_agents/)
