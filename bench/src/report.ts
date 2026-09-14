@@ -14,7 +14,8 @@ function collect(runId?: string): RunResult[] {
       else if (entry.name === 'result.json') results.push(JSON.parse(fs.readFileSync(full, 'utf8')) as RunResult);
     }
   };
-  walk(runId ? path.join(RESULTS_DIR, runId) : RESULTS_DIR);
+  if (runId) for (const id of runId.split(',')) walk(path.join(RESULTS_DIR, id.trim()));
+  else walk(RESULTS_DIR);
   // validate/null runs have no agent section; keep only real runs.
   return results.filter((r) => r.agent !== undefined);
 }

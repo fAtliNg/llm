@@ -219,7 +219,7 @@ const HELP = `bench commands:
   null [all|T01,T02]               untouched workspace must fail
   run --configs <a,b> [--tasks all|T01,..] [--reps N] [--run-id <id>]
                                    reuse --run-id to resume a stopped run or add reps
-  report [--run-id <id>]           aggregate bench/results into markdown (also written to results/)
+  report [--run-id <a,b>]          aggregate bench/results (all runs, or the listed run ids) into markdown
   rediagnose --run-id <id>         recompute diagnostics/analysis.md for finished runs
   list                             list tasks`;
 
@@ -241,7 +241,7 @@ async function main(): Promise<void> {
     case 'report': {
       const markdown = report(options['run-id']);
       console.log(markdown);
-      const file = path.join(RESULTS_DIR, options['run-id'] ? `report-${options['run-id']}.md` : 'report.md');
+      const file = path.join(RESULTS_DIR, options['run-id'] ? `report-${options['run-id'].replace(/,/g, '+')}.md` : 'report.md');
       fs.mkdirSync(RESULTS_DIR, { recursive: true });
       fs.writeFileSync(file, markdown);
       console.log(`\nwritten to ${file}`);
