@@ -1,0 +1,4 @@
+[
+  { "type": "grep-count", "path": "src/features/tasks/task-form.tsx", "pattern": "SelectTrigger", "max": 0 },
+  { "type": "grep-count", "path": "src/features/tasks/task-form.tsx", "pattern": "<Controller", "max": 2 }
+]

@@ -1,0 +1,1 @@
+Add a task details page. Clicking a task title in the list should open `/tasks/:taskId`, which shows the title as the page heading, the description, the status and priority badges, and an "Edit" link to the existing edit page. For an unknown id the page shows "Task not found".

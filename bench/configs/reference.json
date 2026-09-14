@@ -1,0 +1,8 @@
+{
+  "description": "Strong cloud model through the same harness: validates that tasks are solvable. Needs ANTHROPIC_API_KEY. Adjust the id with `npm run pi -- --list-models anthropic`.",
+  "model": "anthropic/claude-sonnet-5",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 600
+}

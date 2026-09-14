@@ -1,0 +1,1 @@
+Add a `getTaskStats` query endpoint to the tasks API: `GET /api/tasks/stats` returns `{ total: number; done: number }` (done = tasks with status `done`). Add the MSW handler backed by the in-memory db, following the existing handlers. On the tasks page, once loaded, show the text `{done} of {total} done` under the heading, for example "1 of 3 done".

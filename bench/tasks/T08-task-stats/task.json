@@ -1,0 +1,1 @@
+{ "id": "T08-task-stats", "title": "Task stats endpoint", "layer": "query", "work": "create", "difficulty": 2, "formulation": "spec", "tags": ["handler-order-trap"] }

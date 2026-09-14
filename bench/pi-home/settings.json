@@ -1,0 +1,6 @@
+{
+  "defaultProvider": "ollama",
+  "defaultModel": "qwen3.5:9b-32k",
+  "defaultProjectTrust": "always",
+  "enableInstallTelemetry": false
+}

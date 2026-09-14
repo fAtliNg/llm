@@ -1,0 +1,1 @@
+Write unit tests for `TaskStatusBadge` and `TaskPriorityBadge` in `src/features/tasks/task-badges.test.tsx`. Cover every status and every priority value: each one must render its human-readable label. Follow the testing conventions of the project.

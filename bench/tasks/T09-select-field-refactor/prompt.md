@@ -1,0 +1,1 @@
+The status and priority fields in `TaskForm` are near-identical copies of each other. Extract a reusable select field component so the form no longer repeats that markup, without changing the form's behaviour or its tests.

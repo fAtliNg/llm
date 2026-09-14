@@ -1,0 +1,1 @@
+{ "id": "T09-select-field-refactor", "title": "Extract a reusable select field", "layer": "form", "work": "refactor", "difficulty": 2, "formulation": "product" }

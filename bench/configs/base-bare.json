@@ -1,0 +1,8 @@
+{
+  "description": "Base model, no project context, no skills.",
+  "model": "ollama/qwen3.5:9b-32k",
+  "thinking": "off",
+  "contextFiles": false,
+  "skills": false,
+  "timeoutSec": 900
+}

@@ -1,0 +1,1 @@
+{ "id": "T05-badge-tests", "title": "Unit tests for the task badges", "layer": "test", "work": "test", "difficulty": 2, "formulation": "spec", "testGlob": "src/features/tasks/task-badges.test.tsx" }

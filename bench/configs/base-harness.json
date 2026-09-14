@@ -1,0 +1,8 @@
+{
+  "description": "Base model with AGENTS.md and skills.",
+  "model": "ollama/qwen3.5:9b-32k",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 900
+}

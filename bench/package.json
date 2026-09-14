@@ -1,0 +1,17 @@
+{
+  "name": "bench",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=22.19" },
+  "scripts": {
+    "bench": "node src/cli.ts",
+    "pi": "pi",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.85.1",
+    "@types/node": "26.5.1",
+    "typescript": "6.0.3"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "Base model with harness and thinking on: measures what reasoning buys.",
+  "model": "ollama/qwen3.5:9b-32k",
+  "thinking": "low",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 1800
+}

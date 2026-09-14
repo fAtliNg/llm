@@ -1,0 +1,1 @@
+When saving a new task fails on the server, nothing happens and the user is left guessing. Show the message "Could not save the task" above the form when the create request fails, and keep the entered values in the form so the user can retry.

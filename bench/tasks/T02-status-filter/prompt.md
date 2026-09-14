@@ -1,0 +1,1 @@
+Users want to narrow the task list down by status. Add a status filter above the table on the tasks page: a select labelled "Filter by status" with an "All" option selected by default and one option per status. Choosing a status shows only the matching tasks; "All" shows everything again.
