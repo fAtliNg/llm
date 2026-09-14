@@ -56,6 +56,15 @@
 | @emotion/react | 11.14.0 | |
 | @emotion/styled | 11.14.1 | |
 
+### Вариант C: Ant Design
+
+| Пакет | Версия | Примечание |
+|-------|--------|------------|
+| antd | 6.6.4 | v6 с 2025-11-21, гладкая миграция с v5, React 19 без патча, LESS удалён, CSS-переменные + CSS-in-JS |
+| @ant-design/icons | 6.3.4 | Обновляется вместе с antd, v6 несовместим с antd 5 |
+
+Особенность: у antd своя система форм (Form, Form.Item, rules, useForm). При выборе antd рекомендуется убрать react-hook-form и оставить zod только для схем API.
+
 ## Что вышло после среза знаний Claude
 
 Для генерации датасета и для базовой модели это одинаково слепые зоны, документацию по ним нужно давать в контексте: TypeScript 6 и 7, React Router 8, Vite 8, Vitest 5, MUI 9, ESLint 10, jest-dom 7, React 19.3.
@@ -66,4 +75,5 @@
 - [Material UI v9 (mui.com)](https://mui.com/blog/introducing-material-ui-v9/), [Upgrade to v9](https://mui.com/material-ui/migration/upgrade-to-v9/)
 - [Vitest 5.0 is out](https://vitest.dev/blog/vitest-5.html)
 - [TypeScript 7.0 (InfoQ)](https://www.infoq.com/news/2026/08/typescript-7-released/), [typescript-eslint и TS 7 (Mergify)](https://mergify.com/blog/native-typescript-compiler-faster-typecheck)
+- [Ant Design: From v5 to v6](https://ant.design/docs/react/migration-v6/), [Ant Design 6.0 is Here](https://github.com/ant-design/ant-design/issues/55804)
 - [shadcn/ui: unified radix-ui package](https://ui.shadcn.com/docs/changelog/2026-02-radix-ui), [shadcn/ui: Tailwind v4](https://ui.shadcn.com/docs/tailwind-v4)
