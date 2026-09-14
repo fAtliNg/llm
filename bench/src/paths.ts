@@ -3,7 +3,9 @@ import path from 'node:path';
 export const BENCH_DIR = path.resolve(import.meta.dirname, '..');
 export const REPO_DIR = path.resolve(BENCH_DIR, '..');
 export const TEMPLATE_DIR = path.join(REPO_DIR, 'template');
-export const TASKS_DIR = path.join(BENCH_DIR, 'tasks');
+export const TASKS_DIR = process.env.BENCH_TASKS_DIR
+  ? path.resolve(process.env.BENCH_TASKS_DIR)
+  : path.join(BENCH_DIR, 'tasks');
 export const CONFIGS_DIR = path.join(BENCH_DIR, 'configs');
 export const WORK_DIR = path.join(BENCH_DIR, '.work');
 export const RESULTS_DIR = path.join(BENCH_DIR, 'results');

@@ -6,3 +6,4 @@ pi-home/*
 !pi-home/models.json
 !pi-home/settings.json
 dataset/*.jsonl
+pool/
