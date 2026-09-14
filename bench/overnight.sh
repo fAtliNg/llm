@@ -7,6 +7,8 @@ setopt nonomatch
 cd "$(dirname "$0")"
 export PATH="$HOME/.nvm/versions/node/v22.23.2/bin:$PATH"
 mkdir -p results
+# Keys live in bench/.env.local (git-ignored): DEEPSEEK_API_KEY=... one per line.
+[[ -f .env.local ]] && set -a && source .env.local && set +a
 
 if [[ -z "${DEEPSEEK_API_KEY:-}" ]]; then
   echo "DEEPSEEK_API_KEY is not set; the teacher run will be skipped" >&2
@@ -28,6 +30,7 @@ fi
 # 2. Base on every benchmark task, all three configs, one rep (finished triples are skipped).
 nohup node src/cli.ts run --run-id base-v1 --configs base-harness,base-bare,base-harness-thinking --tasks all --reps 1 >> results/base-v1.log 2>&1 &
 BASE=$!
+disown $BASE 2>/dev/null
 echo $BASE > results/base-v1.pid
 nohup caffeinate -i -s -w $BASE >/dev/null 2>&1 &
 echo "base-v1 resumed, pid $BASE"
@@ -41,6 +44,7 @@ if [[ -n "${DEEPSEEK_API_KEY:-}" ]]; then
   fi
   BENCH_TASKS_DIR="$PWD/pool/tasks" nohup node src/cli.ts run --run-id teacher-v1 --configs reference-deepseek --tasks all --reps 1 >> results/teacher-v1.log 2>&1 &
   TEACHER=$!
+  disown $TEACHER 2>/dev/null
   echo $TEACHER > results/teacher-v1.pid
   nohup caffeinate -i -s -w $TEACHER >/dev/null 2>&1 &
   echo "teacher-v1 started, pid $TEACHER"

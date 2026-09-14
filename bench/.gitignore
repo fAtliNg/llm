@@ -7,3 +7,4 @@ pi-home/*
 !pi-home/settings.json
 dataset/*.jsonl
 pool/
+.env.local
