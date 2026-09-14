@@ -128,6 +128,10 @@ export async function runAgent(
     config.tools ?? 'read,bash,edit,write',
     '-a',
   ];
+  // Cloud reference runs: an API key from the environment beats any stored subscription login.
+  if (config.model.startsWith('anthropic/') && process.env.ANTHROPIC_API_KEY) {
+    args.push('--api-key', process.env.ANTHROPIC_API_KEY);
+  }
   if (!config.contextFiles) args.push('--no-context-files');
   if (!config.skills) args.push('--no-skills');
   args.push('--', task.prompt);
