@@ -1,4 +1,4 @@
-export type Layer = 'component' | 'form' | 'query' | 'routing' | 'test' | 'mock' | 'cross';
+export type Layer = 'component' | 'form' | 'query' | 'routing' | 'test' | 'mock' | 'config' | 'cross';
 export type Work = 'create' | 'modify' | 'fix' | 'test' | 'refactor';
 
 export interface TaskMeta {
