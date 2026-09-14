@@ -3,13 +3,15 @@ import path from 'node:path';
 
 import { exec } from './exec.ts';
 import { PI_BIN, PI_HOME } from './paths.ts';
-import type { AgentMetrics, BenchConfig, Task } from './types.ts';
+import type { AgentMetrics, BenchConfig, Task, ToolEvent } from './types.ts';
 
 interface PiEvent {
   type: string;
   toolName?: string;
-  args?: { command?: string };
+  toolCallId?: string;
+  args?: { command?: string; path?: string };
   isError?: boolean;
+  result?: { content?: { type: string; text?: string }[] };
   message?: { role?: string; content?: { type: string; text?: string }[]; usage?: { input?: number; output?: number } };
   usage?: { input?: number; output?: number };
 }
@@ -26,7 +28,13 @@ export async function runAgent(
   fs.mkdirSync(outDir, { recursive: true });
   const transcript = fs.createWriteStream(path.join(outDir, 'transcript.jsonl'));
 
+  const started = Date.now();
+  const pendingCalls = new Map<string, ToolEvent>();
   const metrics: AgentMetrics = {
+    timeline: [],
+    firstEditAt: null,
+    lastEditAt: null,
+    verifyRuns: 0,
     turns: 0,
     toolCalls: {},
     toolErrors: 0,
@@ -54,12 +62,36 @@ export async function runAgent(
       case 'tool_execution_start': {
         const name = event.toolName ?? 'unknown';
         metrics.toolCalls[name] = (metrics.toolCalls[name] ?? 0) + 1;
-        if (name === 'bash' && VERIFY_COMMAND.test(event.args?.command ?? '')) metrics.ranVerify = true;
+        const at = Math.round((Date.now() - started) / 10) / 100;
+        const target = (name === 'bash' ? event.args?.command : event.args?.path) ?? '';
+        const entry: ToolEvent = { at, tool: name, target: target.slice(0, 300), ok: true };
+        metrics.timeline.push(entry);
+        if (event.toolCallId) pendingCalls.set(event.toolCallId, entry);
+        if (name === 'bash' && VERIFY_COMMAND.test(target)) {
+          metrics.ranVerify = true;
+          metrics.verifyRuns += 1;
+        }
+        if (name === 'edit' || name === 'write') {
+          metrics.firstEditAt ??= at;
+          metrics.lastEditAt = at;
+        }
         break;
       }
-      case 'tool_execution_end':
-        if (event.isError) metrics.toolErrors += 1;
+      case 'tool_execution_end': {
+        const entry = event.toolCallId ? pendingCalls.get(event.toolCallId) : undefined;
+        if (event.isError) {
+          metrics.toolErrors += 1;
+          if (entry) {
+            entry.ok = false;
+            entry.error = (event.result?.content ?? [])
+              .map((part) => part.text ?? '')
+              .join(' ')
+              .slice(0, 200);
+          }
+        }
+        if (event.toolCallId) pendingCalls.delete(event.toolCallId);
         break;
+      }
       case 'message_end': {
         const usage = event.message?.usage ?? event.usage;
         if (usage) {

@@ -7,8 +7,22 @@ npx npm@latest install
 npm run bench -- list
 npm run bench -- validate all          # reference solutions pass
 npm run bench -- null all              # untouched template fails
-npm run bench -- run --config base-harness --tasks T00-rename-button --reps 1
+npm run bench -- run --configs base-harness --tasks T00-rename-button --reps 1
 npm run bench -- report
 ```
+
+Full base measurement, resumable:
+
+```bash
+# start (or continue) the run named base-v1; finished (config, task, rep) triples are skipped
+nohup npm run bench -- run --run-id base-v1 --configs base-harness,base-bare,base-harness-thinking --tasks all --reps 1 > results/base-v1.log 2>&1 &
+echo $! > results/base-v1.pid
+tail -f results/base-v1.log            # watch progress
+kill $(cat results/base-v1.pid)        # stop: the running agent is killed, finished tasks are kept
+npm run bench -- report --run-id base-v1
+```
+
+Each finished run leaves `results/<run>/<config>/<task>/<rep>/` with `result.json`, `analysis.md`
+(what happened and why, for shaping the dataset), `transcript.jsonl`, verify logs and the Pi session.
 
 Tasks live in `tasks/<id>/`, configurations in `configs/`, Pi's provider config in `pi-home/`. Results go to `results/<runId>/...` and workspaces to `.work/`, both ignored by git.

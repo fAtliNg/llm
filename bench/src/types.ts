@@ -55,7 +55,21 @@ export interface Grade {
   failureReason: string | null;
 }
 
+export interface ToolEvent {
+  /** Seconds since the agent started. */
+  at: number;
+  tool: string;
+  /** Command for bash, path for the file tools. */
+  target: string;
+  ok: boolean;
+  error?: string;
+}
+
 export interface AgentMetrics {
+  timeline: ToolEvent[];
+  firstEditAt: number | null;
+  lastEditAt: number | null;
+  verifyRuns: number;
   turns: number;
   toolCalls: Record<string, number>;
   toolErrors: number;
@@ -68,6 +82,17 @@ export interface AgentMetrics {
   finalMessage: string;
 }
 
+export interface Diagnostics {
+  /** Files that differ from the template, relative paths. */
+  changedFiles: string[];
+  /** Compressed trajectory, e.g. "bash×12 → read → edit → bash(verify)". */
+  shape: string;
+  /** Most frequent tool error messages. */
+  topErrors: string[];
+  /** Human-readable observations useful for shaping the dataset. */
+  comments: string[];
+}
+
 export interface RunResult {
   runId: string;
   config: string;
@@ -75,5 +100,6 @@ export interface RunResult {
   rep: number;
   agent: AgentMetrics;
   grade: Grade;
+  diagnostics: Diagnostics;
   workspace: string;
 }
