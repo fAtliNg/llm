@@ -21,11 +21,7 @@ ollama pull qwen3.5:9b
 Тег `9b` это Q4_K_M, около 6,6 ГБ. Контекст задаётся явно, иначе Ollama тихо обрежет его до 4k и tool calling развалится:
 
 ```bash
-cat > /tmp/Modelfile <<'MF'
-FROM qwen3.5:9b
-PARAMETER num_ctx 32768
-MF
-ollama create qwen3.5:9b-32k -f /tmp/Modelfile
+ollama create qwen3.5:9b-32k -f bench/ollama/Modelfile
 ```
 
 KV-кэш в Q8 и прочие настройки сервера через переменные окружения при запуске `ollama serve`: `OLLAMA_KV_CACHE_TYPE=q8_0`, `OLLAMA_FLASH_ATTENTION=1`.
@@ -52,14 +48,13 @@ cd bench && npm run pi -- --list-models
 cd bench && npm run pi -- --model ollama/qwen3.5:9b-32k --thinking off -c ../template
 ```
 
-## Что проверить при первом запуске
+## Результаты первого запуска (2026-09-14, M2 Pro 16 ГБ)
 
-Это открытые вопросы, ответы записать в `04-decisions.md`:
-
-1. Выдаёт ли Qwen3.5-9B через Ollama корректные tool calls в формате Pi: попросить прочитать файл и внести правку.
-2. Выключается ли thinking флагом `--thinking off` через OpenAI-совместимый API Ollama. Если в ответах появляется `<think>`, нужен другой способ: параметр `think: false` в Modelfile или в настройках провайдера Pi.
-3. Скорость: токенов в секунду на prefill и генерации при контексте 8k и 32k.
-4. Память: не уезжает ли модель на CPU при 32k контекста (в `ollama ps` колонка PROCESSOR должна показывать 100% GPU).
+1. Tool calls в формате Pi корректные: `read`, `edit` с `oldText`/`newText`, `bash`. Правки применяются.
+2. Thinking выключается: Ollama принимает `reasoning_effort: "none"`, Pi маппит `--thinking off` на него через `thinkingLevelMap` в `bench/pi-home/models.json`. Reasoning-токенов в ответах ноль.
+3. Скорость: генерация 21,5 токенов/с, prefill 180 токенов/с на коротком контексте.
+4. Память: модель целиком на GPU при контексте 32768 (`ollama ps` показывает 100% GPU, 6,5 ГБ).
+5. T00 (переименовать кнопку) решён с обвязкой за 12 минут и 92 хода: 81 вызов bash, 5 read, 2 edit, 16 ошибок инструментов, контекст дорос до 24k. Модель предпочитает `cat`, `grep` и `sed` через bash вместо `read` и `edit`, придумывает пути, пишет во временные файлы, но в итоге делает правильную правку и сама запускает `npm run verify`.
 
 ## Дымовой прогон бенчмарка
 

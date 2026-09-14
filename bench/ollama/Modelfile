@@ -1,0 +1,4 @@
+# Qwen3.5 9B with an explicit 32k context. Build with:
+#   ollama create qwen3.5:9b-32k -f bench/ollama/Modelfile
+FROM qwen3.5:9b
+PARAMETER num_ctx 32768
