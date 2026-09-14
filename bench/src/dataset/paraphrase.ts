@@ -7,7 +7,7 @@ import path from 'node:path';
  * directories next to the originals with a -p<n> suffix; run pool.ts first.
  */
 const API = 'https://api.deepseek.com/chat/completions';
-const MODEL = process.env.DEEPSEEK_MODEL ?? 'deepseek-chat';
+const MODEL = process.env.DEEPSEEK_MODEL ?? 'deepseek-v4-pro';
 
 const SYSTEM_EN = `You rewrite coding tasks for a React + TypeScript project. Produce N distinct paraphrases of the task.
 Rules: keep every concrete constraint exactly (labels in quotes, file paths, endpoint paths, messages, numbers, field names); change wording, sentence order and framing (a bug report, a product manager's request, a terse engineering ticket, a colleague's chat message); do not add or remove requirements; English only; no preamble.
@@ -51,6 +51,8 @@ async function main(): Promise<void> {
   let written = 0;
   for (const id of ids) {
     if (fs.existsSync(path.join(poolDir, `${id}-${suffix}1`))) continue;
+    // Benchmark tasks may already have a hand-written Russian variant.
+    if (lang === 'ru' && fs.existsSync(path.join(poolDir, `${id}-ru`))) continue;
     const prompt = fs.readFileSync(path.join(poolDir, id, 'prompt.md'), 'utf8').trim();
     let variants: string[];
     try {

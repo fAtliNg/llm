@@ -21,6 +21,14 @@ export interface SelectOptions {
   captured: string;
   maxTurns?: number;
   minTurns?: number;
+  /** Target share of Russian-prompt examples (0..1). Russian examples are all kept; English ones are sampled down. */
+  ruShare?: number;
+}
+
+function isRussian(example: Example): boolean {
+  const user = example.messages.find((m) => m.role === 'user')?.content ?? '';
+  const cyrillic = (user.match(/[а-яё]/gi) ?? []).length;
+  return cyrillic > user.length * 0.2;
 }
 
 interface Verdict {
@@ -122,14 +130,28 @@ export function select(options: SelectOptions): { kept: Example[]; report: strin
     if (v.repaired) repairedKept += 1;
     kept.push(normalizePaths(trimTail(example, result.agent.timeline), result.workspace));
   }
-  const lines = [`examples: ${String(examples.length)}, kept: ${String(kept.length)}, with a repair loop: ${String(repairedKept)} (${examples.length ? String(Math.round((100 * repairedKept) / Math.max(kept.length, 1))) : '0'}% of kept)`, 'reasons:'];
+  let balanced = kept;
+  const ru = kept.filter(isRussian);
+  const en = kept.filter((e) => !isRussian(e));
+  if (options.ruShare !== undefined && ru.length > 0 && options.ruShare > 0 && options.ruShare < 1) {
+    const enTarget = Math.round((ru.length * (1 - options.ruShare)) / options.ruShare);
+    // Deterministic sample: every k-th English example.
+    const step = en.length > enTarget ? en.length / enTarget : 1;
+    const sampled = en.length > enTarget ? Array.from({ length: enTarget }, (_, i) => en[Math.floor(i * step)]!) : en;
+    balanced = [...ru, ...sampled];
+  }
+  const lines = [`examples: ${String(examples.length)}, kept: ${String(kept.length)} (ru ${String(ru.length)}, en ${String(en.length)}), after language balancing: ${String(balanced.length)}, with a repair loop: ${String(repairedKept)} (${examples.length ? String(Math.round((100 * repairedKept) / Math.max(kept.length, 1))) : '0'}% of kept)`, 'reasons:'];
   for (const [reason, count] of [...reasons].sort((a, b) => b[1] - a[1])) lines.push(`  ${reason.padEnd(32)} ${String(count)}`);
-  return { kept, report: lines.join('\n') };
+  return { kept: balanced, report: lines.join('\n') };
 }
 
 if (process.argv[1]?.endsWith('select.ts')) {
-  const [runIds = 'teacher-v1', outFile = 'dataset/train.jsonl'] = process.argv.slice(2);
-  const { kept, report } = select({ runIds: runIds.split(','), captured: 'dataset/student-request.json' });
+  const [runIds = 'teacher-v1', outFile = 'dataset/train.jsonl', ruShareArg] = process.argv.slice(2);
+  const { kept, report } = select({
+    runIds: runIds.split(','),
+    captured: 'dataset/student-request.json',
+    ...(ruShareArg ? { ruShare: Number(ruShareArg) } : {}),
+  });
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, kept.map((e) => JSON.stringify(e)).join('\n') + (kept.length ? '\n' : ''));
   console.log(report);
