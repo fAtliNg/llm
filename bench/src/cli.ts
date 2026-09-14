@@ -4,6 +4,7 @@ import path from 'node:path';
 import { runAgent } from './agent.ts';
 import { analysisMarkdown, diagnose } from './diagnostics.ts';
 import { killAll } from './exec.ts';
+import { startGeminiProxy } from './gemini-proxy.ts';
 import { grade } from './grade.ts';
 import { CONFIGS_DIR, RESULTS_DIR, WORK_DIR } from './paths.ts';
 import { report } from './report.ts';
@@ -128,6 +129,11 @@ function acquireLock(runId: string): () => void {
 async function run(tasks: Task[], configNames: string[], reps: number, runId: string): Promise<void> {
   const releaseLock = acquireLock(runId);
   const configs = configNames.map((name) => [name, loadConfig(name)] as const);
+  const stopProxy = configs.some(([, c]) => c.model.startsWith('google-throttled/')) ? await startGeminiProxy() : null;
+  const finish = () => {
+    releaseLock();
+    stopProxy?.();
+  };
   console.log(`run ${runId}  configs=${configNames.join(',')}  tasks=${String(tasks.length)}  reps=${String(reps)}`);
   let done = 0;
   let skipped = 0;
@@ -144,14 +150,14 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
         const started = Date.now();
         const agent = await runAgent(task, config, workspace, outDir);
         if (agent.apiError && agent.timeline.length === 0) {
-          releaseLock();
+          finish();
           fs.rmSync(outDir, { recursive: true, force: true });
           console.error(`\nprovider error on ${configName}/${task.id}, stopping the run so results stay clean:\n${agent.apiError}`);
           process.exitCode = 2;
           return;
         }
         if (stopping) {
-          releaseLock();
+          finish();
           console.log(`stopped during ${configName}/${task.id}/${String(rep)}; rerun with --run-id ${runId} to resume`);
           return;
         }
@@ -167,7 +173,7 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
       }
     }
   }
-  releaseLock();
+  finish();
   console.log(`\ndone ${String(done)}, skipped ${String(skipped)} (already had results)`);
   console.log(`results: ${path.join(RESULTS_DIR, runId)}`);
 }

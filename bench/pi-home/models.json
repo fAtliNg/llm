@@ -27,6 +27,23 @@
           }
         }
       ]
+    },
+    "google-throttled": {
+      "baseUrl": "http://127.0.0.1:8787/v1beta",
+      "api": "google-generative-ai",
+      "apiKey": "$GEMINI_API_KEY",
+      "models": [
+        {
+          "id": "gemini-3.6-flash",
+          "name": "Gemini 3.6 Flash (throttled, free tier)",
+          "reasoning": true,
+          "contextWindow": 1000000,
+          "maxTokens": 65536,
+          "input": [
+            "text"
+          ]
+        }
+      ]
     }
   }
 }
