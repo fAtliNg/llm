@@ -1,0 +1,11 @@
+{
+  "id": "T19-title-search-ru",
+  "title": "Поиск задач по названию",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

@@ -1,0 +1,56 @@
+import { Link } from 'react-router';
+
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { DeleteTaskButton } from '@/features/tasks/delete-task-button';
+import { MarkDoneButton } from '@/features/tasks/mark-done-button';
+import type { Task } from '@/features/tasks/model';
+import { TaskPriorityBadge, TaskStatusBadge } from '@/features/tasks/task-badges';
+
+export function TaskList({ tasks }: { tasks: Task[] }) {
+  if (tasks.length === 0) {
+    return <p className="text-sm text-muted-foreground">No tasks yet. Create the first one.</p>;
+  }
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Title</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Priority</TableHead>
+          <TableHead className="w-0">
+            <span className="sr-only">Actions</span>
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {tasks.map((task) => (
+          <TableRow key={task.id}>
+            <TableCell className="font-medium">{task.title}</TableCell>
+            <TableCell>
+              <TaskStatusBadge status={task.status} />
+            </TableCell>
+            <TableCell>
+              <TaskPriorityBadge priority={task.priority} />
+            </TableCell>
+            <TableCell className="flex justify-end gap-1">
+              {task.status !== 'done' && <MarkDoneButton task={task} />}
+              <Button variant="ghost" size="sm" asChild>
+                <Link to={`/tasks/${task.id}/edit`}>Edit</Link>
+              </Button>
+              <DeleteTaskButton task={task} />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}

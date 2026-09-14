@@ -1,0 +1,1 @@
+Добавь в API задач query-эндпоинт `getTaskStats`: `GET /api/tasks/stats` возвращает `{ total: number; done: number }` (done это задачи со статусом `done`). Добавь MSW-обработчик поверх in-memory db по образцу существующих. На странице задач после загрузки покажи под заголовком текст `{done} of {total} done`, например "1 of 3 done".

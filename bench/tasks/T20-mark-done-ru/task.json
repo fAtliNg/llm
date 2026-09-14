@@ -1,0 +1,11 @@
+{
+  "id": "T20-mark-done-ru",
+  "title": "Завершить задачу из списка",
+  "layer": "query",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

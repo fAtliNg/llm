@@ -1,0 +1,11 @@
+{
+  "id": "T06-task-details-ru",
+  "title": "Страница задачи",
+  "layer": "routing",
+  "work": "create",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

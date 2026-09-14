@@ -1,0 +1,12 @@
+{
+  "id": "T10-create-error-ru",
+  "title": "Ошибка при сохранении",
+  "layer": "query",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "error-handling",
+    "ru"
+  ]
+}

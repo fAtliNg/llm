@@ -21,6 +21,10 @@ if [[ -n "${DEEPSEEK_API_KEY:-}" ]]; then
     echo "paraphrasing the pool (2 per task)..."
     node src/dataset/paraphrase.ts pool/tasks 2 2>&1 | tail -2
   fi
+  if ! ls -d pool/tasks/*-ru1 >/dev/null 2>&1; then
+    echo "russian formulations (1 per task)..."
+    node src/dataset/paraphrase.ts pool/tasks 1 ru 2>&1 | tail -2
+  fi
   BENCH_TASKS_DIR="$PWD/pool/tasks" nohup node src/cli.ts run --run-id teacher-v1 --configs reference-deepseek --tasks all --reps 1 >> results/teacher-v1.log 2>&1 &
   TEACHER=$!
   disown $TEACHER 2>/dev/null

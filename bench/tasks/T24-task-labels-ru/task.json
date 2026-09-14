@@ -1,0 +1,11 @@
+{
+  "id": "T24-task-labels-ru",
+  "title": "Метки у задач",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

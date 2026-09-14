@@ -1,0 +1,12 @@
+{
+  "id": "T08-task-stats-ru",
+  "title": "Эндпоинт статистики задач",
+  "layer": "query",
+  "work": "create",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "handler-order-trap",
+    "ru"
+  ]
+}

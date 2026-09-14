@@ -55,6 +55,9 @@ export function report(runId?: string): string {
   const byFormulation = table('Solved by formulation', configs, ['spec', 'product'], (config, f) =>
     stat(config, (r) => f === '*' || r.task.formulation === f),
   );
+  const byLanguage = table('Solved by prompt language', configs, ['en', 'ru'], (config, lang) =>
+    stat(config, (r) => lang === '*' || (r.task.tags?.includes('ru') ?? false) === (lang === 'ru')),
+  );
 
   const reasons = ['### Failure reasons', '', '| config | reason | count |', '|---|---|---|'];
   for (const config of configs) {
@@ -115,7 +118,7 @@ export function report(runId?: string): string {
   }
 
   return [
-    byLayer, '', byDifficulty, '', byFormulation, '', reasons.join('\n'), '', agent.join('\n'), '',
+    byLayer, '', byDifficulty, '', byFormulation, '', byLanguage, '', reasons.join('\n'), '', agent.join('\n'), '',
     timeByConfig.join('\n'), '', perTask.join('\n'), '', details.join('\n'),
   ].join('\n');
 }

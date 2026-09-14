@@ -1,0 +1,12 @@
+{
+  "id": "T00-rename-button-ru",
+  "title": "Переименовать кнопку New task",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru",
+    "smoke"
+  ]
+}

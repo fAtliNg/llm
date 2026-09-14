@@ -1,0 +1,13 @@
+{
+  "id": "T03-delete-not-refreshing-ru",
+  "title": "Список не обновляется после удаления",
+  "layer": "query",
+  "work": "fix",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "exploration",
+    "planted-bug",
+    "ru"
+  ]
+}

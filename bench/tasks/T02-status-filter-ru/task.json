@@ -1,0 +1,11 @@
+{
+  "id": "T02-status-filter-ru",
+  "title": "Фильтр списка задач по статусу",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

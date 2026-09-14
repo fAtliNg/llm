@@ -1,0 +1,11 @@
+{
+  "id": "T30-delete-error-ru",
+  "title": "Ошибка при удалении",
+  "layer": "query",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}
