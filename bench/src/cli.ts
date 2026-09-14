@@ -193,6 +193,36 @@ function stripTask(task: Task) {
   return meta;
 }
 
+/** Re-grades finished runs against the current task definitions (after a hidden test or check was fixed). */
+async function regrade(runId: string, taskFilter: string | undefined): Promise<void> {
+  const wanted = taskFilter && taskFilter !== 'all' ? new Set(taskFilter.split(',').map((t) => t.trim())) : null;
+  const root = path.join(RESULTS_DIR, runId);
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name === 'result.json') files.push(full);
+    }
+  };
+  walk(root);
+  for (const file of files) {
+    const record = JSON.parse(fs.readFileSync(file, 'utf8')) as RunResult;
+    if (wanted && !wanted.has(record.task.id)) continue;
+    if (!fs.existsSync(record.workspace)) {
+      console.log(`skip ${record.config}/${record.task.id}: workspace gone`);
+      continue;
+    }
+    const task = loadTask(record.task.id);
+    const before = record.grade.solved;
+    record.grade = await grade(record.workspace, task, path.dirname(file));
+    record.diagnostics = diagnose(record.workspace, task, record.agent, record.grade);
+    fs.writeFileSync(file, JSON.stringify(record, null, 2));
+    fs.writeFileSync(path.join(path.dirname(file), 'analysis.md'), analysisMarkdown({ task, config: record.config, rep: record.rep, agent: record.agent, grade: record.grade, diagnostics: record.diagnostics }));
+    console.log(`${record.grade.solved ? 'PASS' : 'FAIL'}  ${record.config}/${record.task.id}/${String(record.rep)}  ${before === record.grade.solved ? '(unchanged)' : `(was ${before ? 'PASS' : 'FAIL'})`}  ${record.grade.failureReason ?? ''}`);
+  }
+}
+
 /** Recomputes diagnostics and analysis.md for finished runs whose workspaces still exist. */
 function rediagnose(runId: string): void {
   const root = path.join(RESULTS_DIR, runId);
@@ -220,6 +250,7 @@ const HELP = `bench commands:
   run --configs <a,b> [--tasks all|T01,..] [--reps N] [--run-id <id>]
                                    reuse --run-id to resume a stopped run or add reps
   report [--run-id <a,b>]          aggregate bench/results (all runs, or the listed run ids) into markdown
+  regrade --run-id <id> [--tasks]  re-grade finished runs after a task's tests or checks changed
   rediagnose --run-id <id>         recompute diagnostics/analysis.md for finished runs
   list                             list tasks`;
 
@@ -247,6 +278,10 @@ async function main(): Promise<void> {
       console.log(`\nwritten to ${file}`);
       break;
     }
+    case 'regrade':
+      if (!options['run-id']) throw new Error('--run-id is required');
+      await regrade(options['run-id'], options.tasks);
+      break;
     case 'rediagnose':
       if (!options['run-id']) throw new Error('--run-id is required');
       rediagnose(options['run-id']);

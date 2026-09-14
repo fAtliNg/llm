@@ -27,7 +27,7 @@ async function vitest(
   workspace: string,
   filter: string,
   jsonFile: string,
-): Promise<{ stage: Stage; passed: number; failed: number }> {
+): Promise<{ stage: Stage; passed: number; failed: number; output: string }> {
   const result = await exec(
     'npx',
     ['vitest', 'run', filter, '--reporter=json', `--outputFile=${jsonFile}`, '--reporter=default'],
@@ -47,6 +47,7 @@ async function vitest(
     stage: { ok: success && result.code === 0, tail: tail(output), seconds: result.seconds },
     passed,
     failed,
+    output,
   };
 }
 
@@ -113,6 +114,7 @@ export async function grade(workspace: string, task: Task, outDir: string): Prom
     stage: { ok: true, tail: 'no hidden tests', seconds: 0 },
     passed: 0,
     failed: 0,
+    output: '',
   };
   if (fs.existsSync(hiddenSource)) {
     const hiddenTarget = path.join(workspace, HIDDEN_TESTS_DIR);
@@ -120,7 +122,7 @@ export async function grade(workspace: string, task: Task, outDir: string): Prom
     fs.mkdirSync(hiddenTarget, { recursive: true });
     fs.cpSync(hiddenSource, hiddenTarget, { recursive: true });
     hiddenRun = await vitest(workspace, HIDDEN_TESTS_DIR, path.join(outDir, 'hidden.json'));
-    fs.writeFileSync(path.join(outDir, 'hidden.log'), hiddenRun.stage.tail);
+    fs.writeFileSync(path.join(outDir, 'hidden.log'), hiddenRun.output);
     fs.rmSync(hiddenTarget, { recursive: true, force: true });
   }
 
