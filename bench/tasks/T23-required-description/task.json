@@ -1,0 +1,8 @@
+{
+  "id": "T23-required-description",
+  "title": "Description becomes required",
+  "layer": "form",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "spec"
+}

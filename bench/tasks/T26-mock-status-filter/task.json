@@ -1,0 +1,8 @@
+{
+  "id": "T26-mock-status-filter",
+  "title": "Status filter in the mock API",
+  "layer": "mock",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec"
+}

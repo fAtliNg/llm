@@ -1,0 +1,1 @@
+Show the number of loaded tasks in the tasks page heading using the format "Tasks (3)". While loading or on error the heading stays "Tasks". The count must update after a task is deleted. Update existing tests if the change requires it.

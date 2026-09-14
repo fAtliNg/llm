@@ -1,0 +1,1 @@
+Add a test to `src/pages/tasks-page.test.tsx`: when the first `GET /api/tasks` fails with status 500 and the user clicks "Try again", the list loads and shows the seeded tasks. Use `server.use` with a one-time handler (`{ once: true }`) so the retry succeeds.

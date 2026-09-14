@@ -1,0 +1,1 @@
+`GET /api/tasks` must support an optional `status` query parameter: `/api/tasks?status=done` returns only tasks with that status, and without the parameter all tasks are returned as before. Implement it in the MSW handler using the request URL.

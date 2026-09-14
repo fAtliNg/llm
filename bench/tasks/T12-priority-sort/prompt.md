@@ -1,0 +1,1 @@
+Sort the rows of the tasks table by priority: high first, then medium, then low. Tasks with the same priority keep the order the API returned them in. Do the sorting on the client; do not change the API or the mocks.

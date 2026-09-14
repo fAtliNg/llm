@@ -1,0 +1,1 @@
+Users want to complete a task straight from the list. For every task that is not done, add a "Mark done" button in its row (accessible name "Mark done <title>", like the existing delete button). Clicking it updates the task's status to done through the API, and the row then shows the Done badge. Tasks that are already done have no such button.

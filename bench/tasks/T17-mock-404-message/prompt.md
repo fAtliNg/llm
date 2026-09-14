@@ -1,0 +1,1 @@
+In the MSW handlers, `GET /api/tasks/:taskId` for an unknown id must respond with status 404 and the JSON body `{ "message": "Task <id> not found" }`, for example `Task 999 not found`. Other handlers stay as they are.

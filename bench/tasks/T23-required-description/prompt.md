@@ -1,0 +1,1 @@
+Make the task description required: at least 10 characters after trimming, with the validation message "Add at least 10 characters". The rule lives in the zod schema so the mock API enforces it too. Update existing tests and any test fixtures that no longer satisfy the rule.

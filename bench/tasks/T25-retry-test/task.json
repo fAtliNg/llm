@@ -1,0 +1,9 @@
+{
+  "id": "T25-retry-test",
+  "title": "Test for the retry button",
+  "layer": "test",
+  "work": "test",
+  "difficulty": 2,
+  "formulation": "spec",
+  "testGlob": "src/pages/tasks-page.test.tsx"
+}

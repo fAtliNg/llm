@@ -1,0 +1,8 @@
+{
+  "id": "T20-mark-done",
+  "title": "Complete a task from the list",
+  "layer": "query",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product"
+}

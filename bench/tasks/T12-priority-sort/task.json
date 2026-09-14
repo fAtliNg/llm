@@ -1,0 +1,8 @@
+{
+  "id": "T12-priority-sort",
+  "title": "Sort tasks by priority",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec"
+}

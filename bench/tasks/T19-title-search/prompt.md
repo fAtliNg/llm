@@ -1,0 +1,1 @@
+Users want to find tasks quickly. Add a search box labelled "Search" above the tasks table that filters the rows as the user types: case-insensitive substring match on the title. Clearing the box shows all tasks again.

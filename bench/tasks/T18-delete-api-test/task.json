@@ -1,0 +1,9 @@
+{
+  "id": "T18-delete-api-test",
+  "title": "Test for deleteTask",
+  "layer": "test",
+  "work": "test",
+  "difficulty": 1,
+  "formulation": "spec",
+  "testGlob": "src/features/tasks/api.test.ts"
+}

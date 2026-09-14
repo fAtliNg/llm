@@ -1,0 +1,8 @@
+{
+  "id": "T17-mock-404-message",
+  "title": "Descriptive 404 from the mock API",
+  "layer": "mock",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec"
+}

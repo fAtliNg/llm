@@ -1,0 +1,1 @@
+Extend `src/features/tasks/api.test.ts` with a test proving that `deleteTask` removes a task: after deleting the task with id "3", `getTasks` returns two tasks and none of them has id "3". Follow the style of the existing test in that file.

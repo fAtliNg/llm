@@ -1,0 +1,8 @@
+{
+  "id": "T14-cancel-link",
+  "title": "Cancel link in the task form",
+  "layer": "form",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec"
+}
