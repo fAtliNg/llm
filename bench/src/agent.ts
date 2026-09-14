@@ -7,12 +7,18 @@ import type { AgentMetrics, BenchConfig, Task, ToolEvent } from './types.ts';
 
 interface PiEvent {
   type: string;
+  errorMessage?: string;
   toolName?: string;
   toolCallId?: string;
   args?: { command?: string; path?: string };
   isError?: boolean;
   result?: { content?: { type: string; text?: string }[] };
-  message?: { role?: string; content?: { type: string; text?: string }[]; usage?: { input?: number; output?: number } };
+  message?: {
+    role?: string;
+    content?: { type: string; text?: string }[];
+    usage?: { input?: number; output?: number };
+    errorMessage?: string;
+  };
   usage?: { input?: number; output?: number };
 }
 
@@ -45,6 +51,7 @@ export async function runAgent(
     timedOut: false,
     exitCode: null,
     finalMessage: '',
+    apiError: null,
   };
 
   const onLine = (line: string) => {
@@ -93,6 +100,8 @@ export async function runAgent(
         break;
       }
       case 'message_end': {
+        const apiError = event.message?.errorMessage ?? event.errorMessage;
+        if (apiError) metrics.apiError = apiError.slice(0, 300);
         const usage = event.message?.usage ?? event.usage;
         if (usage) {
           metrics.inputTokens += usage.input ?? 0;

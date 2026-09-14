@@ -80,6 +80,8 @@ export interface AgentMetrics {
   timedOut: boolean;
   exitCode: number | null;
   finalMessage: string;
+  /** Provider error text when the model never answered (bad key, 404, 503). */
+  apiError: string | null;
 }
 
 export interface Diagnostics {

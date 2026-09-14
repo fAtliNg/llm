@@ -143,6 +143,13 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
         prepare(task, workspace);
         const started = Date.now();
         const agent = await runAgent(task, config, workspace, outDir);
+        if (agent.apiError && agent.timeline.length === 0) {
+          releaseLock();
+          fs.rmSync(outDir, { recursive: true, force: true });
+          console.error(`\nprovider error on ${configName}/${task.id}, stopping the run so results stay clean:\n${agent.apiError}`);
+          process.exitCode = 2;
+          return;
+        }
         if (stopping) {
           releaseLock();
           console.log(`stopped during ${configName}/${task.id}/${String(rep)}; rerun with --run-id ${runId} to resume`);
