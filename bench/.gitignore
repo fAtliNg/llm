@@ -1,4 +1,7 @@
 node_modules
 .work
 results
-pi-home/sessions
+# Pi state lives in pi-home; only the two config files are tracked, never credentials or sessions.
+pi-home/*
+!pi-home/models.json
+!pi-home/settings.json
