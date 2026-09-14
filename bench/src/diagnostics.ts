@@ -14,21 +14,34 @@ function hash(file: string): string {
   return crypto.createHash('sha1').update(fs.readFileSync(file)).digest('hex');
 }
 
-/** Files that differ from the template: modified, added, or deleted. */
+/** Baseline the agent started from: the template with the task's setup overlay applied. */
+function baselineHashes(task: Task): Map<string, string> {
+  const relevant = (relative: string) => !relative.split(path.sep).some((part) => EXCLUDED.has(part));
+  const hashes = new Map<string, string>();
+  for (const file of listFiles(TEMPLATE_DIR).filter(relevant)) {
+    hashes.set(file, hash(path.join(TEMPLATE_DIR, file)));
+  }
+  if (task.hasSetup) {
+    const setupDir = path.join(task.dir, 'setup');
+    for (const file of listFiles(setupDir)) hashes.set(file, hash(path.join(setupDir, file)));
+  }
+  return hashes;
+}
+
+/** Files that differ from the baseline: modified, added, or deleted. */
 export function changedFiles(workspace: string, task: Task): string[] {
   const relevant = (relative: string) =>
     !relative.split(path.sep).some((part) => EXCLUDED.has(part)) && !relative.startsWith(HIDDEN_TESTS_DIR);
-  const before = new Set(listFiles(TEMPLATE_DIR).filter(relevant));
+  const before = baselineHashes(task);
   const after = new Set(listFiles(workspace).filter(relevant));
   const changed: string[] = [];
   for (const file of after) {
-    if (!before.has(file)) changed.push(`+ ${file}`);
-    else if (hash(path.join(TEMPLATE_DIR, file)) !== hash(path.join(workspace, file))) changed.push(`~ ${file}`);
+    const previous = before.get(file);
+    if (previous === undefined) changed.push(`+ ${file}`);
+    else if (previous !== hash(path.join(workspace, file))) changed.push(`~ ${file}`);
   }
-  for (const file of before) if (!after.has(file)) changed.push(`- ${file}`);
-  // Setup overlays are part of the task, not the agent's work.
-  const setup = task.hasSetup ? new Set(listFiles(path.join(task.dir, 'setup')).map((f) => `~ ${f}`)) : new Set();
-  return changed.filter((entry) => !setup.has(entry)).sort();
+  for (const file of before.keys()) if (!after.has(file)) changed.push(`- ${file}`);
+  return changed.sort();
 }
 
 function label(event: ToolEvent): string {

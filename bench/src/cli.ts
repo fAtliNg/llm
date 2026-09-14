@@ -7,8 +7,8 @@ import { killAll } from './exec.ts';
 import { grade } from './grade.ts';
 import { CONFIGS_DIR, RESULTS_DIR, WORK_DIR } from './paths.ts';
 import { report } from './report.ts';
-import { loadTasks } from './tasks.ts';
-import type { BenchConfig, Task } from './types.ts';
+import { loadTask, loadTasks } from './tasks.ts';
+import type { BenchConfig, RunResult, Task } from './types.ts';
 import { createWorkspace, overlay } from './workspace.ts';
 
 interface Args {
@@ -158,12 +158,34 @@ function stripTask(task: Task) {
   return meta;
 }
 
+/** Recomputes diagnostics and analysis.md for finished runs whose workspaces still exist. */
+function rediagnose(runId: string): void {
+  const root = path.join(RESULTS_DIR, runId);
+  const walk = (dir: string) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name === 'result.json') {
+        const record = JSON.parse(fs.readFileSync(full, 'utf8')) as RunResult;
+        if (!fs.existsSync(record.workspace)) return;
+        const task = loadTask(record.task.id);
+        record.diagnostics = diagnose(record.workspace, task, record.agent, record.grade);
+        fs.writeFileSync(full, JSON.stringify(record, null, 2));
+        fs.writeFileSync(path.join(dir, 'analysis.md'), analysisMarkdown({ task, config: record.config, rep: record.rep, agent: record.agent, grade: record.grade, diagnostics: record.diagnostics }));
+        console.log(`rediagnosed ${record.config}/${record.task.id}/${String(record.rep)}`);
+      }
+    }
+  };
+  walk(root);
+}
+
 const HELP = `bench commands:
   validate [all|T01,T02]           reference solutions must pass
   null [all|T01,T02]               untouched workspace must fail
   run --configs <a,b> [--tasks all|T01,..] [--reps N] [--run-id <id>]
                                    reuse --run-id to resume a stopped run or add reps
   report [--run-id <id>]           aggregate bench/results into markdown (also written to results/)
+  rediagnose --run-id <id>         recompute diagnostics/analysis.md for finished runs
   list                             list tasks`;
 
 async function main(): Promise<void> {
@@ -190,6 +212,10 @@ async function main(): Promise<void> {
       console.log(`\nwritten to ${file}`);
       break;
     }
+    case 'rediagnose':
+      if (!options['run-id']) throw new Error('--run-id is required');
+      rediagnose(options['run-id']);
+      break;
     case 'list':
       for (const task of loadTasks('all')) {
         console.log(`${task.id}  d${String(task.difficulty)}  ${task.layer.padEnd(9)} ${task.work.padEnd(8)} ${task.formulation.padEnd(7)} ${task.title}`);
