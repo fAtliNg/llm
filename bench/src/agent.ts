@@ -144,6 +144,9 @@ export async function runAgent(
   if (config.model.startsWith('google/') && process.env.GEMINI_API_KEY) {
     args.push('--api-key', process.env.GEMINI_API_KEY);
   }
+  if (config.model.startsWith('deepseek/') && process.env.DEEPSEEK_API_KEY) {
+    args.push('--api-key', process.env.DEEPSEEK_API_KEY);
+  }
   if (!config.contextFiles) args.push('--no-context-files');
   if (!config.skills) args.push('--no-skills');
   args.push('--', task.prompt);

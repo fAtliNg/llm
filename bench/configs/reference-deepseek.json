@@ -1,0 +1,8 @@
+{
+  "description": "Reference: DeepSeek V4 Pro through the same harness. Needs DEEPSEEK_API_KEY.",
+  "model": "deepseek/deepseek-v4-pro",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 600
+}
