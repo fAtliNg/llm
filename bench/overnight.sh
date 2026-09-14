@@ -25,7 +25,12 @@ nohup caffeinate -i -s -w $BASE >/dev/null 2>&1 &
 echo "base-v1 resumed, pid $BASE"
 
 # 3. Teacher on the whole pool (cloud model, only CPU for grading), in parallel.
+#    First expand the pool with paraphrases once (skipped if -p1 directories already exist).
 if [[ -n "${DEEPSEEK_API_KEY:-}" ]]; then
+  if ! ls -d pool/tasks/*-p1 >/dev/null 2>&1; then
+    echo "paraphrasing the pool (2 per task)..."
+    node src/dataset/paraphrase.ts pool/tasks 2 2>&1 | tail -2
+  fi
   BENCH_TASKS_DIR="$PWD/pool/tasks" nohup node src/cli.ts run --run-id teacher-v1 --configs reference-deepseek --tasks all --reps 1 >> results/teacher-v1.log 2>&1 &
   TEACHER=$!
   echo $TEACHER > results/teacher-v1.pid
