@@ -1,0 +1,8 @@
+{
+  "description": "Free-tier reference: Gemini through the same harness. Needs GEMINI_API_KEY from aistudio.google.com.",
+  "model": "google/gemini-3.8-flash",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 600
+}
