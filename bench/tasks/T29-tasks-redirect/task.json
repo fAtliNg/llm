@@ -1,0 +1,8 @@
+{
+  "id": "T29-tasks-redirect",
+  "title": "Redirect /tasks to the list",
+  "layer": "routing",
+  "work": "create",
+  "difficulty": 2,
+  "formulation": "spec"
+}

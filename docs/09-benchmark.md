@@ -116,6 +116,38 @@ bench/tasks/<id>/
 | T09-select-field-refactor | form | refactor | 2 | product | вынести повторяющийся код без изменения поведения, структурная проверка |
 | T10-create-error | query | modify | 2 | product | обработка ошибки мутации, сохранение введённых значений |
 
+## Задачи второй волны
+
+Ещё 23 задачи (2026-09-14), все проходят `validate` и проваливаются в `null`. Упор на ступень 1 со спецификационной формулировкой, чтобы у базы появился ненулевой сигнал, плюс по несколько задач на каждый слой и три сквозные.
+
+| id | Слой | Тип | Сложность | Формулировка | Название |
+|---|---|---|---|---|---|
+| T11-page-heading | component | modify | 1 | spec | Rename the tasks page heading |
+| T12-priority-sort | component | modify | 1 | spec | Sort tasks by priority |
+| T13-task-count | component | modify | 1 | spec | Task count in the heading |
+| T14-cancel-link | form | modify | 1 | spec | Cancel link in the task form |
+| T15-badge-variants | component | modify | 1 | spec | Swap status badge variants |
+| T16-description-placeholder | form | modify | 1 | spec | Placeholder for the description |
+| T17-mock-404-message | mock | modify | 1 | spec | Descriptive 404 from the mock API |
+| T18-delete-api-test | test | test | 1 | spec | Test for deleteTask |
+| T19-title-search | component | modify | 2 | product | Search tasks by title |
+| T20-mark-done | query | modify | 2 | product | Complete a task from the list |
+| T21-not-found-path | routing | modify | 1 | spec | Not-found page names the path |
+| T22-edit-heading | routing | modify | 1 | spec | Edit page heading with the task title |
+| T23-required-description | form | modify | 2 | spec | Description becomes required |
+| T24-task-labels | cross | create | 3 | product | Labels on tasks |
+| T25-retry-test | test | test | 2 | spec | Test for the retry button |
+| T26-mock-status-filter | mock | modify | 1 | spec | Status filter in the mock API |
+| T27-refresh-button | query | modify | 1 | spec | Refresh button |
+| T28-default-priority | form | modify | 1 | spec | Default priority is high |
+| T29-tasks-redirect | routing | create | 2 | spec | Redirect /tasks to the list |
+| T30-delete-error | query | modify | 2 | product | Show an error when deleting fails |
+| T31-empty-cta | component | modify | 1 | product | Call to action in the empty state |
+| T32-projects-feature | cross | create | 3 | product | Projects feature end to end |
+| T33-form-edit-test | test | test | 2 | spec | Test for the form in edit mode |
+
+Всего 34 задачи. Распределение второй волны: по слоям component 6, cross 2, form 4, mock 2, query 3, routing 3, test 3; по сложности 1: 14, 2: 7, 3: 2; spec 17, product 6.
+
 Дальше добавлять по тем же осям до 50–150, следуя целевому распределению.
 
 ## Thinking как конфигурация

@@ -1,0 +1,9 @@
+{
+  "id": "T33-form-edit-test",
+  "title": "Test for the form in edit mode",
+  "layer": "test",
+  "work": "test",
+  "difficulty": 2,
+  "formulation": "spec",
+  "testGlob": "src/features/tasks/task-form.test.tsx"
+}

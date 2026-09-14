@@ -1,0 +1,1 @@
+Extend `src/features/tasks/task-form.test.tsx` with a test for edit mode: render `TaskForm` with `defaultValues` of an existing task, check that the Title and Description fields are prefilled, and that submitting without changes calls `onSubmit` with those same values.

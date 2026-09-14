@@ -1,0 +1,1 @@
+If deleting a task fails on the server, nothing tells the user and the dialog just closes. Keep the confirmation dialog open and show the message "Could not delete the task" inside it; the task stays in the list so the user can retry or cancel.

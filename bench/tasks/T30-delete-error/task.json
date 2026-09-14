@@ -1,0 +1,8 @@
+{
+  "id": "T30-delete-error",
+  "title": "Show an error when deleting fails",
+  "layer": "query",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product"
+}
