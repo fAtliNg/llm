@@ -25,4 +25,15 @@ npm run bench -- report --run-id base-v1
 Each finished run leaves `results/<run>/<config>/<task>/<rep>/` with `result.json`, `analysis.md`
 (what happened and why, for shaping the dataset), `transcript.jsonl`, verify logs and the Pi session.
 
+Other commands:
+
+```bash
+npm run bench -- regrade --run-id base-v1 --tasks T07-contacts-feature   # re-grade after a task's tests changed
+npm run bench -- rediagnose --run-id base-v1                              # recompute analysis.md
+npm run bench -- report --run-id base-v1,reference-deepseek-v1            # combine selected runs
+node src/dataset/convert.ts reference-deepseek-v1 dataset/examples.jsonl  # solved runs → training examples
+```
+
+Cloud configs read their keys from the environment: `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`.
+
 Tasks live in `tasks/<id>/`, configurations in `configs/`, Pi's provider config in `pi-home/`. Results go to `results/<runId>/...` and workspaces to `.work/`, both ignored by git.
