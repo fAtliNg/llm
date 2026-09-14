@@ -3,6 +3,7 @@
 # Usage: DEEPSEEK_API_KEY=... ./overnight.sh
 # Both runs are resumable; rerun the script to continue after a stop.
 set -u
+setopt nonomatch
 cd "$(dirname "$0")"
 export PATH="$HOME/.nvm/versions/node/v22.23.2/bin:$PATH"
 mkdir -p results
@@ -11,10 +12,17 @@ if [[ -z "${DEEPSEEK_API_KEY:-}" ]]; then
   echo "DEEPSEEK_API_KEY is not set; the teacher run will be skipped" >&2
 fi
 
-# 1. Wait for a running base-v1 to finish (it holds a lock file while alive).
-if [[ -f results/base-v1/.lock ]] && kill -0 "$(cat results/base-v1/.lock)" 2>/dev/null; then
-  echo "base-v1 is still running (pid $(cat results/base-v1/.lock)); waiting for it..."
-  while kill -0 "$(cat results/base-v1/.lock)" 2>/dev/null; do sleep 60; done
+# 1. Wait for a running base-v1 to finish: check the lock file and the pid file, and any
+#    process that still carries the run id on its command line.
+running_base() {
+  for f in results/base-v1/.lock results/base-v1.pid; do
+    [[ -f $f ]] && kill -0 "$(cat $f)" 2>/dev/null && return 0
+  done
+  pgrep -f "run-id base-v1" >/dev/null 2>&1
+}
+if running_base; then
+  echo "base-v1 is still running; waiting for it..."
+  while running_base; do sleep 60; done
 fi
 
 # 2. Base on every benchmark task, all three configs, one rep (finished triples are skipped).
