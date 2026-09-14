@@ -14,28 +14,7 @@ if [[ -z "${DEEPSEEK_API_KEY:-}" ]]; then
   echo "DEEPSEEK_API_KEY is not set; the teacher run will be skipped" >&2
 fi
 
-# 1. Wait for a running base-v1 to finish: check the lock file and the pid file, and any
-#    process that still carries the run id on its command line.
-running_base() {
-  for f in results/base-v1/.lock results/base-v1.pid; do
-    [[ -f $f ]] && kill -0 "$(cat $f)" 2>/dev/null && return 0
-  done
-  pgrep -f "run-id base-v1" >/dev/null 2>&1
-}
-if running_base; then
-  echo "base-v1 is still running; waiting for it..."
-  while running_base; do sleep 60; done
-fi
-
-# 2. Base on every benchmark task, all three configs, one rep (finished triples are skipped).
-nohup node src/cli.ts run --run-id base-v1 --configs base-harness,base-bare,base-harness-thinking --tasks all --reps 1 >> results/base-v1.log 2>&1 &
-BASE=$!
-disown $BASE 2>/dev/null
-echo $BASE > results/base-v1.pid
-nohup caffeinate -i -s -w $BASE >/dev/null 2>&1 &
-echo "base-v1 resumed, pid $BASE"
-
-# 3. Teacher on the whole pool (cloud model, only CPU for grading), in parallel.
+# 1. Teacher on the whole pool (cloud model, only CPU for grading). Independent of the base run, so it starts first.
 #    First expand the pool with paraphrases once (skipped if -p1 directories already exist).
 if [[ -n "${DEEPSEEK_API_KEY:-}" ]]; then
   if ! ls -d pool/tasks/*-p1 >/dev/null 2>&1; then
@@ -49,6 +28,27 @@ if [[ -n "${DEEPSEEK_API_KEY:-}" ]]; then
   nohup caffeinate -i -s -w $TEACHER >/dev/null 2>&1 &
   echo "teacher-v1 started, pid $TEACHER"
 fi
+
+# 2. Wait for a running base-v1 to finish: check the lock file and the pid file, and any
+#    process that still carries the run id on its command line.
+running_base() {
+  for f in results/base-v1/.lock results/base-v1.pid; do
+    [[ -f $f ]] && kill -0 "$(cat $f)" 2>/dev/null && return 0
+  done
+  pgrep -f "run-id base-v1" >/dev/null 2>&1
+}
+if running_base; then
+  echo "base-v1 is still running; waiting for it..."
+  while running_base; do sleep 60; done
+fi
+
+# 3. Base on every benchmark task, all three configs, one rep (finished triples are skipped).
+nohup node src/cli.ts run --run-id base-v1 --configs base-harness,base-bare,base-harness-thinking --tasks all --reps 1 >> results/base-v1.log 2>&1 &
+BASE=$!
+disown $BASE 2>/dev/null
+echo $BASE > results/base-v1.pid
+nohup caffeinate -i -s -w $BASE >/dev/null 2>&1 &
+echo "base-v1 resumed, pid $BASE"
 
 echo "logs: results/base-v1.log, results/teacher-v1.log"
 echo "stop: kill \$(cat results/base-v1.pid) ; kill \$(cat results/teacher-v1.pid)"
