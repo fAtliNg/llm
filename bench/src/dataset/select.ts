@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { RESULTS_DIR } from '../paths.ts';
+import { BENCH_DIR, RESULTS_DIR } from '../paths.ts';
 import type { RunResult, ToolEvent } from '../types.ts';
 import { convert, type Example } from './convert.ts';
 
@@ -34,7 +34,8 @@ function verdict(result: RunResult, maxTurns: number, minTurns: number): Verdict
   const failedEdits = tl.filter((e) => !e.ok && (e.tool === 'edit' || e.tool === 'write')).length;
   // A red verify followed by a fix is the repair loop we want, so verify commands never count here.
   const badBash = tl.filter((e) => !e.ok && e.tool === 'bash' && !BENIGN_BASH_ERROR.test(e.target) && !VERIFY.test(e.target)).length;
-  const absolute = tl.filter((e) => /\/Users\/|\/home\//.test(e.target)).length;
+  // Absolute paths inside the workspace are normalized away later; only foreign ones disqualify.
+  const absolute = tl.filter((e) => /\/Users\/|\/home\//.test(e.target.split(result.workspace).join(''))).length;
   const tmp = tl.filter((e) => /\/tmp\//.test(e.target)).length;
   const cd = tl.filter((e) => e.tool === 'bash' && /^\s*cd\s/.test(e.target)).length;
   const verifies = tl.filter((e) => e.tool === 'bash' && VERIFY.test(e.target));
@@ -76,6 +77,35 @@ function trimTail(example: Example, timeline: ToolEvent[]): Example {
   return { ...example, messages: kept, meta: { ...example.meta, turns: kept.filter((m) => m.role === 'assistant').length } };
 }
 
+/**
+ * Rewrites absolute workspace paths to relative ones in every message and tool call, and
+ * replaces the remaining machine-specific prefixes from the system prompt (Pi docs under
+ * node_modules, the capture workspace) with a neutral /workspace root.
+ */
+function normalizePaths(example: Example, workspace: string): Example {
+  const prefixSlash = `${workspace}/`;
+  const fix = (text: string) =>
+    text
+      .split(prefixSlash)
+      .join('')
+      .split(workspace)
+      .join('.')
+      .split(`${BENCH_DIR}/.work/capture`)
+      .join('/workspace/app')
+      .split(BENCH_DIR)
+      .join('/workspace');
+  return {
+    ...example,
+    messages: example.messages.map((m) => ({
+      ...m,
+      content: fix(m.content),
+      ...(m.tool_calls
+        ? { tool_calls: m.tool_calls.map((c) => ({ ...c, function: { ...c.function, arguments: fix(c.function.arguments) } })) }
+        : {}),
+    })),
+  };
+}
+
 export function select(options: SelectOptions): { kept: Example[]; report: string } {
   const maxTurns = options.maxTurns ?? 20;
   const minTurns = options.minTurns ?? 2;
@@ -90,7 +120,7 @@ export function select(options: SelectOptions): { kept: Example[]; report: strin
     reasons.set(v.reason, (reasons.get(v.reason) ?? 0) + 1);
     if (!v.keep) continue;
     if (v.repaired) repairedKept += 1;
-    kept.push(trimTail(example, result.agent.timeline));
+    kept.push(normalizePaths(trimTail(example, result.agent.timeline), result.workspace));
   }
   const lines = [`examples: ${String(examples.length)}, kept: ${String(kept.length)}, with a repair loop: ${String(repairedKept)} (${examples.length ? String(Math.round((100 * repairedKept) / Math.max(kept.length, 1))) : '0'}% of kept)`, 'reasons:'];
   for (const [reason, count] of [...reasons].sort((a, b) => b[1] - a[1])) lines.push(`  ${reason.padEnd(32)} ${String(count)}`);
