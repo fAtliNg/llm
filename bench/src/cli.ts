@@ -106,7 +106,27 @@ function printFailure(result: Awaited<ReturnType<typeof grade>>): void {
  * that already have a result.json are skipped, so a stopped run continues where it left off
  * and `--reps 3` after `--reps 1` only adds the missing repetitions.
  */
+function acquireLock(runId: string): () => void {
+  const dir = path.join(RESULTS_DIR, runId);
+  const lock = path.join(dir, '.lock');
+  fs.mkdirSync(dir, { recursive: true });
+  if (fs.existsSync(lock)) {
+    const pid = Number(fs.readFileSync(lock, 'utf8'));
+    let alive = false;
+    try {
+      process.kill(pid, 0);
+      alive = true;
+    } catch {
+      alive = false;
+    }
+    if (alive) throw new Error(`run ${runId} is already running (pid ${String(pid)}); stop it or pick another --run-id`);
+  }
+  fs.writeFileSync(lock, String(process.pid));
+  return () => fs.rmSync(lock, { force: true });
+}
+
 async function run(tasks: Task[], configNames: string[], reps: number, runId: string): Promise<void> {
+  const releaseLock = acquireLock(runId);
   const configs = configNames.map((name) => [name, loadConfig(name)] as const);
   console.log(`run ${runId}  configs=${configNames.join(',')}  tasks=${String(tasks.length)}  reps=${String(reps)}`);
   let done = 0;
@@ -124,6 +144,7 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
         const started = Date.now();
         const agent = await runAgent(task, config, workspace, outDir);
         if (stopping) {
+          releaseLock();
           console.log(`stopped during ${configName}/${task.id}/${String(rep)}; rerun with --run-id ${runId} to resume`);
           return;
         }
@@ -139,6 +160,7 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
       }
     }
   }
+  releaseLock();
   console.log(`\ndone ${String(done)}, skipped ${String(skipped)} (already had results)`);
   console.log(`results: ${path.join(RESULTS_DIR, runId)}`);
 }
