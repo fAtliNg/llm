@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "template-dev",
+      "runtimeExecutable": "/Users/sergey/.nvm/versions/node/v22.23.2/bin/npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "template", "--", "--port", "5173", "--strictPort"],
+      "port": 5173
+    }
+  ]
+}
