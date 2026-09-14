@@ -450,6 +450,18 @@ export function generatePool({ outDir, threshold = 0.5 }: PoolOptions): void {
         const setupDir = path.join(dir, 'setup');
         if (entity.overlay) fs.cpSync(entity.overlay, setupDir, { recursive: true });
         if (template.setup) {
+          // A planted bug is fixed when the removed line is back: emit a structural check for it.
+          const checks: { type: 'grep-count'; path: string; pattern: string; min: number }[] = [];
+          for (const [file, edits] of Object.entries(template.setup(entity))) {
+            for (const [from, to] of edits) {
+              const removedLine = from
+                .split('\n')
+                .map((line) => line.trim())
+                .find((line) => line.length > 0 && !to.includes(line));
+              if (removedLine) checks.push({ type: 'grep-count', path: file, pattern: removedLine.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), min: 1 });
+            }
+          }
+          if (checks.length > 0) fs.writeFileSync(path.join(dir, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
           for (const [file, edits] of Object.entries(template.setup(entity))) {
             const source = fs.existsSync(path.join(setupDir, file)) ? path.join(setupDir, file) : path.join(BENCH_DIR, '..', 'template', file);
             let content = fs.readFileSync(source, 'utf8');

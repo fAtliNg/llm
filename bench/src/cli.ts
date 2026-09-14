@@ -163,6 +163,7 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
         }
         const result = await grade(workspace, task, outDir);
         const diagnostics = diagnose(workspace, task, agent, result);
+        applyPoolRules(task, result, diagnostics);
         const record = { runId, config: configName, task: stripTask(task), rep, agent, grade: result, diagnostics, workspace };
         fs.writeFileSync(path.join(outDir, 'result.json'), JSON.stringify(record, null, 2));
         fs.writeFileSync(path.join(outDir, 'analysis.md'), analysisMarkdown({ task, config: configName, rep, agent, grade: result, diagnostics }));
@@ -193,6 +194,15 @@ function stripTask(task: Task) {
   return meta;
 }
 
+/** Pool tasks have no hidden tests: an untouched workspace is never a solution. */
+function applyPoolRules(task: Task, result: Awaited<ReturnType<typeof grade>>, diagnostics: ReturnType<typeof diagnose>): void {
+  if (!task.tags?.includes('pool')) return;
+  if (result.solved && diagnostics.changedFiles.length === 0) {
+    result.solved = false;
+    result.failureReason = 'no-changes';
+  }
+}
+
 /** Re-grades finished runs against the current task definitions (after a hidden test or check was fixed). */
 async function regrade(runId: string, taskFilter: string | undefined): Promise<void> {
   const wanted = taskFilter && taskFilter !== 'all' ? new Set(taskFilter.split(',').map((t) => t.trim())) : null;
@@ -217,6 +227,7 @@ async function regrade(runId: string, taskFilter: string | undefined): Promise<v
     const before = record.grade.solved;
     record.grade = await grade(record.workspace, task, path.dirname(file));
     record.diagnostics = diagnose(record.workspace, task, record.agent, record.grade);
+    applyPoolRules(task, record.grade, record.diagnostics);
     fs.writeFileSync(file, JSON.stringify(record, null, 2));
     fs.writeFileSync(path.join(path.dirname(file), 'analysis.md'), analysisMarkdown({ task, config: record.config, rep: record.rep, agent: record.agent, grade: record.grade, diagnostics: record.diagnostics }));
     console.log(`${record.grade.solved ? 'PASS' : 'FAIL'}  ${record.config}/${record.task.id}/${String(record.rep)}  ${before === record.grade.solved ? '(unchanged)' : `(was ${before ? 'PASS' : 'FAIL'})`}  ${record.grade.failureReason ?? ''}`);
