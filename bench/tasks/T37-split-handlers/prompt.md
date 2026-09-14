@@ -1,0 +1,1 @@
+Move the task handlers out of `src/mocks/handlers.ts` into `src/mocks/handlers/tasks.ts` (exporting `taskHandlers`), and make `src/mocks/handlers.ts` compose the shared `handlers` array from them. Every existing import of `@/mocks/handlers` must keep working and all tests must pass unchanged.

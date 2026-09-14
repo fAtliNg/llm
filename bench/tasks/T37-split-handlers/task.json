@@ -1,0 +1,8 @@
+{
+  "id": "T37-split-handlers",
+  "title": "Split the MSW handlers by feature",
+  "layer": "config",
+  "work": "refactor",
+  "difficulty": 2,
+  "formulation": "spec"
+}

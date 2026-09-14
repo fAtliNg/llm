@@ -1,0 +1,1 @@
+Make ESLint enforce braces around every `if`, `else`, `for` and `while` body (the core `curly` rule with the `all` option) so that `npm run lint` fails on a brace-less `if (x) return;`. Fix any existing violations. Verify that the rule really fires: with the current config layout it is easy to add it in a place where it has no effect.

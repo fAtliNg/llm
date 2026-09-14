@@ -1,0 +1,6 @@
+[
+  {
+    "type": "file-exists",
+    "path": "src/components/ui/tooltip.tsx"
+  }
+]

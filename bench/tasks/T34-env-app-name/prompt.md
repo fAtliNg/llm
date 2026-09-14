@@ -1,0 +1,1 @@
+Add a typed environment variable `VITE_APP_NAME`: declare it in `src/env.d.ts`, set it to "Template" in `.env.development` and `.env.test`, and use it for the brand text in the header (`src/app/root-layout.tsx`) instead of the hard-coded "Template", falling back to "Template" when it is unset.

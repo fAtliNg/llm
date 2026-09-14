@@ -51,9 +51,17 @@ async function vitest(
   };
 }
 
-function runChecks(workspace: string, task: Task): { ok: boolean; failures: string[] } {
+async function runChecks(workspace: string, task: Task): Promise<{ ok: boolean; failures: string[] }> {
   const failures: string[] = [];
   for (const check of task.checks) {
+    if (check.type === 'command') {
+      const result = await exec('/bin/zsh', ['-c', check.run], { cwd: workspace, timeoutMs: STAGE_TIMEOUT });
+      const failed = result.code !== 0 || result.timedOut;
+      if ((check.expect === 'fail') !== failed) {
+        failures.push(`${check.label ?? check.run}: expected to ${check.expect}, exit ${String(result.code)}`);
+      }
+      continue;
+    }
     const file = path.join(workspace, check.path);
     if (check.type === 'file-exists') {
       if (!fs.existsSync(file)) failures.push(`missing file: ${check.path}`);
@@ -126,7 +134,7 @@ export async function grade(workspace: string, task: Task, outDir: string): Prom
     fs.rmSync(hiddenTarget, { recursive: true, force: true });
   }
 
-  const checks = runChecks(workspace, task);
+  const checks = await runChecks(workspace, task);
   const mutants = await runMutants(workspace, task, outDir);
 
   const partial = {

@@ -1,0 +1,8 @@
+{
+  "id": "T34-env-app-name",
+  "title": "Typed environment variable for the app name",
+  "layer": "config",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec"
+}

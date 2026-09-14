@@ -1,0 +1,11 @@
+{
+  "id": "T36-eslint-curly",
+  "title": "Enforce braces around every block",
+  "layer": "config",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "trap"
+  ]
+}

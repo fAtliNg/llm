@@ -256,7 +256,6 @@ const TEMPLATES: Template[] = [
       'Add a typed environment variable `VITE_APP_NAME` (declared in `src/env.d.ts`, defaulting to "Template" in `.env.development`) and use it for the brand text in the header instead of the hard-coded "Template".',
       'Add an npm script `check:types` that runs `tsc --noEmit` and make `verify` use it instead of the inline `typecheck` script; keep `typecheck` as an alias.',
       'Enable the `@typescript-eslint/switch-exhaustiveness-check` rule as an error in the ESLint config and fix any code that violates it.',
-      'Add Vitest coverage: a `test:coverage` npm script using the v8 provider that writes reports to `coverage/`, and make sure `coverage/` is ignored by git, ESLint and Prettier.',
       'Move the MSW handlers for tasks into `src/mocks/handlers/tasks.ts` and re-export them from `src/mocks/handlers.ts`, keeping every import working.',
     ],
   },
@@ -308,7 +307,6 @@ const TEMPLATES: Template[] = [
     layer: 'config', work: 'modify', difficulty: 2, formulation: 'spec',
     domains: ['tasks'],
     variants: () => [
-      'Add the `date-fns` dependency (pin the exact latest version) and use its `format` to render dates as "d MMM yyyy" in a new `formatDate` helper in `src/lib/format.ts` with a unit test.',
       'Add the shadcn `tooltip` component through the CLI (`npx shadcn@4.21.0 add tooltip`), run the formatter, and wrap the delete buttons in the tasks table with a tooltip reading "Delete this task".',
       'Add a `lint:strict` npm script that runs ESLint with `--max-warnings 0`, and make `verify` use it. Ensure the current code passes.',
       'Turn on `noPropertyAccessFromIndexSignature` in tsconfig and fix every place the compiler complains about.',

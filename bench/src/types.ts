@@ -24,7 +24,9 @@ export interface Task extends TaskMeta {
 
 export type Check =
   | { type: 'file-exists'; path: string }
-  | { type: 'grep-count'; path: string; pattern: string; min?: number; max?: number };
+  | { type: 'grep-count'; path: string; pattern: string; min?: number; max?: number }
+  /** Runs a shell command in the workspace; `expect: 'fail'` means a non-zero exit is required. */
+  | { type: 'command'; run: string; expect: 'pass' | 'fail'; label?: string };
 
 export interface BenchConfig {
   description?: string;
