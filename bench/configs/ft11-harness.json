@@ -1,0 +1,8 @@
+{
+  "description": "Fine-tuned v1.1 (clean tool-call format) with AGENTS.md and skills.",
+  "model": "ollama/qwen3.5-9b-agent:v1.1-q4",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 1800
+}
