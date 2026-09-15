@@ -88,20 +88,25 @@ def main() -> None:
         random_state=42,
     )
 
+    # Qwen3.5 is multimodal: Unsloth returns a processor whose text tokenizer lives in `.tokenizer`.
+    # Everything text-only (rendering, length filter, the trainer) must use that inner tokenizer,
+    # otherwise the processor tries to parse our chats as images.
+    text_tok = getattr(tokenizer, "tokenizer", tokenizer)
+
     rows = load_rows(args.data)
 
     def render(row: dict) -> dict:
-        text = tokenizer.apply_chat_template(row["messages"], tools=row["tools"], tokenize=False)
+        text = text_tok.apply_chat_template(row["messages"], tools=row["tools"], tokenize=False)
         return {"text": text}
 
     ds = Dataset.from_list(rows).map(render, remove_columns=["messages", "tools"])
-    ds = ds.filter(lambda r: len(tokenizer(r["text"])["input_ids"]) <= args.max_seq)
+    ds = ds.filter(lambda r: len(text_tok(r["text"])["input_ids"]) <= args.max_seq)
     split = ds.train_test_split(test_size=args.eval_frac, seed=42)
     print(f"train {len(split['train'])}, eval {len(split['test'])} examples (dropped over {args.max_seq} tokens: {len(rows) - len(ds)})")
 
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
+        processing_class=text_tok,
         train_dataset=split["train"],
         eval_dataset=split["test"],
         args=SFTConfig(
@@ -138,6 +143,7 @@ def main() -> None:
     adapter_dir = args.out / "lora"
     model.save_pretrained(adapter_dir)
     tokenizer.save_pretrained(adapter_dir)
+    text_tok.save_pretrained(adapter_dir)
     if args.no_export:
         print("smoke run done, adapter at", adapter_dir)
         return
