@@ -156,7 +156,7 @@ function stripWorkspaceCd(example: Example, workspace: string): Example {
 }
 
 export function select(options: SelectOptions): { kept: Example[]; report: string } {
-  const maxTurns = options.maxTurns ?? 20;
+  const maxTurns = options.maxTurns ?? Number(process.env.MAX_TURNS ?? '30');
   const minTurns = options.minTurns ?? 2;
   const examples = convert({ runIds: options.runIds, captured: options.captured, solvedOnly: false });
   const kept: Example[] = [];
