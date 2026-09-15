@@ -22,7 +22,7 @@ source venv/bin/activate
 if ! python -c "import unsloth" 2>/dev/null; then
   echo "== installing torch (CUDA 12.8 build, needed for Blackwell), unsloth, transformers v5, trl"
   pip install -q --upgrade pip
-  pip install -q torch --index-url https://download.pytorch.org/whl/cu128
+  pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cu128
   pip install -q "unsloth" "unsloth_zoo" "transformers>=5" "trl>=0.22" "datasets" "huggingface_hub"
 fi
 python - <<'PY'
