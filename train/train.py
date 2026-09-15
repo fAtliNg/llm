@@ -59,7 +59,7 @@ def main() -> None:
     ap.add_argument("--max-seq", type=int, default=16384)
     ap.add_argument("--batch", type=int, default=1)
     ap.add_argument("--grad-accum", type=int, default=8)
-    ap.add_argument("--eval-frac", type=float, default=0.05)
+    ap.add_argument("--eval-frac", type=float, default=0.0, help="held-out share for eval loss; 0 = train on everything (eval on 32k sequences needs ~80 GB for logits, and quality is measured by the benchmark anyway)")
     ap.add_argument("--gguf", nargs="*", default=["q4_k_m", "q8_0"], help="quantisations to export")
     ap.add_argument("--max-steps", type=int, default=0, help="stop after N optimizer steps (smoke test); 0 = full epochs")
     ap.add_argument("--no-export", action="store_true", help="skip merge and GGUF export (smoke test)")
@@ -101,14 +101,18 @@ def main() -> None:
 
     ds = Dataset.from_list(rows).map(render, remove_columns=["messages", "tools"])
     ds = ds.filter(lambda r: len(text_tok(r["text"])["input_ids"]) <= args.max_seq)
-    split = ds.train_test_split(test_size=args.eval_frac, seed=42)
-    print(f"train {len(split['train'])}, eval {len(split['test'])} examples (dropped over {args.max_seq} tokens: {len(rows) - len(ds)})")
+    if args.eval_frac > 0:
+        split = ds.train_test_split(test_size=args.eval_frac, seed=42)
+        train_ds, eval_ds = split["train"], split["test"]
+    else:
+        train_ds, eval_ds = ds, None
+    print(f"train {len(train_ds)}, eval {len(eval_ds) if eval_ds else 0} examples (dropped over {args.max_seq} tokens: {len(rows) - len(ds)})")
 
     trainer = SFTTrainer(
         model=model,
         processing_class=text_tok,
-        train_dataset=split["train"],
-        eval_dataset=split["test"],
+        train_dataset=train_ds,
+        eval_dataset=eval_ds,
         args=SFTConfig(
             dataset_text_field="text",
             max_length=args.max_seq,
@@ -123,8 +127,10 @@ def main() -> None:
             weight_decay=0.01,
             bf16=True,
             logging_steps=5,
-            eval_strategy="steps",
+            eval_strategy="steps" if eval_ds else "no",
             eval_steps=50,
+            per_device_eval_batch_size=1,
+            prediction_loss_only=True,
             save_strategy="epoch",
             output_dir=str(args.out / "checkpoints"),
             report_to="none",

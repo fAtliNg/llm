@@ -10,6 +10,7 @@ cd "$(dirname "$0")"
 MODE="${1:-full}"
 MAX_SEQ="${MAX_SEQ:-32768}"          # 32768 needs an 80 GB card; use 16384 on 48 GB
 OUT="${OUT:-out/v1}"
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # Ubuntu 24.04 refuses system-wide pip installs: everything lives in a venv next to the script.
 if [[ ! -x venv/bin/python ]]; then
