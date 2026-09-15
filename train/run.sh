@@ -11,9 +11,18 @@ MODE="${1:-full}"
 MAX_SEQ="${MAX_SEQ:-32768}"          # 32768 needs an 80 GB card; use 16384 on 48 GB
 OUT="${OUT:-out/v1}"
 
+# Ubuntu 24.04 refuses system-wide pip installs: everything lives in a venv next to the script.
+if [[ ! -x venv/bin/python ]]; then
+  echo "== creating venv"
+  command -v python3 >/dev/null || { echo "python3 missing"; exit 1; }
+  python3 -m venv venv 2>/dev/null || { apt-get update -qq && apt-get install -y -qq python3-venv python3-pip >/dev/null && python3 -m venv venv; }
+fi
+# shellcheck disable=SC1091
+source venv/bin/activate
 if ! python -c "import unsloth" 2>/dev/null; then
-  echo "== installing unsloth, transformers v5, trl"
+  echo "== installing torch (CUDA 12.8 build, needed for Blackwell), unsloth, transformers v5, trl"
   pip install -q --upgrade pip
+  pip install -q torch --index-url https://download.pytorch.org/whl/cu128
   pip install -q "unsloth" "unsloth_zoo" "transformers>=5" "trl>=0.22" "datasets" "huggingface_hub"
 fi
 python - <<'PY'
