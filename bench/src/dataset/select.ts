@@ -45,7 +45,7 @@ function verdict(result: RunResult, maxTurns: number, minTurns: number): Verdict
   // Absolute paths inside the workspace are normalized away later; only foreign ones disqualify.
   const absolute = tl.filter((e) => /\/Users\/|\/home\//.test(e.target.split(result.workspace).join(''))).length;
   const tmp = tl.filter((e) => /\/tmp\//.test(e.target)).length;
-  const cd = tl.filter((e) => e.tool === 'bash' && /^\s*cd\s/.test(e.target)).length;
+  const cd = tl.filter((e) => e.tool === 'bash' && /^\s*cd\s/.test(e.target) && !e.target.trim().startsWith(`cd ${result.workspace}`)).length;
   const verifies = tl.filter((e) => e.tool === 'bash' && VERIFY.test(e.target));
   const lastVerify = verifies.at(-1);
   const repaired = verifies.length >= 2;
@@ -114,6 +114,46 @@ function normalizePaths(example: Example, workspace: string): Example {
   };
 }
 
+/** Strips ANSI colour codes from tool results so the student does not learn terminal noise. */
+function stripAnsi(example: Example): Example {
+  const clean = (t: string) => t.replace(/\u001b\[[0-9;]*[A-Za-z]/g, '');
+  return { ...example, messages: example.messages.map((m) => (m.role === 'tool' ? { ...m, content: clean(m.content) } : m)) };
+}
+
+/** Long markdown summaries with headings are cut to their first paragraph; the student should report briefly. */
+function shortenReport(example: Example): Example {
+  const messages = [...example.messages];
+  const last = messages.at(-1);
+  if (!last || last.role !== 'assistant' || last.tool_calls) return example;
+  const text = last.content.trim();
+  if (text.length <= 600 && !/^#{1,3} /m.test(text)) return example;
+  const paragraphs = text.split(/\n\s*\n/).map((p) => p.replace(/^#{1,3} .*$/m, '').trim()).filter(Boolean);
+  const first = paragraphs[0] ?? text;
+  messages[messages.length - 1] = { role: 'assistant', content: first.length > 600 ? `${first.slice(0, 600).trim()}…` : first };
+  return { ...example, messages };
+}
+
+/** `cd <workspace> && cmd` is harmless once paths are relative: the prefix is dropped rather than the whole run. */
+function stripWorkspaceCd(example: Example, workspace: string): Example {
+  const re = new RegExp(`^\\s*cd\\s+${workspace.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}/?\\s*(&&|;)\\s*`);
+  return {
+    ...example,
+    messages: example.messages.map((m) =>
+      m.tool_calls
+        ? {
+            ...m,
+            tool_calls: m.tool_calls.map((c) => {
+              if (c.function.name !== 'bash') return c;
+              const args = JSON.parse(c.function.arguments) as { command?: string };
+              if (typeof args.command !== 'string') return c;
+              return { ...c, function: { ...c.function, arguments: JSON.stringify({ ...args, command: args.command.replace(re, '') }) } };
+            }),
+          }
+        : m,
+    ),
+  };
+}
+
 export function select(options: SelectOptions): { kept: Example[]; report: string } {
   const maxTurns = options.maxTurns ?? 20;
   const minTurns = options.minTurns ?? 2;
@@ -128,7 +168,7 @@ export function select(options: SelectOptions): { kept: Example[]; report: strin
     reasons.set(v.reason, (reasons.get(v.reason) ?? 0) + 1);
     if (!v.keep) continue;
     if (v.repaired) repairedKept += 1;
-    kept.push(normalizePaths(trimTail(example, result.agent.timeline), result.workspace));
+    kept.push(shortenReport(stripAnsi(normalizePaths(stripWorkspaceCd(trimTail(example, result.agent.timeline), result.workspace), result.workspace))));
   }
   let balanced = kept;
   const ru = kept.filter(isRussian);

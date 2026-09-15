@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { BENCH_DIR } from '../paths.ts';
+
 /**
  * Expands the pool with paraphrases from DeepSeek: same constraints, different wording and
  * angle (bug report, product request, terse spec). Needs DEEPSEEK_API_KEY. Writes new task
@@ -61,7 +63,15 @@ async function main(): Promise<void> {
       console.error(`${id}: ${String(error)}`);
       continue;
     }
-    variants.slice(0, n).forEach((text, i) => {
+    const templateRoot = path.join(BENCH_DIR, '..', 'template');
+    const setupRoot = path.join(poolDir, id, 'setup');
+    const pathsIn = (text: string) => text.match(/src\/[A-Za-z0-9_./-]+\.tsx?/g) ?? [];
+    const known = new Set(pathsIn(prompt));
+    const sane = variants.filter((text) =>
+      pathsIn(text).every((p) => known.has(p) || fs.existsSync(path.join(templateRoot, p)) || fs.existsSync(path.join(setupRoot, p))),
+    );
+    if (sane.length < variants.length) console.error(`\n${id}: dropped ${String(variants.length - sane.length)} paraphrase(s) with invented paths`);
+    sane.slice(0, n).forEach((text, i) => {
       const target = path.join(poolDir, `${id}-${suffix}${String(i + 1)}`);
       fs.cpSync(path.join(poolDir, id), target, { recursive: true });
       fs.writeFileSync(path.join(target, 'prompt.md'), `${text.trim()}\n`);

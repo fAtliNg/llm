@@ -138,7 +138,7 @@ const TEMPLATES: Template[] = [
   {
     layer: 'component', work: 'modify', difficulty: 1, formulation: 'product',
     variants: (e) => [
-      ...COUNT_FORMATS.map((f) => `Users cannot tell how many ${e.plural} there are at a glance. Show the number of loaded ${e.plural} next to the page heading in the format "${f.replace('{Plural}', e.Plural).replace('{plural}', e.plural)}". Update existing tests if needed.`),
+      ...COUNT_FORMATS.map((f) => `Users cannot tell how many ${e.plural} there are at a glance. Show the number of loaded ${e.plural} next to the page heading in the format "${f.replace('{Plural}', e.Plural).replace('{plural}', e.plural)}". Add a test for it.`),
       `The ${e.plural} table looks bare when a row has no ${e.textField.label.toLowerCase()} details. Show a muted dash "—" in any empty cell instead of leaving it blank.`,
       `Long ${e.textField.label.toLowerCase()}s break the layout of the ${e.plural} table. Truncate the ${e.textField.label.toLowerCase()} cell to one line with an ellipsis and show the full text in the title attribute.`,
     ],
@@ -155,14 +155,21 @@ const TEMPLATES: Template[] = [
     layer: 'component', work: 'modify', difficulty: 2, formulation: 'product',
     variants: (e) => [
       ...SORT_LABELS.map((l) => `Users want to sort the ${e.plural} table by ${e.textField.label.toLowerCase()}. Add a "${l.replace('{field}', e.textField.label.toLowerCase())}" toggle button above the table that switches between ascending and descending order, on the client.`),
-      `Users lose track of which ${e.singular} they just created. After creating one, highlight its row in the list (for example with a muted background) until the page is reloaded.`,
-      ...SEARCH_LABELS.map((l) => `The ${e.plural} list is hard to scan. Add a "${l.replace('{field}', e.textField.label.toLowerCase())}" input above the table that filters rows by ${e.textField.label.toLowerCase()} as the user types, case-insensitive, and shows "No matches" when nothing matches.`),
+      `Users lose track of which ${e.singular} they just created. After creating one, highlight its row in the list (for example with a muted background) until the page is reloaded. Add a test for it.`,
+      ...SEARCH_LABELS.map((l) => `The ${e.plural} list is hard to scan. Add a "${l.replace('{field}', e.textField.label.toLowerCase())}" input above the table that filters rows by ${e.textField.label.toLowerCase()} as the user types, case-insensitive, and shows "No matches" when nothing matches. Label the input properly and add a test.`),
     ],
   },
   // ---------- form ----------
   {
     layer: 'form', work: 'modify', difficulty: 2, formulation: 'spec',
-    variants: (e) => NEW_FIELDS.map((f) => `Add a "${f.label}" field to the ${e.singular} form (${f.kind === 'textarea' ? 'a textarea' : `an input of type ${f.kind}`}): ${f.rule}. Store it as \`${f.name}\` on the ${e.singular}; existing ${e.plural}, mock data and API calls without it keep working. Show it in the ${e.plural} table. Update existing tests if needed.`),
+    variants: (e) =>
+      NEW_FIELDS.map((f) => {
+        const control = f.kind === 'textarea' ? 'a textarea' : f.kind === 'select' ? 'a select' : f.kind === 'checkbox' ? 'a checkbox' : `an input of type ${f.kind}`;
+        const compat = f.rule.startsWith('required')
+          ? `Update the mock data and existing tests so every ${e.singular} has it.`
+          : `Existing ${e.plural}, mock data and API calls without it keep working.`;
+        return `Add a "${f.label}" field to the ${e.singular} form (${control}): ${f.rule}. Store it as \`${f.name}\` on the ${e.singular}. ${compat} Show it in the ${e.plural} table. Cover the new field with a test in the form's test file.`;
+      }),
   },
   {
     layer: 'form', work: 'modify', difficulty: 1, formulation: 'spec',
@@ -184,7 +191,7 @@ const TEMPLATES: Template[] = [
   // ---------- query ----------
   {
     layer: 'query', work: 'modify', difficulty: 2, formulation: 'product',
-    variants: (e) => MESSAGES.map((m) => `When saving a new ${e.singular} fails on the server, nothing happens and the user is left guessing. Show the message "${m.replace('{singular}', e.singular)}" above the form when the create request fails, and keep the entered values in the form.`),
+    variants: (e) => MESSAGES.map((m) => `When saving a new ${e.singular} fails on the server, nothing happens and the user is left guessing. Show the message "${m.replace('{singular}', e.singular)}" above the form when the create request fails, and keep the entered values in the form. Add a test with a failing MSW handler.`),
   },
   {
     layer: 'query', work: 'create', difficulty: 2, formulation: 'spec',
@@ -197,7 +204,7 @@ const TEMPLATES: Template[] = [
   {
     layer: 'query', work: 'modify', difficulty: 1, formulation: 'spec',
     variants: (e) => [
-      ...REFRESH_LABELS.map((l) => `Add a "${l}" button next to the heading of the ${e.plural} page that refetches the ${e.plural} from the API.`),
+      ...REFRESH_LABELS.map((l) => `Add a "${l}" button next to the heading of the ${e.plural} page that refetches the ${e.plural} from the API. Add a test that clicking it issues a new request.`),
       `The ${e.plural} query should refetch automatically when the browser tab regains focus: enable \`refetchOnFocus\` for it and set up the RTK Query listeners in the store.`,
       `Poll the ${e.plural} list every 30 seconds while the ${e.plural} page is open, using RTK Query's \`pollingInterval\`.`,
     ],
@@ -406,10 +413,19 @@ export interface PoolOptions {
   threshold?: number;
 }
 
+/**
+ * Append-only: existing task directories are never deleted or rewritten (teacher results are
+ * keyed by task id, and paraphrases are expensive). Prompts already present in the pool count
+ * as duplicates, so re-running with changed templates only adds what is new, under the
+ * current POOL_PREFIX (default P; use a new letter for a new wave so ids never collide).
+ */
 export function generatePool({ outDir, threshold = 0.5 }: PoolOptions): void {
-  fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
-  const bench = benchmarkPrompts();
+  const prefix = process.env.POOL_PREFIX ?? 'P';
+  const existingIds = fs.readdirSync(outDir).filter((id) => fs.existsSync(path.join(outDir, id, 'prompt.md')));
+  const existingPrompts = existingIds.map((id) => shingles(fs.readFileSync(path.join(outDir, id, 'prompt.md'), 'utf8')));
+  const bench = [...benchmarkPrompts(), ...existingPrompts];
+  let skippedExisting = 0;
   /** Accepted prompts per domain, masked, for within-pool dedup. */
   const accepted = new Map<Domain, Set<string>[]>();
   const coverage = new Map<string, number>();
@@ -432,8 +448,12 @@ export function generatePool({ outDir, threshold = 0.5 }: PoolOptions): void {
         }
         accepted.set(entity.domain, [...sameDomain, shMasked]);
         index += 1;
-        const id = `P${String(index).padStart(4, '0')}-${template.layer}-${template.work}-${entity.domain}`;
+        const id = `${prefix}${String(index).padStart(4, '0')}-${template.layer}-${template.work}-${entity.domain}`;
         const dir = path.join(outDir, id);
+        if (fs.existsSync(dir)) {
+          skippedExisting += 1;
+          continue;
+        }
         fs.mkdirSync(dir, { recursive: true });
         fs.writeFileSync(
           path.join(dir, 'task.json'),
@@ -477,7 +497,7 @@ export function generatePool({ outDir, threshold = 0.5 }: PoolOptions): void {
     }
   }
 
-  console.log(`pool: ${String(index)} prompts written to ${outDir}, ${String(dropped)} dropped as near-duplicates (threshold ${String(threshold)})`);
+  console.log(`pool: ${String(index - skippedExisting)} new prompts written to ${outDir} (prefix ${prefix}), ${String(skippedExisting)} ids already existed, ${String(dropped)} dropped as duplicates of the benchmark or the existing pool (threshold ${String(threshold)})`);
   console.log('\ncoverage (layer/work/difficulty/formulation → prompts):');
   for (const [key, count] of [...coverage].sort()) console.log(`  ${key.padEnd(34)} ${String(count)}`);
   const byLayer = new Map<string, number>();
