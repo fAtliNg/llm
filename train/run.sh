@@ -17,6 +17,11 @@ if [[ ! -x venv/bin/python ]]; then
   command -v python3 >/dev/null || { echo "python3 missing"; exit 1; }
   python3 -m venv venv 2>/dev/null || { apt-get update -qq && apt-get install -y -qq python3-venv python3-pip >/dev/null && python3 -m venv venv; }
 fi
+# Triton compiles small C helpers at runtime: it needs gcc and the Python headers.
+if ! command -v gcc >/dev/null || [[ ! -f /usr/include/python3.12/Python.h && ! -f "/usr/include/python$(python3 -c 'import sys;print(f"{sys.version_info[0]}.{sys.version_info[1]}")')/Python.h" ]]; then
+  echo "== installing gcc and python headers"
+  DEBIAN_FRONTEND=noninteractive apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq build-essential python3-dev >/dev/null
+fi
 # shellcheck disable=SC1091
 source venv/bin/activate
 if ! python -c "import unsloth" 2>/dev/null; then
