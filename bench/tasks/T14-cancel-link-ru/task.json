@@ -1,0 +1,11 @@
+{
+  "id": "T14-cancel-link-ru",
+  "title": "Добавьте \"Cancel\" рядом с кнопкой отправки `TaskForm`: ссылку, стилизо",
+  "layer": "form",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

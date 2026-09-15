@@ -82,13 +82,25 @@ export function toChat(messages: PiMessage[], system: string): ChatMessage[] {
   return out;
 }
 
+/**
+ * Pi emits one agent_end per agent run; after a provider error it retries in the same session,
+ * so a transcript can hold several, each carrying only its own new messages. Concatenate them
+ * and drop assistant messages that are empty (the errored turn).
+ */
 function agentEndMessages(transcript: string): PiMessage[] | null {
-  let messages: PiMessage[] | null = null;
+  const messages: PiMessage[] = [];
+  let seen = false;
   for (const line of fs.readFileSync(transcript, 'utf8').split('\n')) {
     if (!line.startsWith('{"type":"agent_end"')) continue;
-    messages = (JSON.parse(line) as { messages: PiMessage[] }).messages;
+    seen = true;
+    messages.push(...(JSON.parse(line) as { messages: PiMessage[] }).messages);
   }
-  return messages;
+  if (!seen) return null;
+  return messages.filter((m) => {
+    if (m.role !== 'assistant') return true;
+    if (typeof m.content === 'string') return m.content.trim().length > 0;
+    return m.content.some((c) => (c.type === 'text' && (c.text ?? '').trim().length > 0) || c.type === 'toolCall');
+  });
 }
 
 export interface ConvertOptions {

@@ -1,0 +1,11 @@
+{
+  "id": "T27-refresh-button-ru",
+  "title": "Добавьте кнопку \"Refresh\" рядом с кнопкой \"New task\" на странице задач",
+  "layer": "query",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

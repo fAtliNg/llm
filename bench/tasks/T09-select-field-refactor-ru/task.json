@@ -1,0 +1,11 @@
+{
+  "id": "T09-select-field-refactor-ru",
+  "title": "В `TaskForm` поля `status` и `priority` почти идентичны по разметке. Т",
+  "layer": "form",
+  "work": "refactor",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

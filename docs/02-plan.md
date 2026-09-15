@@ -68,7 +68,7 @@
 
 ### 8. Обучение
 
-LoRA через Unsloth на арендованной GPU. Пара итераций по гиперпараметрам (rank, learning rate, число эпох). Подробности в `03-infrastructure.md`.
+LoRA через Unsloth на арендованной GPU. Пара итераций по гиперпараметрам (rank, learning rate, число эпох). Подробности в `03-infrastructure.md` и `13-training.md`. Скрипт `train/train.py` готов, формат примеров проверен на настоящем chat template Qwen3.5 (2026-09-15).
 
 ### 9. Упаковка
 

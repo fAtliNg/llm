@@ -1,0 +1,12 @@
+{
+  "id": "T33-form-edit-test-ru",
+  "title": "Нет теста на режим редактирования в `src/features/tasks/task-form.test",
+  "layer": "test",
+  "work": "test",
+  "difficulty": 2,
+  "formulation": "spec",
+  "testGlob": "src/features/tasks/task-form.test.tsx",
+  "tags": [
+    "ru"
+  ]
+}

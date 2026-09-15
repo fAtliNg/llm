@@ -1,0 +1,1 @@
+Нужно исправить структуру: вынести task handlers из `src/mocks/handlers.ts` в `src/mocks/handlers/tasks.ts`, экспортировав `taskHandlers`, и сделать так, чтобы `src/mocks/handlers.ts` собирал общий массив `handlers` из них. Все существующие импорты `@/mocks/handlers` должны продолжать работать, все тесты должны проходить без изменений.

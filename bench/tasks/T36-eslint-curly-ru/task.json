@@ -1,0 +1,12 @@
+{
+  "id": "T36-eslint-curly-ru",
+  "title": "Баг: ESLint не требует фигурные скобки вокруг тел `if`, `else`, `for` ",
+  "layer": "config",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "ru",
+    "trap"
+  ]
+}

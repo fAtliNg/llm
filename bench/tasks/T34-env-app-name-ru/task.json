@@ -1,0 +1,11 @@
+{
+  "id": "T34-env-app-name-ru",
+  "title": "Баг: в шапке захардкожен текст 'Template' вместо значения из env. Нужн",
+  "layer": "config",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

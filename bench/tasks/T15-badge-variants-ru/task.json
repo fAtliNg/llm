@@ -1,0 +1,11 @@
+{
+  "id": "T15-badge-variants-ru",
+  "title": "В компоненте `TaskStatusBadge` неправильно заданы варианты бейджа: ста",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

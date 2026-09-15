@@ -1,0 +1,11 @@
+{
+  "id": "T32-projects-feature-ru",
+  "title": "В приложении отсутствует раздел Projects: нет списка на `/projects` с ",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

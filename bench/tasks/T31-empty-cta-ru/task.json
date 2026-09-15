@@ -1,0 +1,11 @@
+{
+  "id": "T31-empty-cta-ru",
+  "title": "Баг: при отсутствии задач пустое сообщение не предлагает дальнейших де",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "T16-description-placeholder-ru",
+  "title": "Баг: в Description textarea формы task form отсутствует placeholder \"W",
+  "layer": "form",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

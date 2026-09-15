@@ -1,0 +1,1 @@
+Добавьте shadcn `tooltip` компонент в проект через CLI (`npx shadcn@4.21.0 add tooltip`, затем `npm run format`). Оберните trigger-кнопку `DeleteTaskButton` в tooltip с содержимым "Delete this task" (учтите, что Radix tooltips требуют провайдера). Остальное без изменений.

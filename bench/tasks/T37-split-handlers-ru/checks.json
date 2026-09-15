@@ -1,0 +1,24 @@
+[
+  {
+    "type": "file-exists",
+    "path": "src/mocks/handlers/tasks.ts"
+  },
+  {
+    "type": "grep-count",
+    "path": "src/mocks/handlers/tasks.ts",
+    "pattern": "export const taskHandlers",
+    "min": 1
+  },
+  {
+    "type": "grep-count",
+    "path": "src/mocks/handlers.ts",
+    "pattern": "handlers/tasks",
+    "min": 1
+  },
+  {
+    "type": "grep-count",
+    "path": "src/mocks/handlers.ts",
+    "pattern": "http\\\\.(get|post|patch|delete)",
+    "max": 0
+  }
+]

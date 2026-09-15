@@ -1,0 +1,11 @@
+{
+  "id": "T23-required-description-ru",
+  "title": "Сделай описание задачи обязательным: минимум 10 символов после обрезки",
+  "layer": "form",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

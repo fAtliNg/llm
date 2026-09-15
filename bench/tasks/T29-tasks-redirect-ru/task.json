@@ -1,0 +1,11 @@
+{
+  "id": "T29-tasks-redirect-ru",
+  "title": "При заходе на `/tasks` должен быть редирект на `/` с заменой history e",
+  "layer": "routing",
+  "work": "create",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "T22-edit-heading-ru",
+  "title": "Баг-репорт: На странице редактирования после загрузки задачи заголовок",
+  "layer": "routing",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

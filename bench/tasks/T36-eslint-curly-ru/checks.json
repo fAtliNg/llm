@@ -1,0 +1,14 @@
+[
+  {
+    "type": "grep-count",
+    "path": "eslint.config.js",
+    "pattern": "curly",
+    "min": 1
+  },
+  {
+    "type": "command",
+    "label": "lint must reject a brace-less if",
+    "run": "printf 'export function probe(a: boolean): number {\\n  if (a) return 1;\\n  return 0;\\n}\\n' > src/__probe.ts && npx eslint src/__probe.ts; rc=$?; rm -f src/__probe.ts; exit $rc",
+    "expect": "fail"
+  }
+]

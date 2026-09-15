@@ -1,0 +1,11 @@
+{
+  "id": "T13-task-count-ru",
+  "title": "Баг: в tasks page heading не отображается количество загруженных задач",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

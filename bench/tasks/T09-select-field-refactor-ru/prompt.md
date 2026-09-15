@@ -1,0 +1,1 @@
+В `TaskForm` поля `status` и `priority` почти идентичны по разметке. Требуется вынести переиспользуемый компонент `select field`, чтобы исключить дублирование, without changing the form's behaviour or its tests.

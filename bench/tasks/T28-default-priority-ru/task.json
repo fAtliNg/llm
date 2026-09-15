@@ -1,0 +1,11 @@
+{
+  "id": "T28-default-priority-ru",
+  "title": "Сейчас в форме задачи новые задачи по умолчанию получают приоритет \"me",
+  "layer": "form",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

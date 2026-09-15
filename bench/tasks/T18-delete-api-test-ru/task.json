@@ -1,0 +1,12 @@
+{
+  "id": "T18-delete-api-test-ru",
+  "title": "В `src/features/tasks/api.test.ts` не хватает теста на `deleteTask`: н",
+  "layer": "test",
+  "work": "test",
+  "difficulty": 1,
+  "formulation": "spec",
+  "testGlob": "src/features/tasks/api.test.ts",
+  "tags": [
+    "ru"
+  ]
+}

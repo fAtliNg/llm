@@ -1,0 +1,11 @@
+{
+  "id": "T11-page-heading-ru",
+  "title": "Заголовок страницы задач сейчас \"Tasks\", а должен быть \"My tasks\". Тек",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

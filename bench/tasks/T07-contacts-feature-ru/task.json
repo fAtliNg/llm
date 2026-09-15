@@ -1,0 +1,11 @@
+{
+  "id": "T07-contacts-feature-ru",
+  "title": "Обнаружил, что в приложении отсутствует раздел Contacts. По требования",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "ru"
+  ]
+}

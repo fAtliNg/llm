@@ -1,0 +1,11 @@
+{
+  "id": "T12-priority-sort-ru",
+  "title": "Баг: строки таблицы tasks не отсортированы по приоритету. Нужно: сорти",
+  "layer": "component",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

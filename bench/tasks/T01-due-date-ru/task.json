@@ -1,0 +1,11 @@
+{
+  "id": "T01-due-date-ru",
+  "title": "Проблема: отсутствует возможность задать дату выполнения задачи. Ожида",
+  "layer": "form",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

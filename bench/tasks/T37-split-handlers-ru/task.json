@@ -1,0 +1,11 @@
+{
+  "id": "T37-split-handlers-ru",
+  "title": "Нужно исправить структуру: вынести task handlers из `src/mocks/handler",
+  "layer": "config",
+  "work": "refactor",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

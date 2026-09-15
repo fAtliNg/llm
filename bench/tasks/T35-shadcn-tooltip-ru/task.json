@@ -1,0 +1,11 @@
+{
+  "id": "T35-shadcn-tooltip-ru",
+  "title": "Добавьте shadcn `tooltip` компонент в проект через CLI (`npx shadcn@4.",
+  "layer": "config",
+  "work": "create",
+  "difficulty": 2,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

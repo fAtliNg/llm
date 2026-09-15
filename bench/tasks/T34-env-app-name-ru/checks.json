@@ -1,0 +1,20 @@
+[
+  {
+    "type": "grep-count",
+    "path": "src/env.d.ts",
+    "pattern": "VITE_APP_NAME",
+    "min": 1
+  },
+  {
+    "type": "grep-count",
+    "path": ".env.development",
+    "pattern": "VITE_APP_NAME=",
+    "min": 1
+  },
+  {
+    "type": "grep-count",
+    "path": "src/app/root-layout.tsx",
+    "pattern": "VITE_APP_NAME",
+    "min": 1
+  }
+]

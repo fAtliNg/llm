@@ -1,0 +1,12 @@
+{
+  "id": "T05-badge-tests-ru",
+  "title": "Баг: в `src/features/tasks/task-badges.test.tsx` отсутствуют unit-тест",
+  "layer": "test",
+  "work": "test",
+  "difficulty": 2,
+  "formulation": "spec",
+  "testGlob": "src/features/tasks/task-badges.test.tsx",
+  "tags": [
+    "ru"
+  ]
+}

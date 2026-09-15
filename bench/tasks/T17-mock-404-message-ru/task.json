@@ -1,0 +1,11 @@
+{
+  "id": "T17-mock-404-message-ru",
+  "title": "Баг: В MSW handlers для `GET /api/tasks/:taskId` при неизвестном id до",
+  "layer": "mock",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

@@ -1,0 +1,1 @@
+Баг: в `src/features/tasks/task-badges.test.tsx` отсутствуют unit-тесты для `TaskStatusBadge` и `TaskPriorityBadge`. Нужно покрыть все статусы и все значения приоритета: каждый должен рендерить свою human-readable label. Следовать testing conventions проекта.

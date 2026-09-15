@@ -37,7 +37,7 @@ interface Verdict {
   repaired: boolean;
 }
 
-function verdict(result: RunResult, maxTurns: number, minTurns: number): Verdict {
+function verdict(example: Example, result: RunResult, maxTurns: number, minTurns: number): Verdict {
   const tl = result.agent.timeline;
   const failedEdits = tl.filter((e) => !e.ok && (e.tool === 'edit' || e.tool === 'write')).length;
   // A red verify followed by a fix is the repair loop we want, so verify commands never count here.
@@ -50,6 +50,7 @@ function verdict(result: RunResult, maxTurns: number, minTurns: number): Verdict
   const lastVerify = verifies.at(-1);
   const repaired = verifies.length >= 2;
   if (!result.grade.solved) return { keep: false, reason: `not solved (${result.grade.failureReason ?? '?'})`, repaired };
+  if (example.messages[1]?.role !== 'user') return { keep: false, reason: 'no user turn', repaired };
   if (result.diagnostics?.changedFiles.length === 0) return { keep: false, reason: 'no changes', repaired };
   if (!lastVerify) return { keep: false, reason: 'never ran verify', repaired };
   if (!lastVerify.ok) return { keep: false, reason: 'last verify was red', repaired };
@@ -164,7 +165,7 @@ export function select(options: SelectOptions): { kept: Example[]; report: strin
   for (const example of examples) {
     const file = path.join(RESULTS_DIR, example.meta.runId, example.meta.config, example.meta.task, String(example.meta.rep), 'result.json');
     const result = JSON.parse(fs.readFileSync(file, 'utf8')) as RunResult;
-    const v = verdict(result, maxTurns, minTurns);
+    const v = verdict(example, result, maxTurns, minTurns);
     reasons.set(v.reason, (reasons.get(v.reason) ?? 0) + 1);
     if (!v.keep) continue;
     if (v.repaired) repairedKept += 1;

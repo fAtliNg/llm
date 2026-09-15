@@ -1,0 +1,11 @@
+{
+  "id": "T26-mock-status-filter-ru",
+  "title": "Нужно, чтобы `GET /api/tasks` поддерживал необязательный query-парамет",
+  "layer": "mock",
+  "work": "modify",
+  "difficulty": 1,
+  "formulation": "spec",
+  "tags": [
+    "ru"
+  ]
+}

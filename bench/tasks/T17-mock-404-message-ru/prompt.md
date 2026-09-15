@@ -1,0 +1,1 @@
+Баг: В MSW handlers для `GET /api/tasks/:taskId` при неизвестном id должен возвращаться статус 404 и JSON-тело `{ "message": "Task <id> not found" }`, например `Task 999 not found`. Остальные handlers не менять.
