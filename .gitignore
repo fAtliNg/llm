@@ -34,3 +34,4 @@ eval/runs/
 train/train.jsonl
 train/out/
 train/*.log
+train/models/
