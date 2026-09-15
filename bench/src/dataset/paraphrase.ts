@@ -51,17 +51,25 @@ async function main(): Promise<void> {
   const n = Number(countArg);
   const ids = fs.readdirSync(poolDir).filter((id) => !/-(p|ru)\d+$/.test(id) && fs.existsSync(path.join(poolDir, id, 'prompt.md'))).sort();
   let written = 0;
-  for (const id of ids) {
-    if (fs.existsSync(path.join(poolDir, `${id}-${suffix}1`))) continue;
+  const concurrency = Number(process.env.PARAPHRASE_CONCURRENCY ?? '4');
+  const queue = ids.filter((id) => !fs.existsSync(path.join(poolDir, `${id}-${suffix}1`)));
+  const worker = async (): Promise<void> => {
+    for (;;) {
+      const id = queue.shift();
+      if (!id) return;
+      await one(id);
+    }
+  };
+  const one = async (id: string): Promise<void> => {
     // Benchmark tasks may already have a hand-written Russian variant.
-    if (lang === 'ru' && fs.existsSync(path.join(poolDir, `${id}-ru`))) continue;
+    if (lang === 'ru' && fs.existsSync(path.join(poolDir, `${id}-ru`))) return;
     const prompt = fs.readFileSync(path.join(poolDir, id, 'prompt.md'), 'utf8').trim();
     let variants: string[];
     try {
       variants = await paraphrase(prompt, n, apiKey, lang);
     } catch (error: unknown) {
       console.error(`${id}: ${String(error)}`);
-      continue;
+      return;
     }
     const templateRoot = path.join(BENCH_DIR, '..', 'template');
     const setupRoot = path.join(poolDir, id, 'setup');
@@ -83,7 +91,8 @@ async function main(): Promise<void> {
       written += 1;
     });
     process.stdout.write(`\r${id}: +${String(variants.length)}  (total ${String(written)})   `);
-  }
+  };
+  await Promise.all(Array.from({ length: concurrency }, () => worker()));
   console.log(`\nwrote ${String(written)} paraphrased tasks`);
 }
 

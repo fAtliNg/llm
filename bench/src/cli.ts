@@ -126,7 +126,7 @@ function acquireLock(runId: string): () => void {
   return () => fs.rmSync(lock, { force: true });
 }
 
-async function run(tasks: Task[], configNames: string[], reps: number, runId: string): Promise<void> {
+async function run(tasks: Task[], configNames: string[], reps: number, runId: string, parallel = 1): Promise<void> {
   const releaseLock = acquireLock(runId);
   const configs = configNames.map((name) => [name, loadConfig(name)] as const);
   const stopProxy = configs.some(([, c]) => c.model.startsWith('google-throttled/')) ? await startGeminiProxy() : null;
@@ -134,47 +134,61 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
     releaseLock();
     stopProxy?.();
   };
-  console.log(`run ${runId}  configs=${configNames.join(',')}  tasks=${String(tasks.length)}  reps=${String(reps)}`);
+  console.log(`run ${runId}  configs=${configNames.join(',')}  tasks=${String(tasks.length)}  reps=${String(reps)}${parallel > 1 ? `  parallel=${String(parallel)}` : ''}`);
   let done = 0;
   let skipped = 0;
+  // Jobs are taken in order by `parallel` workers; cloud models spend most of the time waiting
+  // on the API, so several agents at once cost little on the local machine. Keep 1 for local models.
+  const jobs: { configName: string; config: ReturnType<typeof loadConfig>; task: Task; rep: number }[] = [];
   for (const [configName, config] of configs) {
     for (const task of tasks) {
-      for (let rep = 1; rep <= reps; rep += 1) {
-        const outDir = path.join(RESULTS_DIR, runId, configName, task.id, String(rep));
-        if (fs.existsSync(path.join(outDir, 'result.json'))) {
-          skipped += 1;
-          continue;
-        }
-        const workspace = path.join(WORK_DIR, runId, configName, task.id, String(rep));
-        prepare(task, workspace);
-        const started = Date.now();
-        const agent = await runAgent(task, config, workspace, outDir);
-        if (agent.apiError && agent.timeline.length === 0) {
-          finish();
-          fs.rmSync(outDir, { recursive: true, force: true });
-          console.error(`\nprovider error on ${configName}/${task.id}, stopping the run so results stay clean:\n${agent.apiError}`);
-          process.exitCode = 2;
-          return;
-        }
-        if (stopping) {
-          finish();
-          console.log(`stopped during ${configName}/${task.id}/${String(rep)}; rerun with --run-id ${runId} to resume`);
-          return;
-        }
-        const result = await grade(workspace, task, outDir);
-        const diagnostics = diagnose(workspace, task, agent, result);
-        applyPoolRules(task, result, diagnostics);
-        const record = { runId, config: configName, task: stripTask(task), rep, agent, grade: result, diagnostics, workspace };
-        fs.writeFileSync(path.join(outDir, 'result.json'), JSON.stringify(record, null, 2));
-        fs.writeFileSync(path.join(outDir, 'analysis.md'), analysisMarkdown({ task, config: configName, rep, agent, grade: result, diagnostics }));
-        done += 1;
-        const minutes = ((Date.now() - started) / 60000).toFixed(1);
-        line(task, result.solved, `${configName}, ${agent.timedOut ? 'timeout, ' : ''}${result.failureReason ?? 'solved'}, ${String(agent.turns)} turns, ${minutes} min`);
-        for (const comment of diagnostics.comments) console.log(`        · ${comment}`);
-      }
+      for (let rep = 1; rep <= reps; rep += 1) jobs.push({ configName, config, task, rep });
     }
   }
+  let aborted: string | null = null;
+  const worker = async (): Promise<void> => {
+    for (;;) {
+      const job = jobs.shift();
+      if (!job || stopping || aborted) return;
+      const { configName, config, task, rep } = job;
+      const outDir = path.join(RESULTS_DIR, runId, configName, task.id, String(rep));
+      if (fs.existsSync(path.join(outDir, 'result.json'))) {
+        skipped += 1;
+        continue;
+      }
+      const workspace = path.join(WORK_DIR, runId, configName, task.id, String(rep));
+      prepare(task, workspace);
+      const started = Date.now();
+      const agent = await runAgent(task, config, workspace, outDir);
+      if (agent.apiError && agent.timeline.length === 0) {
+        fs.rmSync(outDir, { recursive: true, force: true });
+        aborted = `provider error on ${configName}/${task.id}:\n${agent.apiError}`;
+        return;
+      }
+      if (stopping) {
+        console.log(`stopped during ${configName}/${task.id}/${String(rep)}; rerun with --run-id ${runId} to resume`);
+        return;
+      }
+      const result = await grade(workspace, task, outDir);
+      const diagnostics = diagnose(workspace, task, agent, result);
+      applyPoolRules(task, result, diagnostics);
+      const record = { runId, config: configName, task: stripTask(task), rep, agent, grade: result, diagnostics, workspace };
+      fs.writeFileSync(path.join(outDir, 'result.json'), JSON.stringify(record, null, 2));
+      fs.writeFileSync(path.join(outDir, 'analysis.md'), analysisMarkdown({ task, config: configName, rep, agent, grade: result, diagnostics }));
+      done += 1;
+      const minutes = ((Date.now() - started) / 60000).toFixed(1);
+      line(task, result.solved, `${configName}, ${agent.timedOut ? 'timeout, ' : ''}${result.failureReason ?? 'solved'}, ${String(agent.turns)} turns, ${minutes} min`);
+      for (const comment of diagnostics.comments) console.log(`        · ${comment}`);
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, parallel) }, () => worker()));
   finish();
+  if (aborted) {
+    console.error(`\n${aborted}\nstopping the run so results stay clean`);
+    process.exitCode = 2;
+    return;
+  }
+  if (stopping) return;
   console.log(`\ndone ${String(done)}, skipped ${String(skipped)} (already had results)`);
   console.log(`results: ${path.join(RESULTS_DIR, runId)}`);
 }
@@ -258,7 +272,7 @@ function rediagnose(runId: string): void {
 const HELP = `bench commands:
   validate [all|T01,T02]           reference solutions must pass
   null [all|T01,T02]               untouched workspace must fail
-  run --configs <a,b> [--tasks all|T01,..] [--reps N] [--run-id <id>]
+  run --configs <a,b> [--tasks all|T01,..] [--reps N] [--run-id <id>] [--parallel N]
                                    reuse --run-id to resume a stopped run or add reps
   report [--run-id <a,b>]          aggregate bench/results (all runs, or the listed run ids) into markdown
   regrade --run-id <id> [--tasks]  re-grade finished runs after a task's tests or checks changed
@@ -277,7 +291,7 @@ async function main(): Promise<void> {
     case 'run': {
       const configs = options.configs ?? options.config;
       if (!configs) throw new Error('--config <name> or --configs <a,b,c> is required');
-      await run(loadTasks(options.tasks), configs.split(','), Number(options.reps ?? '1'), options['run-id'] ?? stamp());
+      await run(loadTasks(options.tasks), configs.split(','), Number(options.reps ?? '1'), options['run-id'] ?? stamp(), Number(options.parallel ?? '1'));
       break;
     }
     case 'report': {
