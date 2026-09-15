@@ -95,11 +95,15 @@ def main() -> None:
 
     rows = load_rows(args.data)
 
-    def render(row: dict) -> dict:
-        text = text_tok.apply_chat_template(row["messages"], tools=row["tools"], tokenize=False)
-        return {"text": text}
-
-    ds = Dataset.from_list(rows).map(render, remove_columns=["messages", "tools"])
+    # Render BEFORE handing anything to `datasets`: Dataset.from_list unifies nested dict schemas
+    # across rows, so tool-call arguments would get every key seen anywhere in the data, filled
+    # with None. v1 was trained on exactly that corruption and learned to emit "None" parameters.
+    texts = [text_tok.apply_chat_template(row["messages"], tools=row["tools"], tokenize=False) for row in rows]
+    bad = [i for i, t in enumerate(texts) if ">None</parameter>" in t or ">null</parameter>" in t]
+    if bad:
+        raise SystemExit(f"rendered text contains None/null parameters in {len(bad)} examples (e.g. #{bad[0]}); refusing to train on it")
+    print("sample rendered tool call:", texts[0][texts[0].find("<tool_call>"):texts[0].find("</tool_call>") + 12][:300])
+    ds = Dataset.from_dict({"text": texts})
     ds = ds.filter(lambda r: len(text_tok(r["text"])["input_ids"]) <= args.max_seq)
     if args.eval_frac > 0:
         split = ds.train_test_split(test_size=args.eval_frac, seed=42)
