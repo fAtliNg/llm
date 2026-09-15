@@ -9,3 +9,5 @@ PARAMETER temperature 0.7
 PARAMETER top_p 0.8
 PARAMETER top_k 20
 PARAMETER presence_penalty 1.0
+# llama.cpp spins one busy thread per core while the GPU works; cap it so verify/tests keep CPU.
+PARAMETER num_thread 4
