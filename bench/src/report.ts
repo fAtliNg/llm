@@ -28,6 +28,35 @@ function pct(solved: number, total: number): string {
   return total === 0 ? '-' : `${String(Math.round((100 * solved) / total))}% (${String(solved)}/${String(total)})`;
 }
 
+const VERIFY_CMD = /npm run (verify|test|typecheck|lint)|vitest|\btsc\b|eslint/;
+
+interface TrajectoryShape {
+  callsBeforeFirstEdit: number | null;
+  callsAfterLastGreenVerify: number | null;
+  endsOnGreenVerify: boolean;
+  sawRedVerify: boolean;
+  repairedAfterRed: boolean;
+}
+
+function trajectoryShape(timeline: RunResult['agent']['timeline']): TrajectoryShape {
+  const firstEdit = timeline.findIndex((e) => e.tool === 'edit' || e.tool === 'write');
+  const category = (cmd: string): string =>
+    /npm run verify/.test(cmd) ? 'verify' : /vitest|npm run test/.test(cmd) ? 'test' : /\btsc\b|typecheck/.test(cmd) ? 'typecheck' : 'lint';
+  const verifies = timeline.map((e, i) => ({ e, i, cat: category(e.target) })).filter(({ e }) => e.tool === 'bash' && VERIFY_CMD.test(e.target));
+  const greens = verifies.filter(({ e }) => e.ok);
+  const reds = verifies.filter(({ e }) => !e.ok);
+  // Only the full verify counts as the green that ends a trajectory; a green lint after a red typecheck is not a repair.
+  const lastFullGreen = greens.filter(({ cat }) => cat === 'verify').at(-1);
+  const firstRed = reds[0];
+  return {
+    callsBeforeFirstEdit: firstEdit < 0 ? null : firstEdit,
+    callsAfterLastGreenVerify: lastFullGreen ? timeline.length - 1 - lastFullGreen.i : null,
+    endsOnGreenVerify: lastFullGreen !== undefined && lastFullGreen.i === timeline.length - 1,
+    sawRedVerify: firstRed !== undefined,
+    repairedAfterRed: firstRed !== undefined && greens.some(({ i, cat }) => i > firstRed.i && (cat === 'verify' || cat === firstRed.cat)),
+  };
+}
+
 function table(title: string, rows: string[], cols: string[], cell: (row: string, col: string) => string): string {
   const lines = [`### ${title}`, '', `| config | ${cols.join(' | ')} | all |`, `|---|${cols.map(() => '---').join('|')}|---|`];
   for (const row of rows) lines.push(`| ${row} | ${cols.map((col) => cell(row, col)).join(' | ')} | ${cell(row, '*')} |`);
@@ -80,6 +109,27 @@ export function report(runId?: string): string {
     );
   }
 
+  // Trajectory shape: how quickly the agent gets to an edit, whether it stops after a green verify,
+  // and whether it repairs after a red one. These move before the solved rate does.
+  const shape = [
+    '### Trajectory shape',
+    '',
+    '| config | runs | calls before first edit | calls after last green verify | ends on green verify | saw red verify | repaired after red | never edited |',
+    '|---|---|---|---|---|---|---|---|',
+  ];
+  for (const config of configs) {
+    const subset = results.filter((r) => r.config === config);
+    const stats = subset.map((r) => trajectoryShape(r.agent.timeline));
+    const mean = (f: (x: TrajectoryShape) => number | null) => {
+      const xs = stats.map(f).filter((x): x is number => x !== null);
+      return xs.length ? (xs.reduce((a, b) => a + b, 0) / xs.length).toFixed(1) : '-';
+    };
+    const red = stats.filter((x) => x.sawRedVerify);
+    shape.push(
+      `| ${config} | ${String(subset.length)} | ${mean((x) => x.callsBeforeFirstEdit)} | ${mean((x) => x.callsAfterLastGreenVerify)} | ${pct(stats.filter((x) => x.endsOnGreenVerify).length, subset.length)} | ${pct(red.length, subset.length)} | ${pct(red.filter((x) => x.repairedAfterRed).length, Math.max(red.length, 1))} | ${pct(stats.filter((x) => x.callsBeforeFirstEdit === null).length, subset.length)} |`,
+    );
+  }
+
   const perTask = [
     '### Per task',
     '',
@@ -118,7 +168,7 @@ export function report(runId?: string): string {
   }
 
   return [
-    byLayer, '', byDifficulty, '', byFormulation, '', byLanguage, '', reasons.join('\n'), '', agent.join('\n'), '',
+    byLayer, '', byDifficulty, '', byFormulation, '', byLanguage, '', reasons.join('\n'), '', agent.join('\n'), '', shape.join('\n'), '',
     timeByConfig.join('\n'), '', perTask.join('\n'), '', details.join('\n'),
   ].join('\n');
 }
