@@ -6,9 +6,10 @@ HOST="${1:?server, e.g. root@1.2.3.4}"; REMOTE_OUT="${2:-out/v1}"; TAG="${3:-qwe
 cd "$(dirname "$0")"
 mkdir -p models/v1
 echo "== downloading gguf q4_k_m and the adapter"
-rsync -ah --info=progress2 "$HOST:$REMOTE_OUT/gguf-q4_k_m/" models/v1/gguf-q4_k_m/
+# Unsloth writes the GGUF next to the export dir, with a _gguf suffix; only the Q4 file is needed.
+rsync -ah --info=progress2 --include='*Q4_K_M.gguf' --exclude='*' "$HOST:$REMOTE_OUT/gguf-q4_k_m_gguf/" models/v1/gguf-q4_k_m/
 rsync -ah "$HOST:$REMOTE_OUT/lora/" models/v1/lora/
-GGUF=$(ls models/v1/gguf-q4_k_m/*.gguf | head -1)
+GGUF=$(ls models/v1/gguf-q4_k_m/*Q4_K_M.gguf | head -1)
 echo "== gguf: $GGUF ($(du -h "$GGUF" | cut -f1))"
 sed "s#^FROM .*#FROM $PWD/$GGUF#" Modelfile > models/v1/Modelfile
 ollama create "$TAG" -f models/v1/Modelfile

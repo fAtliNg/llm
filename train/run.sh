@@ -42,8 +42,7 @@ if [[ "$MODE" == "smoke" ]]; then
   echo "== smoke done. Look for 'train_runtime' above: full run ≈ (examples*epochs/8) steps × seconds per step."
 else
   python train.py --data train.jsonl --out "$OUT" --max-seq "$MAX_SEQ" 2>&1 | tee train.log
-  echo "== packing"
-  for d in "$OUT"/gguf-*; do tar -cf "$d.tar" -C "$(dirname "$d")" "$(basename "$d")"; done
-  ls -la "$OUT"/*.tar
-  echo "== done. Download the gguf-q4_k_m.tar (and q8_0 if wanted), then STOP the pod."
+  echo "== done. GGUF files:"
+  find "$OUT" -name "*.gguf" -exec ls -la {} \;
+  echo "Download the *Q4_K_M.gguf (and Q8_0 if wanted) plus $OUT/lora, then STOP the server."
 fi
