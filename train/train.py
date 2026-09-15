@@ -61,6 +61,8 @@ def main() -> None:
     ap.add_argument("--grad-accum", type=int, default=8)
     ap.add_argument("--eval-frac", type=float, default=0.05)
     ap.add_argument("--gguf", nargs="*", default=["q4_k_m", "q8_0"], help="quantisations to export")
+    ap.add_argument("--max-steps", type=int, default=0, help="stop after N optimizer steps (smoke test); 0 = full epochs")
+    ap.add_argument("--no-export", action="store_true", help="skip merge and GGUF export (smoke test)")
     args = ap.parse_args()
 
     from unsloth import FastLanguageModel  # noqa: E402  (must be imported before transformers)
@@ -108,6 +110,7 @@ def main() -> None:
             per_device_train_batch_size=args.batch,
             gradient_accumulation_steps=args.grad_accum,
             num_train_epochs=args.epochs,
+            max_steps=args.max_steps if args.max_steps > 0 else -1,
             learning_rate=args.lr,
             lr_scheduler_type="cosine",
             warmup_ratio=0.05,
@@ -129,11 +132,15 @@ def main() -> None:
         instruction_part="<|im_start|>user\n",
         response_part="<|im_start|>assistant\n",
     )
-    trainer.train()
+    stats = trainer.train()
+    print("train stats:", stats)
 
     adapter_dir = args.out / "lora"
     model.save_pretrained(adapter_dir)
     tokenizer.save_pretrained(adapter_dir)
+    if args.no_export:
+        print("smoke run done, adapter at", adapter_dir)
+        return
     merged_dir = args.out / "merged-bf16"
     model.save_pretrained_merged(str(merged_dir), tokenizer, save_method="merged_16bit")
     for quant in args.gguf:

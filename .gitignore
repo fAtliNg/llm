@@ -31,3 +31,6 @@ eval/runs/
 # env
 .env
 .env.local
+train/train.jsonl
+train/out/
+train/*.log
