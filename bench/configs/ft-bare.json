@@ -1,0 +1,8 @@
+{
+  "description": "Fine-tuned v1, no project context, no skills.",
+  "model": "ollama/qwen3.5-9b-agent:v1-q4",
+  "thinking": "off",
+  "contextFiles": false,
+  "skills": false,
+  "timeoutSec": 1800
+}
