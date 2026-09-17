@@ -1,0 +1,14 @@
+{
+  "id": "F02-employees",
+  "title": "Employees end to end",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity"
+  ]
+}

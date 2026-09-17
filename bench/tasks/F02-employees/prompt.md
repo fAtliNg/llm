@@ -1,0 +1,5 @@
+We need to keep track of employees. Users open "Employees" from the main navigation and see a table at `/employees` with name, email, department and start date ("—" when there is none). A "New employee" button opens `/employees/new`, a form with a "Create" button that brings them back to the list.
+
+An employee has: "Name" (`name`, required, up to 100 characters, message "Name is required"), "Email" (`email`, a valid email, message "Enter a valid email", unique among employees), "Department" (`department`, a select with Engineering, Design and Sales, stored as `engineering`, `design`, `sales`), "Start date" (`startDate`, a date input, optional, an ISO date or null).
+
+It must be a real feature following the same layering as tasks: contract in `shared/employees.ts`, a table with a migration and two seeded employees, REST routes under `/api/employees` (list, get, create, update with PATCH, delete) answering 400 for invalid bodies, 404 for unknown ids and 409 with `{ "message": "An employee with this email already exists" }` for a duplicate email, RTK Query endpoints, and tests on both sides.
