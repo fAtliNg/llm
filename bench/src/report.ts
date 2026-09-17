@@ -88,6 +88,43 @@ export function report(runId?: string): string {
     stat(config, (r) => lang === '*' || (r.task.tags?.includes('ru') ?? false) === (lang === 'ru')),
   );
 
+  const byVersion = table('Solved by benchmark version', configs, ['v1 front-end', 'v2 full-stack'], (config, v) =>
+    stat(config, (r) => v === '*' || (r.task.template === 'fullstack') === (v === 'v2 full-stack')),
+  );
+
+  // Attempts: the target is stated as "solved within k attempts", so repetitions are grouped per task.
+  // The partial score is the share of hidden tests passed: it moves before the solved rate does.
+  const attempts = [
+    '### Attempts and partial score',
+    '',
+    '| config | scope | tasks | attempts/task | solved per attempt | solved in any attempt | solved in every attempt | hidden tests passed |',
+    '|---|---|---|---|---|---|---|---|',
+  ];
+  const scopes: [string, (r: RunResult) => boolean][] = [
+    ['all', () => true],
+    ['difficulty 2-3', (r) => r.task.difficulty >= 2],
+    ['difficulty 3', (r) => r.task.difficulty === 3],
+    ['v2, difficulty 2-3', (r) => r.task.template === 'fullstack' && r.task.difficulty >= 2],
+  ];
+  for (const config of configs) {
+    for (const [scope, inScope] of scopes) {
+      const subset = results.filter((r) => r.config === config && inScope(r));
+      if (subset.length === 0) continue;
+      const perTaskRuns = new Map<string, RunResult[]>();
+      for (const r of subset) perTaskRuns.set(r.task.id, [...(perTaskRuns.get(r.task.id) ?? []), r]);
+      const groups = [...perTaskRuns.values()];
+      const hiddenShare = subset
+        .map((r) => ({ passed: r.grade.hidden.passed, total: r.grade.hidden.passed + r.grade.hidden.failed }))
+        .filter((x) => x.total > 0);
+      const partial = hiddenShare.length
+        ? `${((hiddenShare.reduce((sum, x) => sum + x.passed / x.total, 0) / hiddenShare.length) * 100).toFixed(0)}%`
+        : '-';
+      attempts.push(
+        `| ${config} | ${scope} | ${String(groups.length)} | ${(subset.length / groups.length).toFixed(1)} | ${pct(subset.filter((r) => r.grade.solved).length, subset.length)} | ${pct(groups.filter((g) => g.some((r) => r.grade.solved)).length, groups.length)} | ${pct(groups.filter((g) => g.every((r) => r.grade.solved)).length, groups.length)} | ${partial} |`,
+      );
+    }
+  }
+
   const reasons = ['### Failure reasons', '', '| config | reason | count |', '|---|---|---|'];
   for (const config of configs) {
     const counts = new Map<string, number>();
@@ -168,7 +205,7 @@ export function report(runId?: string): string {
   }
 
   return [
-    byLayer, '', byDifficulty, '', byFormulation, '', byLanguage, '', reasons.join('\n'), '', agent.join('\n'), '', shape.join('\n'), '',
+    byLayer, '', byDifficulty, '', byFormulation, '', byLanguage, '', byVersion, '', attempts.join('\n'), '', reasons.join('\n'), '', agent.join('\n'), '', shape.join('\n'), '',
     timeByConfig.join('\n'), '', perTask.join('\n'), '', details.join('\n'),
   ].join('\n');
 }
