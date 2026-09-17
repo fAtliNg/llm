@@ -1,0 +1,1 @@
+Bug report from the office manager: "Atlas is booked on Monday from 10 to 12. When I try to book Atlas on Tuesday from 10 to 12, the form says 'This room is already booked for that time'. Other hours on Tuesday work." Find the cause, fix it, and add a test that would have caught it. Real conflicts on the same day must still be rejected.

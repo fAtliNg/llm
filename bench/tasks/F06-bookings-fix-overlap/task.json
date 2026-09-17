@@ -1,0 +1,10 @@
+{
+  "id": "F06-bookings-fix-overlap",
+  "title": "Bug: a room booked on one day cannot be booked at the same hours on another day",
+  "template": "fullstack",
+  "layer": "query",
+  "work": "fix",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity", "planted-bug"]
+}
