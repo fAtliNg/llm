@@ -114,8 +114,15 @@ export interface ConvertOptions {
 }
 
 export function convert(options: ConvertOptions): Example[] {
-  const captured = JSON.parse(fs.readFileSync(options.captured, 'utf8')) as CapturedRequest;
-  const system = captured.messages.find((m) => m.role === 'system')?.content ?? '';
+  // The student's system prompt embeds the template's AGENTS.md, so every template has its own capture:
+  // `student-request.json` for the front-end template, `student-request-fullstack.json` next to it.
+  const load = (file: string) => {
+    const captured = JSON.parse(fs.readFileSync(file, 'utf8')) as CapturedRequest;
+    return { captured, system: captured.messages.find((m) => m.role === 'system')?.content ?? '' };
+  };
+  const frontend = load(options.captured);
+  const fullstackFile = options.captured.replace(/\.json$/, '-fullstack.json');
+  const fullstack = fs.existsSync(fullstackFile) ? load(fullstackFile) : null;
   const examples: Example[] = [];
   const walk = (dir: string, visit: (file: string) => void) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -132,6 +139,9 @@ export function convert(options: ConvertOptions): Example[] {
       if (!fs.existsSync(transcript)) return;
       const messages = agentEndMessages(transcript);
       if (!messages) return;
+      const isFullstack = record.task.template === 'fullstack';
+      if (isFullstack && !fullstack) throw new Error(`${fullstackFile} is missing: capture the student's request in the full-stack template first`);
+      const { captured, system } = isFullstack && fullstack ? fullstack : frontend;
       const chat = toChat(messages, system);
       const turns = chat.filter((m) => m.role === 'assistant').length;
       if (options.maxTurns && turns > options.maxTurns) return;
