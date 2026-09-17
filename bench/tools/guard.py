@@ -37,8 +37,14 @@ def violation(name, args):
         if real.startswith(work) or real.startswith(ALLOWED) or real.startswith(os.path.join(bench, "node_modules")):
             continue
         return f"{name} touches a path outside the workspace: {path[:160]}"
-    if cmd and re.search(r"(^|[;&|]\s*)cd\s+(\.\./\.\.|~|/)(?!" + re.escape(work) + ")", cmd):
-        return f"cd out of the workspace: {cmd[:160]}"
+    for target in re.findall(r"(?:^|[;&|(]\s*)cd\s+([^\s;&|)]+)", cmd):
+        target = target.strip("\"'")
+        if target.startswith(("/", "~")):
+            real = os.path.normpath(os.path.expanduser(target))
+            if not real.startswith(work):
+                return f"cd out of the workspace: {cmd[:160]}"
+        elif target.startswith("../.."):
+            return f"cd two levels up: {cmd[:160]}"
     return None
 
 def stop(reason):
