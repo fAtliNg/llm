@@ -5,6 +5,7 @@ import { BENCH_DIR } from '../paths.ts';
 import type { Check, Layer, Work } from '../types.ts';
 import { duplicateMessage, names, type GenEntity, type GenField } from './entity-codegen.ts';
 import { GEN_ENTITIES } from './pool-fs-entities.ts';
+import { hiddenBoolFilter, hiddenDelete, hiddenFilter, hiddenSearch, hiddenSort, hiddenStats, type Hidden } from './pool-fs-hidden.ts';
 import { HELD_OUT, removeTest } from './pool-fs.ts';
 
 /**
@@ -13,7 +14,7 @@ import { HELD_OUT, removeTest } from './pool-fs.ts';
  * (run pool-fs-setups.ts first). Every task is written in English and in Russian with the same
  * setup and checks. Prefix `FB`. Usage: node src/dataset/pool-fs-wave-b.ts [outDir]
  */
-interface Spec {
+export interface Spec {
   family: string;
   entity: GenEntity;
   layer: Layer;
@@ -21,6 +22,8 @@ interface Spec {
   en: string;
   ru: string;
   checks?: Check[];
+  /** Hidden API test with its reference implementation (pool-fs-hidden.ts). */
+  hidden?: Hidden;
   /** Starts from the clean template instead of the generated entity. */
   fromScratch?: boolean;
   difficulty?: 1 | 2 | 3;
@@ -112,7 +115,7 @@ const fieldsEn = (e: GenEntity) => e.fields.map((f) => `"${f.label}" (\`${f.name
 const fieldsRu = (e: GenEntity) => e.fields.map((f) => `"${f.label}" (\`${f.name}\`: ${ruleRu(e, f)})`).join('; ');
 const columnLabels = (e: GenEntity) => e.columns.map((name) => `"${e.fields.find((f) => f.name === name)?.label ?? name}"`);
 
-function specs(): Spec[] {
+export function specs(): Spec[] {
   const out: Spec[] = [];
   for (const e of GEN_ENTITIES) {
     const n = names(e);
@@ -157,6 +160,7 @@ function specs(): Spec[] {
 
     out.push({
       family: 'search', entity: e, layer: 'cross', work: 'modify',
+      hidden: hiddenSearch(e, first),
       checks: [{ type: 'grep-count', path: `server/features/${k}/routes.ts`, pattern: 'like\\(|sql`', min: 1 }],
       en: `${intro.en} The list is getting long. Add a field labelled "Search" above the table: the list shows only the ${n.plural} whose ${lower(first)} contains the text, case-insensitively, and "No matches" when there are none. The search must happen on the server: \`GET /api/${k}?q=...\` filters in SQL, and without the parameter everything is returned. Add tests on both sides.`,
       ru: `${intro.ru} Список стал длинным. Добавь над таблицей поле с подписью "Search": в списке остаются только записи, у которых ${f2ru(first)} содержит введённый текст без учёта регистра, а если таких нет, показывается "No matches". Поиск выполняется на сервере: \`GET /api/${k}?q=...\` фильтрует в SQL, без параметра возвращается всё. Добавь тесты с обеих сторон.`,
@@ -166,12 +170,14 @@ function specs(): Spec[] {
       if (f.kind === 'enum') {
         out.push({
           family: 'filter', entity: e, layer: 'cross', work: 'modify',
+          hidden: hiddenFilter(e, f),
           checks: [{ type: 'grep-count', path: `server/features/${k}/routes.ts`, pattern: 'query', min: 1 }],
           en: `${intro.en} Add a select labelled "Filter by ${lower(f)}" above the table with "All" chosen by default and one option per ${lower(f)} (${f.options.map(([, l]) => l).join(', ')}). Picking one shows only matching ${n.plural}; "All" shows everything again. The filtering happens on the server: \`GET /api/${k}?${f.name}=${f.options[1]?.[0] ?? ''}\` returns only those, without the parameter everything is returned, and an unknown value answers 400 with \`{ "message": "Invalid ${lower(f)}" }\`. Add tests on both sides.`,
           ru: `${intro.ru} Добавь над таблицей селект с подписью "Filter by ${lower(f)}", где по умолчанию выбрано "All", а остальные варианты это значения поля (${f.options.map(([, l]) => l).join(', ')}). При выборе значения остаются только подходящие записи; "All" снова показывает все. Фильтрация выполняется на сервере: \`GET /api/${k}?${f.name}=${f.options[1]?.[0] ?? ''}\` возвращает только их, без параметра возвращается всё, а неизвестное значение даёт 400 с \`{ "message": "Invalid ${lower(f)}" }\`. Добавь тесты с обеих сторон.`,
         });
         out.push({
           family: 'stats', entity: e, layer: 'cross', work: 'create',
+          hidden: hiddenStats(e, f),
           checks: [{ type: 'grep-count', path: `server/features/${k}/routes.ts`, pattern: 'stats', min: 1 }],
           en: `${intro.en} Add \`GET /api/${k}/stats\` returning \`{ "total": <count>, "by${cap(f.name)}": { ${f.options.map(([v]) => `"${v}": <count>`).join(', ')} } }\`, computed with a SQL aggregate rather than by loading every row, and registered so that it does not collide with \`/:${n.idParam}\`. Put the response schema next to the contract in \`shared/${k}.ts\`. Show the numbers above the table as one line, for example "${f.options.map(([, l]) => `${l}: 1`).join(' · ')}", and keep it correct after a new ${n.singular} is created. Add tests on both sides.`,
           ru: `${intro.ru} Добавь \`GET /api/${k}/stats\`, который возвращает \`{ "total": <count>, "by${cap(f.name)}": { ${f.options.map(([v]) => `"${v}": <count>`).join(', ')} } }\`; числа считаются SQL-агрегатом, а не загрузкой всех строк, а маршрут зарегистрирован так, чтобы не конфликтовать с \`/:${n.idParam}\`. Схему ответа положи рядом с контрактом в \`shared/${k}.ts\`. Покажи числа над таблицей одной строкой, например "${f.options.map(([, l]) => `${l}: 1`).join(' · ')}", и чтобы строка оставалась верной после создания новой записи. Добавь тесты с обеих сторон.`,
@@ -180,6 +186,7 @@ function specs(): Spec[] {
       if (f.kind === 'bool') {
         out.push({
           family: 'boolfilter', entity: e, layer: 'cross', work: 'modify',
+          hidden: hiddenBoolFilter(e, f),
           checks: [{ type: 'grep-count', path: `server/features/${k}/routes.ts`, pattern: 'query', min: 1 }],
           en: `${intro.en} Add a checkbox labelled "Only ${lower(f)}" above the table. When it is checked the list shows only the ${n.plural} where "${f.label}" is set. The filtering happens on the server: \`GET /api/${k}?${f.name}=true\` returns only those, \`${f.name}=false\` only the others, without the parameter everything; any other value answers 400 with \`{ "message": "Invalid ${f.name}" }\`. Add tests on both sides.`,
           ru: `${intro.ru} Добавь над таблицей чекбокс с подписью "Only ${lower(f)}". Когда он отмечен, в списке остаются только записи, у которых установлено "${f.label}". Фильтрация выполняется на сервере: \`GET /api/${k}?${f.name}=true\` возвращает только их, \`${f.name}=false\` только остальные, без параметра всё; любое другое значение даёт 400 с \`{ "message": "Invalid ${f.name}" }\`. Добавь тесты с обеих сторон.`,
@@ -188,6 +195,7 @@ function specs(): Spec[] {
       if (f.kind === 'int' || f.kind === 'money') {
         out.push({
           family: 'sort', entity: e, layer: 'cross', work: 'modify',
+          hidden: hiddenSort(e, f),
           checks: [{ type: 'grep-count', path: `server/features/${k}/routes.ts`, pattern: 'orderBy', min: 1 }],
           en: `${intro.en} Add a select labelled "Sort by" above the table with the options "Default", "${f.label} ascending" and "${f.label} descending". The sorting happens on the server: \`GET /api/${k}?sort=${f.name}\` and \`?sort=-${f.name}\` order in SQL, without the parameter the order stays as it is, and any other value answers 400 with \`{ "message": "Invalid sort" }\`. Add tests on both sides.`,
           ru: `${intro.ru} Добавь над таблицей селект с подписью "Sort by" и вариантами "Default", "${f.label} ascending" и "${f.label} descending". Сортировка выполняется на сервере: \`GET /api/${k}?sort=${f.name}\` и \`?sort=-${f.name}\` упорядочивают в SQL, без параметра порядок остаётся прежним, а любое другое значение даёт 400 с \`{ "message": "Invalid sort" }\`. Добавь тесты с обеих сторон.`,
@@ -231,6 +239,7 @@ function specs(): Spec[] {
     });
     out.push({
       family: 'fix-delete', entity: e, layer: 'query', work: 'fix',
+      hidden: hiddenDelete(e),
       checks: [{ type: 'grep-count', path: `server/features/${k}/routes.ts`, pattern: `eq\\(${n.plural}\\.${first.name}, c\\.req\\.param`, max: 0 }],
       plant: (files) => {
         edit(files, `server/features/${k}/routes.ts`, (s) => {
@@ -306,7 +315,7 @@ function cut(content: string, fragment: string): string {
   return content.replace(fragment, '');
 }
 
-function readSetup(plural: string): Map<string, string> {
+export function readSetup(plural: string): Map<string, string> {
   const root = path.join(SETUPS, plural);
   if (!fs.existsSync(root)) throw new Error(`no setup for ${plural}: run pool-fs-setups.ts first`);
   const files = new Map<string, string>();
@@ -339,6 +348,11 @@ export function generateWaveB(outDir: string): void {
       [`${baseId}-ru`, spec.ru, ['ru']],
     ] as [string, string, string[]][]) {
       const dir = path.join(outDir, id);
+      if (spec.hidden && fs.existsSync(dir)) {
+        // Hidden tests were added after the first generation: refresh them in place.
+        fs.mkdirSync(path.join(dir, 'hidden-api'), { recursive: true });
+        fs.writeFileSync(path.join(dir, 'hidden-api', spec.hidden.file), spec.hidden.test);
+      }
       if (fs.existsSync(dir)) continue;
       fs.mkdirSync(dir, { recursive: true });
       const meta = {
@@ -349,6 +363,10 @@ export function generateWaveB(outDir: string): void {
       fs.writeFileSync(path.join(dir, 'task.json'), JSON.stringify(meta, null, 2) + '\n');
       fs.writeFileSync(path.join(dir, 'prompt.md'), `${prompt}\n`);
       if (spec.checks) fs.writeFileSync(path.join(dir, 'checks.json'), JSON.stringify(spec.checks, null, 2) + '\n');
+      if (spec.hidden) {
+        fs.mkdirSync(path.join(dir, 'hidden-api'), { recursive: true });
+        fs.writeFileSync(path.join(dir, 'hidden-api', spec.hidden.file), spec.hidden.test);
+      }
       for (const [file, content] of files) {
         const target = path.join(dir, 'setup', file);
         fs.mkdirSync(path.dirname(target), { recursive: true });
