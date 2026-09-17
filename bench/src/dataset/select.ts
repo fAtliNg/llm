@@ -93,15 +93,21 @@ function trimTail(example: Example, timeline: ToolEvent[]): Example {
  */
 function normalizePaths(example: Example, workspace: string): Example {
   const prefixSlash = `${workspace}/`;
+  const repoRoot = workspace.includes('/bench/.work/') ? (workspace.split('/bench/.work/')[0] ?? workspace) : workspace;
   const fix = (text: string) =>
     text
       .split(prefixSlash)
       .join('')
       .split(workspace)
       .join('.')
+      .split(`${BENCH_DIR}/.work/capture-fs`)
+      .join('/workspace/app')
       .split(`${BENCH_DIR}/.work/capture`)
       .join('/workspace/app')
       .split(BENCH_DIR)
+      .join('/workspace')
+      // runs made inside the Docker sandbox live under another repository root
+      .split(repoRoot)
       .join('/workspace');
   return {
     ...example,
