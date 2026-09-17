@@ -1,0 +1,15 @@
+{
+  "id": "F02-employees-ru",
+  "title": "Сотрудники под ключ",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "held-out-entity",
+    "ru",
+    "v2"
+  ]
+}

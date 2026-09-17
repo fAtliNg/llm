@@ -1,0 +1,14 @@
+{
+  "id": "F01-due-date-ru",
+  "title": "Необязательная дата выполнения через весь стек",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "ru",
+    "v2"
+  ]
+}

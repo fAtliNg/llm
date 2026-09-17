@@ -1,0 +1,15 @@
+{
+  "id": "F03-employees-filter-ru",
+  "title": "Фильтр сотрудников по отделу через API",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "held-out-entity",
+    "ru",
+    "v2"
+  ]
+}
