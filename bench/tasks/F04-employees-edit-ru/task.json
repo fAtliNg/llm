@@ -1,0 +1,15 @@
+{
+  "id": "F04-employees-edit-ru",
+  "title": "Правка и удаление сотрудников, конфликт от API в форме",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru"
+  ]
+}

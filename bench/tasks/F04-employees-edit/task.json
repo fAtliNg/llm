@@ -1,0 +1,10 @@
+{
+  "id": "F04-employees-edit",
+  "title": "Edit and delete employees, surface the API conflict in the form",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity"]
+}

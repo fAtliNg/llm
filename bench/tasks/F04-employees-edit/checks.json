@@ -1,0 +1,5 @@
+[
+  { "type": "file-exists", "path": "src/pages/employee-edit-page.tsx" },
+  { "type": "grep-count", "path": "src/app/router.tsx", "pattern": "employees/:employeeId/edit", "min": 1 },
+  { "type": "grep-count", "path": "src/features/employees/api.ts", "pattern": "invalidatesTags", "min": 3 }
+]
