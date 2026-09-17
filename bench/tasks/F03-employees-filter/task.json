@@ -1,0 +1,14 @@
+{
+  "id": "F03-employees-filter",
+  "title": "Filter employees by department through the API",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity"
+  ]
+}
