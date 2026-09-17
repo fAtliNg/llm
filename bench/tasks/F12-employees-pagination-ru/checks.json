@@ -1,0 +1,5 @@
+[
+  { "type": "grep-count", "path": "server/features/employees/routes.ts", "pattern": "\\.limit\\(", "min": 1 },
+  { "type": "grep-count", "path": "server/features/employees/routes.ts", "pattern": "\\.offset\\(", "min": 1 },
+  { "type": "grep-count", "path": "shared/employees.ts", "pattern": "total", "min": 1 }
+]

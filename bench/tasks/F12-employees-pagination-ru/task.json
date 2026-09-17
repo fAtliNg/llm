@@ -1,0 +1,15 @@
+{
+  "id": "F12-employees-pagination-ru",
+  "title": "Серверная пагинация сотрудников: ответ меняет форму на обеих сторонах",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru"
+  ]
+}

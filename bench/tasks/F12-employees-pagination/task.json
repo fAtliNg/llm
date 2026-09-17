@@ -1,0 +1,10 @@
+{
+  "id": "F12-employees-pagination",
+  "title": "Server-side pagination of employees: the response changes shape on both sides",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity"]
+}
