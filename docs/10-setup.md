@@ -126,6 +126,15 @@ docker logs -f bench-4b            # ход прогона
 docker rm -f bench-4b              # остановить; повторный run с тем же run-id продолжит
 ```
 
+Образ это снимок: задачи, шаблоны и код стенда копируются в него при сборке. После добавления задач (бенчмарк v2 вырос до 24 задач 2026-09-17) или правок стенда образ нужно пересобрать той же командой `docker build`, иначе контейнер гоняет старый набор. Прогон бенчмарка v2 с тремя попытками, как требует целевой показатель:
+
+```bash
+R=base4b-v2; mkdir -p bench/results/$R
+docker run -d --name bench-v2 --restart on-failure:5 -v "$PWD/bench/results/$R:/work/llm/bench/results/$R" \
+  llm-bench sh -c "rm -f results/$R/.lock; exec node src/cli.ts run --run-id $R --configs base4b-mac --tasks tag:v2 --reps 3"
+node bench/src/cli.ts report --run-id $R      # таблицы «Attempts and partial score» и «Safety»
+```
+
 Память: по умолчанию Docker Desktop берёт под виртуальную машину 8 ГБ. На Mac с 16 ГБ вместе с моделью в Ollama это уводит систему в подкачку, интерфейс подвисает. Контейнеру хватает 4 ГБ: `memoryMiB` в `~/Library/Group Containers/group.com.docker/settings.json`, затем перезапуск Docker Desktop.
 
 Кэш промптов движка: llama.cpp по умолчанию держит в оперативной памяти до 8 ГБ состояний прошлых промптов (`--cache-ram 8192`), Ollama этот флаг не задаёт. При работе агента кэш заполняется, и процесс `llama-server` с моделью на 3,4 ГБ разрастается до 13 ГБ; на 16 ГБ система уходит в подкачку. Лечится переменной окружения, которую движок читает сам: закрыть приложение Ollama и запустить сервер вручную
