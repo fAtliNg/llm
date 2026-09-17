@@ -116,7 +116,8 @@ function acquireLock(runId: string): () => void {
     let alive = false;
     try {
       process.kill(pid, 0);
-      alive = true;
+      // In a container the runner is always pid 1, so a stale lock from a killed run points at ourselves.
+      alive = pid !== process.pid;
     } catch {
       alive = false;
     }
