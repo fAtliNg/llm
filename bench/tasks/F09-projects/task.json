@@ -1,0 +1,10 @@
+{
+  "id": "F09-projects",
+  "title": "Projects with tasks: a new entity related to an existing one, counts and guarded delete",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity", "relation"]
+}

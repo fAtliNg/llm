@@ -1,0 +1,16 @@
+{
+  "id": "F09-projects-ru",
+  "title": "Проекты и задачи: новая сущность со связью, счётчики и защищённое удаление",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "relation",
+    "ru"
+  ]
+}

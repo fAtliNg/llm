@@ -1,0 +1,9 @@
+Tasks pile up without any grouping. We need projects, and every task may belong to one.
+
+Projects: users open "Projects" from the main navigation and see a table at `/projects` with name, description and a "Tasks" column with the number of tasks in the project. A "New project" button opens `/projects/new`, a form with a "Create" button that brings them back to the list. A project has "Name" (`name`, required, up to 60 characters, message "Name is required", unique: a duplicate answers 409 with `{ "message": "A project with this name already exists" }`) and "Description" (`description`, a textarea, optional, up to 300 characters, an empty string when empty).
+
+Tasks get `projectId`: the id of a project or null. The task form, on both the create and the edit page, gets a select labelled "Project" with "No project" chosen by default and one option per project by name. The tasks table gets a "Project" column with the project name or "—". In the seed there are two projects; the first two tasks belong to the first project and the third task has none.
+
+The API follows the same layering as tasks: contract in `shared/projects.ts`, a table with a migration, REST routes under `/api/projects` (list, get, create, update with PATCH, delete) answering 400 for invalid bodies and 404 for unknown ids. Every item of `GET /api/projects` carries `taskCount`, counted in SQL rather than by loading all tasks. `POST` and `PATCH /api/tasks` answer 400 with `{ "message": "Unknown project" }` for a `projectId` that does not exist. A project that still has tasks cannot be deleted: 409 with `{ "message": "Project still has tasks" }`.
+
+The counts on the projects page must be correct after a task is created, moved to another project or deleted, without reloading the page. Update existing tests where the change requires it and cover the new behaviour on both sides.
