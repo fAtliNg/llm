@@ -1,0 +1,5 @@
+[
+  { "type": "grep-count", "path": "shared/employees.ts", "pattern": "managerId", "min": 1 },
+  { "type": "grep-count", "path": "server/db/schema.ts", "pattern": "references\\(", "min": 1 },
+  { "type": "command", "label": "a new migration exists", "run": "[ \"$(ls drizzle/*.sql | wc -l | tr -d \" \")\" -ge 3 ]", "expect": "pass" }
+]

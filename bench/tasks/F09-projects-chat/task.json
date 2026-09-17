@@ -1,0 +1,17 @@
+{
+  "id": "F09-projects-chat",
+  "title": "Проекты для задач, просьба в чате",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "relation",
+    "ru",
+    "chat"
+  ]
+}

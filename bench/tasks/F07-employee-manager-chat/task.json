@@ -1,0 +1,17 @@
+{
+  "id": "F07-employee-manager-chat",
+  "title": "Руководитель у сотрудника, просьба в чате",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "relation",
+    "ru",
+    "chat"
+  ]
+}

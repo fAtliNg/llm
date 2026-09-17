@@ -1,0 +1,16 @@
+{
+  "id": "F12-employees-pagination-chat",
+  "title": "Пагинация сотрудников, просьба в чате",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru",
+    "chat"
+  ]
+}

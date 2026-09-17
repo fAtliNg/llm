@@ -1,0 +1,15 @@
+{
+  "id": "F01-due-date-chat",
+  "title": "Срок выполнения у задач, просьба в чате",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "ru",
+    "chat"
+  ]
+}

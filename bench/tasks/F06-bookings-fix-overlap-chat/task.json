@@ -1,0 +1,17 @@
+{
+  "id": "F06-bookings-fix-overlap-chat",
+  "title": "Баг с бронированием на другой день, сообщение в чате",
+  "template": "fullstack",
+  "layer": "query",
+  "work": "fix",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "planted-bug",
+    "ru",
+    "chat"
+  ]
+}

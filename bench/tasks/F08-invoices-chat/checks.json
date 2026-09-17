@@ -1,0 +1,8 @@
+[
+  { "type": "file-exists", "path": "shared/invoices.ts" },
+  { "type": "file-exists", "path": "server/features/invoices/routes.ts" },
+  { "type": "file-exists", "path": "server/features/invoices/routes.test.ts" },
+  { "type": "grep-count", "path": "server/app.ts", "pattern": "invoices", "min": 1 },
+  { "type": "grep-count", "path": "server/db/schema.ts", "pattern": "MatchesContract", "min": 2 },
+  { "type": "command", "label": "a new migration exists", "run": "[ \"$(ls drizzle/*.sql | wc -l | tr -d \" \")\" -ge 2 ]", "expect": "pass" }
+]

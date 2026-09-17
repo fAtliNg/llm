@@ -109,8 +109,11 @@ export function report(runId?: string): string {
   const byFormulation = table('Solved by formulation', configs, ['spec', 'product'], (config, f) =>
     stat(config, (r) => f === '*' || r.task.formulation === f),
   );
-  const byLanguage = table('Solved by prompt language', configs, ['en', 'ru'], (config, lang) =>
-    stat(config, (r) => lang === '*' || (r.task.tags?.includes('ru') ?? false) === (lang === 'ru')),
+  // Same tasks, same hidden tests, three ways of asking: an English specification, its Russian
+  // translation, and a colloquial Russian chat message without file paths or hints about the order of work.
+  const styleOf = (r: RunResult) => (r.task.tags?.includes('chat') ? 'ru chat' : r.task.tags?.includes('ru') ? 'ru' : 'en');
+  const byLanguage = table('Solved by prompt language and style', configs, ['en', 'ru', 'ru chat'], (config, style) =>
+    stat(config, (r) => style === '*' || styleOf(r) === style),
   );
 
   const byVersion = table('Solved by benchmark version', configs, ['v1 front-end', 'v2 full-stack'], (config, v) =>

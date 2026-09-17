@@ -1,0 +1,16 @@
+{
+  "id": "F04-employees-edit-chat",
+  "title": "Правка и удаление сотрудников, просьба в чате",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru",
+    "chat"
+  ]
+}

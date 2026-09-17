@@ -1,0 +1,16 @@
+{
+  "id": "F02-employees-chat",
+  "title": "Раздел сотрудников, просьба в чате",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru",
+    "chat"
+  ]
+}
