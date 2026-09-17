@@ -1,0 +1,5 @@
+People delete bookings when plans change, and then nobody knows that the meeting ever existed. Bookings must be cancelled instead of deleted.
+
+Add `cancelledAt` to bookings: null for an active booking, an ISO timestamp set by the server when it is cancelled; clients cannot set it through POST or PATCH. `POST /api/bookings/:bookingId/cancel` cancels the booking and returns it, answers 404 for an unknown id and 409 with `{ "message": "Booking is already cancelled" }` when it was cancelled before. A cancelled booking stays in the list but no longer occupies the room: another booking for the same room, date and hours is accepted.
+
+In the table every active booking gets a "Cancel" button (accessible name "Cancel <title>") behind a confirmation dialog titled "Cancel booking?" with the buttons "Keep" and "Cancel booking". After confirming, the row shows a "Cancelled" badge instead of the button, without a reload. Contract first, then the table with a migration, the API and the page; add tests on both sides.

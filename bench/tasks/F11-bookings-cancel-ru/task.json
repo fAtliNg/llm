@@ -1,0 +1,15 @@
+{
+  "id": "F11-bookings-cancel-ru",
+  "title": "Отмена бронирования: мягкое удаление, которое освобождает переговорную",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru"
+  ]
+}

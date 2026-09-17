@@ -1,0 +1,5 @@
+[
+  { "type": "grep-count", "path": "shared/bookings.ts", "pattern": "cancelledAt", "min": 1 },
+  { "type": "grep-count", "path": "server/db/schema.ts", "pattern": "cancelled", "min": 1 },
+  { "type": "command", "label": "a new migration exists", "run": "[ \"$(ls drizzle/*.sql | wc -l | tr -d \" \")\" -ge 3 ]", "expect": "pass" }
+]

@@ -1,0 +1,10 @@
+{
+  "id": "F11-bookings-cancel",
+  "title": "Cancel a booking: a soft delete that frees the room",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity"]
+}
