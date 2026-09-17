@@ -1,0 +1,15 @@
+{
+  "id": "F05-bookings-ru",
+  "title": "Бронирование переговорных под ключ: проверка часов и конфликт пересечений",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru"
+  ]
+}

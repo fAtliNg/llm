@@ -1,0 +1,10 @@
+{
+  "id": "F05-bookings",
+  "title": "Room bookings end to end with cross-field validation and overlap conflicts",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity"]
+}

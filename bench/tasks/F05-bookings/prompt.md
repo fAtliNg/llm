@@ -1,0 +1,7 @@
+People keep double-booking meeting rooms, so we need bookings in the app. Users open "Bookings" from the main navigation and see a table at `/bookings` with title, room, date and time written like `9:00–11:00`, sorted by date and start hour. A "New booking" button opens `/bookings/new`, a form with a "Book" button that brings them back to the list.
+
+A booking has: "Title" (`title`, required, up to 100 characters, message "Title is required"), "Room" (`room`, a select with Atlas, Borealis and Cosmos, stored as `atlas`, `borealis`, `cosmos`), "Date" (`date`, a date input, required, an ISO date, message "Enter a valid date"), "Start hour" and "End hour" (`startHour`, `endHour`, number inputs, whole hours from 8 to 20). The end must be later than the start, message "End must be after start" on the end hour, both in the form and in the API.
+
+A room cannot have two bookings that intersect on the same date; one ending at 11 and another starting at 11 is fine. The API answers 409 with `{ "message": "This room is already booked for that time" }`, and the form shows that message and stays open.
+
+It must be a real feature following the same layering as tasks: contract in `shared/bookings.ts`, a table with a migration and two seeded bookings, REST routes under `/api/bookings` (list, get, create, update with PATCH, delete) answering 400 for invalid bodies and 404 for unknown ids. A PATCH may contain only some fields: the rules, including the overlap, apply to the booking as it would be stored. RTK Query endpoints and tests on both sides.
