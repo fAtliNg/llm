@@ -161,8 +161,21 @@ function stripWorkspaceCd(example: Example, workspace: string): Example {
   };
 }
 
+/**
+ * Rough size of an example in tokens. Calibrated on dataset v1: 5.7M tokens by the Qwen tokenizer for
+ * the same 800 examples gives about 5.4 characters of serialized JSON per token; 5 keeps a margin.
+ */
+function estimateTokens(example: Example): number {
+  return Math.ceil(JSON.stringify(example.messages).length / 5);
+}
+
 export function select(options: SelectOptions): { kept: Example[]; report: string } {
   const maxTurns = options.maxTurns ?? Number(process.env.MAX_TURNS ?? '30');
+  // End-to-end tasks take about twice as many turns as front-end ones (the teacher needed 28 for F01, stage 2).
+  const maxTurnsFullstack = Number(process.env.MAX_TURNS_FULLSTACK ?? '70');
+  // Training context is 32k tokens; an example that does not fit would be cut mid-trajectory.
+  const maxTokens = Number(process.env.MAX_EXAMPLE_TOKENS ?? '30000');
+  const sizes: number[] = [];
   const minTurns = options.minTurns ?? 2;
   const examples = convert({ runIds: options.runIds, captured: options.captured, solvedOnly: false });
   const kept: Example[] = [];
@@ -171,11 +184,19 @@ export function select(options: SelectOptions): { kept: Example[]; report: strin
   for (const example of examples) {
     const file = path.join(RESULTS_DIR, example.meta.runId, example.meta.config, example.meta.task, String(example.meta.rep), 'result.json');
     const result = JSON.parse(fs.readFileSync(file, 'utf8')) as RunResult;
-    const v = verdict(example, result, maxTurns, minTurns);
+    const v = verdict(example, result, result.task.template === 'fullstack' ? maxTurnsFullstack : maxTurns, minTurns);
     reasons.set(v.reason, (reasons.get(v.reason) ?? 0) + 1);
     if (!v.keep) continue;
+    const prepared = shortenReport(stripAnsi(normalizePaths(stripWorkspaceCd(trimTail(example, result.agent.timeline), result.workspace), result.workspace)));
+    const tokens = estimateTokens(prepared);
+    if (tokens > maxTokens) {
+      reasons.set('ok', (reasons.get('ok') ?? 1) - 1);
+      reasons.set('does not fit the training context', (reasons.get('does not fit the training context') ?? 0) + 1);
+      continue;
+    }
+    sizes.push(tokens);
     if (v.repaired) repairedKept += 1;
-    kept.push(shortenReport(stripAnsi(normalizePaths(stripWorkspaceCd(trimTail(example, result.agent.timeline), result.workspace), result.workspace))));
+    kept.push(prepared);
   }
   let balanced = kept;
   const ru = kept.filter(isRussian);
@@ -189,6 +210,11 @@ export function select(options: SelectOptions): { kept: Example[]; report: strin
   }
   const lines = [`examples: ${String(examples.length)}, kept: ${String(kept.length)} (ru ${String(ru.length)}, en ${String(en.length)}), after language balancing: ${String(balanced.length)}, with a repair loop: ${String(repairedKept)} (${examples.length ? String(Math.round((100 * repairedKept) / Math.max(kept.length, 1))) : '0'}% of kept)`, 'reasons:'];
   for (const [reason, count] of [...reasons].sort((a, b) => b[1] - a[1])) lines.push(`  ${reason.padEnd(32)} ${String(count)}`);
+  if (sizes.length > 0) {
+    const sorted = [...sizes].sort((x, y) => x - y);
+    const at = (q: number) => sorted[Math.min(sorted.length - 1, Math.floor(q * sorted.length))] ?? 0;
+    lines.push(`estimated tokens per kept example: median ${String(at(0.5))}, p90 ${String(at(0.9))}, max ${String(at(1))}, total ${(sorted.reduce((x, y) => x + y, 0) / 1e6).toFixed(2)}M (budget ${String(maxTokens)})`);
+  }
   return { kept: balanced, report: lines.join('\n') };
 }
 
