@@ -34,13 +34,15 @@ loop() {
     if is_peak; then
       alive && { echo "$(date '+%d.%m %H:%M') peak hours: pausing"; kill "$(cat results/$R.pid)"; }
     elif ! alive; then
-      if tail -3 results/$R.log 2>/dev/null | grep -q "^results:"; then echo "$(date '+%d.%m %H:%M') complete"; break; fi
+      if tail -1 results/$R.log 2>/dev/null | grep -q "^results:"; then echo "$(date '+%d.%m %H:%M') complete"; break; fi
       if tail -5 results/$R.log 2>/dev/null | grep -q "provider error"; then echo "$(date '+%d.%m %H:%M') provider error (balance? key?), not restarting"; break; fi
       start
     fi
     sleep 300
   done
 }
+# A marker, so that the "results:" line of a previous session is not read as the end of this one.
+echo "--- session $(date '+%d.%m %H:%M') TASKS=${TASKS:0:60}" >> results/$R.log
 loop >> results/$R.loop.log 2>&1 &
 echo $! > results/$R.loop.pid
 echo "teacher loop started (pid $(cat results/$R.loop.pid)); log: results/$R.loop.log"
