@@ -173,6 +173,7 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
       const result = await grade(workspace, task, outDir);
       const diagnostics = diagnose(workspace, task, agent, result);
       applyPoolRules(task, result, diagnostics);
+      saveChangedFiles(workspace, diagnostics.changedFiles, outDir);
       const record = { runId, config: configName, task: stripTask(task), rep, agent, grade: result, diagnostics, workspace };
       fs.writeFileSync(path.join(outDir, 'result.json'), JSON.stringify(record, null, 2));
       fs.writeFileSync(path.join(outDir, 'analysis.md'), analysisMarkdown({ task, config: configName, rep, agent, grade: result, diagnostics }));
@@ -207,6 +208,28 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
 function stripTask(task: Task) {
   const { dir: _dir, prompt: _prompt, hasSetup: _s, hasSolution: _sol, mutants: _m, checks: _c, ...meta } = task;
   return meta;
+}
+
+/**
+ * Copies the files the agent added or modified into <outDir>/changed right after grading. Workspaces are
+ * disposable (and small models delete them: base 4B wiped 48 of its 58 with `rm -rf`), but the final state
+ * of a failed attempt is the raw material for repair-style training data.
+ */
+function saveChangedFiles(workspace: string, changedFiles: string[], outDir: string): void {
+  for (const entry of changedFiles) {
+    const kind = entry.slice(0, 1);
+    const rel = entry.slice(2);
+    if (kind === '-' || rel.includes('..')) continue;
+    const from = path.join(workspace, rel);
+    try {
+      if (!fs.statSync(from).isFile() || fs.statSync(from).size > 512 * 1024) continue;
+      const to = path.join(outDir, 'changed', rel);
+      fs.mkdirSync(path.dirname(to), { recursive: true });
+      fs.copyFileSync(from, to);
+    } catch {
+      // the agent may have deleted the file or the whole workspace; nothing to save then
+    }
+  }
 }
 
 /** Pool tasks have no hidden tests: an untouched workspace is never a solution. */
