@@ -341,7 +341,7 @@ function specs(): Spec[] {
 }
 
 /** Removes one `it('<title>', ...)` block (two-space indent, closed by `  });`) so the planted bug is not caught by an existing test. */
-function removeTest(content: string, title: string, where: string): string {
+export function removeTest(content: string, title: string, where: string): string {
   const start = content.indexOf(`  it('${title}'`);
   if (start < 0) throw new Error(`${where}: test "${title}" not found`);
   const end = content.indexOf('\n  });\n', start);
