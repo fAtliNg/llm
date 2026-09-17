@@ -8,3 +8,4 @@ pi-home/*
 dataset/*.jsonl
 pool/
 .env.local
+pool-fs/
