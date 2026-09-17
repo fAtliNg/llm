@@ -9,6 +9,8 @@ cd "$(dirname "$0")"
 export PATH="$HOME/.nvm/versions/node/v22.23.2/bin:$PATH"
 R=teacher-fs-v1
 PARALLEL="${PARALLEL:-4}"
+# Pilot first, about 1 USD: TASKS=$(cat pilot-fs.txt) ./teacher-fs.sh  (36 tasks, two per family; same run id,
+# so the full run later skips them).
 # Which tasks: all, ids, tag:<tag>, difficulty:<n>. Stage 3 first when the budget is tight: TASKS=difficulty:3 ./teacher-fs.sh
 TASKS="${TASKS:-all}"
 [[ -f .env.local ]] && set -a && source .env.local && set +a
