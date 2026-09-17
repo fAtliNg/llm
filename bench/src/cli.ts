@@ -336,7 +336,7 @@ async function main(): Promise<void> {
       rediagnose(options['run-id']);
       break;
     case 'list':
-      for (const task of loadTasks('all')) {
+      for (const task of loadTasks(positional[0] ?? options.tasks ?? 'all')) {
         console.log(`${task.id}  d${String(task.difficulty)}  ${task.layer.padEnd(9)} ${task.work.padEnd(8)} ${task.formulation.padEnd(7)} ${task.title}`);
       }
       break;

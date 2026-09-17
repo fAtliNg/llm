@@ -9,6 +9,8 @@ cd "$(dirname "$0")"
 export PATH="$HOME/.nvm/versions/node/v22.23.2/bin:$PATH"
 R=teacher-fs-v1
 PARALLEL="${PARALLEL:-4}"
+# Which tasks: all, ids, tag:<tag>, difficulty:<n>. Stage 3 first when the budget is tight: TASKS=difficulty:3 ./teacher-fs.sh
+TASKS="${TASKS:-all}"
 [[ -f .env.local ]] && set -a && source .env.local && set +a
 [[ -z "${DEEPSEEK_API_KEY:-}" ]] && { echo "DEEPSEEK_API_KEY is not set (bench/.env.local)"; exit 1; }
 mkdir -p results
@@ -20,7 +22,7 @@ is_peak() { # Moscow = UTC+3; peak = Mon-Fri 01-04 and 06-10 UTC
 alive() { [[ -f results/$R.pid ]] && kill -0 "$(cat results/$R.pid)" 2>/dev/null; }
 start() {
   rm -f results/$R/.lock
-  BENCH_TASKS_DIR="$PWD/pool-fs/tasks" nohup node src/cli.ts run --run-id $R --configs reference-deepseek --tasks all --reps 1 --parallel $PARALLEL >> results/$R.log 2>&1 &
+  BENCH_TASKS_DIR="$PWD/pool-fs/tasks" nohup node src/cli.ts run --run-id $R --configs reference-deepseek --tasks "$TASKS" --reps 1 --parallel $PARALLEL >> results/$R.log 2>&1 &
   echo $! > results/$R.pid
   nohup caffeinate -i -s -w $(cat results/$R.pid) >/dev/null 2>&1 &
   echo "$(date '+%d.%m %H:%M') started, pid $(cat results/$R.pid)"

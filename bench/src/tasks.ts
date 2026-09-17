@@ -35,6 +35,16 @@ export function listTaskIds(): string[] {
 }
 
 export function loadTasks(selector: string | undefined): Task[] {
-  const ids = !selector || selector === 'all' ? listTaskIds() : selector.split(',').map((s) => s.trim());
-  return ids.map(loadTask);
+  if (!selector || selector === 'all') return listTaskIds().map(loadTask);
+  // A selector is a comma-separated union of task ids, `tag:<tag>` and `difficulty:<n>`.
+  const parts = selector.split(',').map((s) => s.trim());
+  if (!parts.some((part) => part.includes(':'))) return parts.map(loadTask);
+  const all = listTaskIds().map(loadTask);
+  return all.filter((task) =>
+    parts.some((part) => {
+      if (part.startsWith('tag:')) return task.tags?.includes(part.slice(4)) ?? false;
+      if (part.startsWith('difficulty:')) return String(task.difficulty) === part.slice(11);
+      return task.id === part;
+    }),
+  );
 }
