@@ -156,7 +156,21 @@ function specs(): Spec[] {
       ru: `Баг-репорт: \`DELETE /api/${k}/:${n.idParam}\` отвечает 404 для существующих id, поэтому ничего нельзя удалить. Найди причину на сервере, почини и убедись, что тесты API покрывают обновление и удаление существующей записи и 404 для неизвестного id.`,
     });
     const second = e.fields.find((f) => f.name === e.columns[1]);
-    if (second) {
+    if (second?.kind === 'enum') {
+      // Repeating the first column would leave the labels import unused; show one fixed label instead.
+      const [firstValue, firstLabel] = second.options[0] ?? ['', ''];
+      const lookup = `[${n.singular}.${second.name}]`;
+      out.push({
+        family: 'fix-column', entity: e, layer: 'component', work: 'fix',
+        checks: [{ type: 'grep-count', path: `src/features/${k}/${kebab(n.singular)}-list.tsx`, pattern: `\\[${n.singular}\\.${second.name}\\]`, min: 1 }],
+        plant: (files) => {
+          edit(files, `src/features/${k}/${kebab(n.singular)}-list.tsx`, (s) => s.replace(lookup, `.${firstValue}`));
+          edit(files, `src/pages/${k}-page.test.tsx`, (s) => removeTest(s, `lists the ${n.plural} from the API`, k));
+        },
+        en: `Bug report: in the table at \`/${k}\` every row shows "${firstLabel}" in the "${second.label}" column, whatever the real ${lower(second)} is. Fix it and add a test for the row contents.`,
+        ru: `Баг-репорт: в таблице по адресу \`/${k}\` у каждой строки в колонке "${second.label}" стоит "${firstLabel}", каким бы ни было настоящее значение. Почини и добавь тест на содержимое строки.`,
+      });
+    } else if (second) {
       out.push({
         family: 'fix-column', entity: e, layer: 'component', work: 'fix',
         checks: [{ type: 'grep-count', path: `src/features/${k}/${kebab(n.singular)}-list.tsx`, pattern: `${n.singular}\\.${second.name}`, min: 1 }],
@@ -185,9 +199,16 @@ const f2ru = (f: GenField) => `поле "${f.label}"`;
 function edit(files: Map<string, string>, file: string, change: (content: string) => string): void {
   const content = files.get(file);
   if (content === undefined) throw new Error(`setup file missing: ${file}`);
-  const next = change(content);
+  const next = tidy(change(content));
   if (next === content) throw new Error(`planted bug did not change ${file}`);
   files.set(file, next);
+}
+
+/** Removing a test may leave a blank line before the closing brace and an unused import. */
+function tidy(content: string): string {
+  let next = content.replace(/\n\n(\}\);\n)$/, '\n$1');
+  if (!next.includes('within(')) next = next.replace('import { screen, within }', 'import { screen }');
+  return next;
 }
 
 function cut(content: string, fragment: string): string {
