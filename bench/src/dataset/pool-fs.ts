@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { BENCH_DIR, templateDir } from '../paths.ts';
+import { RU_API, RU_CHILDREN, RU_CONFIG, RU_ENTITIES, RU_FIX, RU_TASK_FIELDS, RU_TEST, RU_WEB } from './pool-fs-ru.ts';
 import type { Check, Layer, Work } from '../types.ts';
 
 /**
@@ -122,11 +123,19 @@ interface Spec {
   difficulty: 1 | 2 | 3;
   formulation: 'spec' | 'product';
   prompt: string;
+  /** Hand-written Russian formulation (pool-fs-ru.ts). */
+  promptRu: string;
   checks?: Check[];
   /** Planted bug: file → [from, to] replacements applied to the template. */
   setup?: Record<string, [string, string][]>;
   tag: string;
 }
+
+const fieldListRu = (e: EntitySpec) => {
+  const ru = RU_ENTITIES[e.plural];
+  if (!ru || ru.fields.length !== e.fields.length) throw new Error(`no Russian fields for ${e.plural}`);
+  return e.fields.map((f, i) => `"${f.label}" (\`${f.name}\`: ${ru.fields[i] ?? ''})`).join('; ');
+};
 
 const fieldList = (e: EntitySpec) => e.fields.map((f) => `"${f.label}" (\`${f.name}\`: ${f.rule})`).join('; ');
 
@@ -140,25 +149,37 @@ const entityChecks = (plural: string): Check[] => [
   { type: 'command', label: 'a new migration exists', run: '[ "$(ls drizzle/*.sql | wc -l | tr -d " ")" -ge 2 ]', expect: 'pass' },
 ];
 
+function ruAt(list: string[], i: number, family: string): string {
+  const text = list[i];
+  if (!text) throw new Error(`no Russian text for ${family} #${String(i)}`);
+  return text;
+}
+
 function specs(): Spec[] {
   const out: Spec[] = [];
 
   // ---------- A. new entity end to end
   for (const e of ENTITIES) {
+    const ru = RU_ENTITIES[e.plural];
+    if (!ru) throw new Error(`no Russian texts for ${e.plural}`);
     out.push({
       family: 'entity', layer: 'cross', work: 'create', difficulty: 3, formulation: 'spec', tag: e.plural,
       checks: entityChecks(e.plural),
       prompt: `Add ${e.Plural} end to end, following the same layering as tasks. Fields: ${fieldList(e)}. Contract in \`shared/${e.plural}.ts\`, a table with a migration and ${e.seeds} in the seed, REST routes under \`/api/${e.plural}\` (list, get, create, update, delete) with tests, RTK Query endpoints, a list page at \`${e.path}\` showing ${e.columns}, a "${e.Plural}" link in the main navigation, a form at \`${e.path}/new\` with a "Create" button that returns to the list, and web tests. Work in stages and run \`npm run verify\` after each.`,
+      promptRu: `Добавь сущность ${e.Plural} (${ru.name}) под ключ, с той же раскладкой по слоям, что у задач. Поля: ${fieldListRu(e)}. Контракт в \`shared/${e.plural}.ts\`, таблица с миграцией и сиды (${ru.seeds}), REST-маршруты под \`/api/${e.plural}\` (список, получение, создание, обновление, удаление) с тестами, эндпоинты RTK Query, страница списка по адресу \`${e.path}\` с колонками: ${ru.columns}, ссылка "${e.Plural}" в главной навигации, форма по адресу \`${e.path}/new\` с кнопкой "Create", которая возвращает к списку, и веб-тесты. Работай этапами и после каждого запускай \`npm run verify\`.`,
     });
     out.push({
       family: 'entity', layer: 'cross', work: 'create', difficulty: 3, formulation: 'product', tag: e.plural,
       checks: entityChecks(e.plural),
       prompt: `We need to keep track of ${e.plural}. Users open "${e.Plural}" from the main navigation, see a table with ${e.columns}, and add a ${e.singular} on a separate page with a "Create" button that brings them back to the list. A ${e.singular} has: ${fieldList(e)}. It must be a real feature: stored in the database, served by the API, covered by tests on both sides.`,
+      promptRu: `Нам нужно вести ${ru.name}. Пользователь открывает "${e.Plural}" из главной навигации, видит таблицу с колонками: ${ru.columns}, и добавляет запись на отдельной странице с кнопкой "Create", после чего возвращается к списку. Поля: ${fieldListRu(e)}. Это должна быть настоящая фича: данные лежат в базе, отдаются через API (\`/api/${e.plural}\`), страница списка по адресу \`${e.path}\`, тесты есть с обеих сторон.`,
     });
   }
 
   // ---------- A2. child entity of tasks
   for (const c of CHILDREN) {
+    const ru = RU_CHILDREN[c.plural];
+    if (!ru) throw new Error(`no Russian texts for ${c.plural}`);
     out.push({
       family: 'child', layer: 'cross', work: 'create', difficulty: 3, formulation: 'product', tag: c.plural,
       checks: [
@@ -167,6 +188,7 @@ function specs(): Spec[] {
         { type: 'command', label: 'a new migration exists', run: '[ "$(ls drizzle/*.sql | wc -l | tr -d " ")" -ge 2 ]', expect: 'pass' },
       ],
       prompt: `Tasks need ${c.plural}. A ${c.singular} belongs to one task and has ${c.fields}. Add ${c.where}. Store them in their own table with a foreign key to the task (deleting a task deletes its ${c.plural}), serve them under \`/api/tasks/:taskId/${c.plural}\` (list and create, plus delete by id), answer 404 for an unknown task, and cover the API and the page with tests.`,
+      promptRu: `Задачам нужны ${ru.name} (${c.plural}). Каждая запись принадлежит одной задаче, поля: ${ru.fields}. Добавь ${ru.where}. Храни их в отдельной таблице с внешним ключом на задачу (удаление задачи удаляет и их), отдавай через \`/api/tasks/:taskId/${c.plural}\` (список и создание, плюс удаление по id), отвечай 404 для неизвестной задачи и покрой тестами API и страницу.`,
     });
   }
 
@@ -183,7 +205,9 @@ function specs(): Spec[] {
     { name: 'reviewerEmail', label: 'Reviewer email', rule: 'an optional valid email, null when empty', show: 'a "Reviewer" column with the email or "—"' },
     { name: 'blocked', label: 'Blocked', rule: 'a checkbox, false by default', show: 'a "Blocked" badge in the status cell of blocked tasks' },
   ];
-  for (const f of TASK_FIELDS) {
+  TASK_FIELDS.forEach((f, fi) => {
+    const [ruleRu, showRu] = RU_TASK_FIELDS[fi] ?? [];
+    if (!ruleRu || !showRu) throw new Error(`no Russian texts for field ${f.name}`);
     out.push({
       family: 'field', layer: 'cross', work: 'modify', difficulty: 2, formulation: 'spec', tag: 'tasks',
       checks: [
@@ -192,8 +216,9 @@ function specs(): Spec[] {
         { type: 'command', label: 'a new migration exists', run: '[ "$(ls drizzle/*.sql | wc -l | tr -d " ")" -ge 2 ]', expect: 'pass' },
       ],
       prompt: `Add a "${f.label}" field to tasks through the whole stack: \`${f.name}\` is ${f.rule}. Contract first, then the table with a migration and the seed, the API (it must reject invalid values with 400), the task form, and the tasks table: ${f.show}. Existing tasks keep working. Cover the new field in the API tests and the form tests, and update existing tests where the change requires it.`,
+      promptRu: `Добавь задачам поле "${f.label}" через весь стек: \`${f.name}\`, ${ruleRu}. Сначала контракт, затем таблица с миграцией и сиды, API (некорректные значения отклоняет с кодом 400), форма задачи и таблица задач: ${showRu}. Существующие задачи продолжают работать. Покрой новое поле в тестах API и тестах формы и обнови существующие тесты там, где этого требует изменение.`,
     });
-  }
+  });
 
   // ---------- C. API only (tasks)
   const API_TASKS: [1 | 2, Work, string][] = [
@@ -210,9 +235,9 @@ function specs(): Spec[] {
     [2, 'modify', 'Tasks need `createdAt`: an ISO timestamp set by the API on create and never changed by updates; clients cannot set it. Add it to the contract, the table with a migration (existing rows get the migration time), the seed and the API tests. The web app does not show it yet.'],
     [2, 'create', 'Add `POST /api/tasks/bulk` that accepts `{ "tasks": [...] }` with 1 to 50 task inputs, inserts them in one transaction and returns the created tasks with 201. If any item is invalid nothing is inserted and the API answers 400. Add API tests for both cases.'],
   ];
-  for (const [difficulty, work, prompt] of API_TASKS) {
-    out.push({ family: 'api', layer: 'query', work, difficulty, formulation: 'spec', tag: 'tasks', prompt });
-  }
+  API_TASKS.forEach(([difficulty, work, prompt], i) => {
+    out.push({ family: 'api', layer: 'query', work, difficulty, formulation: 'spec', tag: 'tasks', prompt, promptRu: ruAt(RU_API, i, 'api') });
+  });
 
   // ---------- D. web only, against the real API
   const WEB_TASKS: [1 | 2, Layer, Work, 'spec' | 'product', string][] = [
@@ -229,9 +254,9 @@ function specs(): Spec[] {
     [2, 'query', 'modify', 'product', 'If deleting a task fails on the server, the dialog just closes. Keep the confirmation dialog open and show "Could not delete the task" inside it; the task stays in the list. Add a test that makes the delete request fail.'],
     [1, 'routing', 'modify', 'spec', 'Visiting `/tasks` must redirect to `/`, replacing the history entry. Add it to the router configuration with a test.'],
   ];
-  for (const [difficulty, layer, work, formulation, prompt] of WEB_TASKS) {
-    out.push({ family: 'web', layer, work, difficulty, formulation, tag: 'tasks', prompt });
-  }
+  WEB_TASKS.forEach(([difficulty, layer, work, formulation, prompt], i) => {
+    out.push({ family: 'web', layer, work, difficulty, formulation, tag: 'tasks', prompt, promptRu: ruAt(RU_WEB, i, 'web') });
+  });
 
   // ---------- E. planted bugs across layers
   const BUGS: { prompt: string; setup: Record<string, [string, string][]>; layer: Layer; checks: Check[] }[] = [
@@ -288,9 +313,9 @@ function specs(): Spec[] {
       setup: { 'src/features/tasks/task-list.tsx': [['<Link to={`/tasks/${task.id}/edit`}>Edit</Link>', '<Link to={`/tasks/${tasks[0]?.id ?? task.id}/edit`}>Edit</Link>']] },
     },
   ];
-  for (const bug of BUGS) {
-    out.push({ family: 'fix', layer: bug.layer, work: 'fix', difficulty: 2, formulation: 'product', tag: 'tasks', prompt: bug.prompt, setup: bug.setup, checks: bug.checks });
-  }
+  BUGS.forEach((bug, i) => {
+    out.push({ family: 'fix', layer: bug.layer, work: 'fix', difficulty: 2, formulation: 'product', tag: 'tasks', prompt: bug.prompt, promptRu: ruAt(RU_FIX, i, 'fix'), setup: bug.setup, checks: bug.checks });
+  });
 
   // ---------- F. tests
   const TEST_TASKS: string[] = [
@@ -301,7 +326,7 @@ function specs(): Spec[] {
     'Write `shared/tasks.test.ts` for the contract: a valid input parses; the title is trimmed; an empty or 121-character title fails with the right messages; an unknown status fails.',
     'Write API tests proving that every error body of `/api/tasks` has a `message` string: invalid JSON body, invalid fields, unknown id for GET, PATCH and DELETE, and an unknown route under `/api`.',
   ];
-  for (const prompt of TEST_TASKS) out.push({ family: 'test', layer: 'test', work: 'test', difficulty: 2, formulation: 'spec', tag: 'tasks', prompt });
+  TEST_TASKS.forEach((prompt, i) => out.push({ family: 'test', layer: 'test', work: 'test', difficulty: 2, formulation: 'spec', tag: 'tasks', prompt, promptRu: ruAt(RU_TEST, i, 'test') }));
 
   // ---------- G. configuration
   const CONFIG_TASKS: string[] = [
@@ -310,7 +335,7 @@ function specs(): Spec[] {
     'The API port and the database file are read from `PORT` and `DATABASE_FILE`. Validate the environment once in `server/env.ts` with zod (port 1 to 65535, default 3000; file default `data/app.db`) and use it in `server/index.ts` and `server/db/client.ts`. Add a test for the parser.',
     'Add request logging to the API: a Hono middleware in `server/logger.ts` that logs method, path, status and milliseconds for every request, disabled when `NODE_ENV` is `test`. Register it in `server/app.ts` and test it with a spy.',
   ];
-  for (const prompt of CONFIG_TASKS) out.push({ family: 'config', layer: 'config', work: 'modify', difficulty: 2, formulation: 'spec', tag: 'tasks', prompt });
+  CONFIG_TASKS.forEach((prompt, i) => out.push({ family: 'config', layer: 'config', work: 'modify', difficulty: 2, formulation: 'spec', tag: 'tasks', prompt, promptRu: ruAt(RU_CONFIG, i, 'config') }));
 
   return out;
 }
@@ -339,32 +364,38 @@ export function generateFullstackPool(outDir: string): void {
   let written = 0;
   const coverage = new Map<string, number>();
   all.forEach((spec, i) => {
-    const id = `${prefix}${String(i + 1).padStart(4, '0')}-${spec.family}-${spec.tag}`;
-    const dir = path.join(outDir, id);
+    const baseId = `${prefix}${String(i + 1).padStart(4, '0')}-${spec.family}-${spec.tag}`;
     coverage.set(`${spec.family}/d${String(spec.difficulty)}`, (coverage.get(`${spec.family}/d${String(spec.difficulty)}`) ?? 0) + 1);
-    if (fs.existsSync(dir)) return;
-    fs.mkdirSync(dir, { recursive: true });
-    const meta = { id, title: spec.prompt.slice(0, 70), template: 'fullstack', layer: spec.layer, work: spec.work, difficulty: spec.difficulty, formulation: spec.formulation, tags: ['pool', 'fullstack', spec.family, spec.tag] };
-    fs.writeFileSync(path.join(dir, 'task.json'), JSON.stringify(meta, null, 2) + '\n');
-    fs.writeFileSync(path.join(dir, 'prompt.md'), `${spec.prompt}\n`);
-    if (spec.checks) fs.writeFileSync(path.join(dir, 'checks.json'), JSON.stringify(spec.checks, null, 2) + '\n');
-    if (spec.setup) {
-      for (const [file, edits] of Object.entries(spec.setup)) {
-        let content = fs.readFileSync(path.join(template, file), 'utf8');
-        for (const [from, to] of edits) {
-          if (from.startsWith('@@remove-test:')) {
-            content = removeTest(content, from.slice('@@remove-test:'.length), `${id} ${file}`);
-            continue;
+    const variants: [string, string, string[]][] = [
+      [baseId, spec.prompt, []],
+      [`${baseId}-ru`, spec.promptRu, ['ru']],
+    ];
+    for (const [id, prompt, extraTags] of variants) {
+      const dir = path.join(outDir, id);
+      if (fs.existsSync(dir)) continue;
+      fs.mkdirSync(dir, { recursive: true });
+      const meta = { id, title: prompt.slice(0, 70), template: 'fullstack', layer: spec.layer, work: spec.work, difficulty: spec.difficulty, formulation: spec.formulation, tags: ['pool', 'fullstack', spec.family, spec.tag, ...extraTags] };
+      fs.writeFileSync(path.join(dir, 'task.json'), JSON.stringify(meta, null, 2) + '\n');
+      fs.writeFileSync(path.join(dir, 'prompt.md'), `${prompt}\n`);
+      if (spec.checks) fs.writeFileSync(path.join(dir, 'checks.json'), JSON.stringify(spec.checks, null, 2) + '\n');
+      if (spec.setup) {
+        for (const [file, edits] of Object.entries(spec.setup)) {
+          let content = fs.readFileSync(path.join(template, file), 'utf8');
+          for (const [from, to] of edits) {
+            if (from.startsWith('@@remove-test:')) {
+              content = removeTest(content, from.slice('@@remove-test:'.length), `${id} ${file}`);
+              continue;
+            }
+            if (!content.includes(from)) throw new Error(`${id}: planted-bug anchor not found in ${file}: ${from.slice(0, 60)}`);
+            content = content.replace(from, to);
           }
-          if (!content.includes(from)) throw new Error(`${id}: planted-bug anchor not found in ${file}: ${from.slice(0, 60)}`);
-          content = content.replace(from, to);
+          const target = path.join(dir, 'setup', file);
+          fs.mkdirSync(path.dirname(target), { recursive: true });
+          fs.writeFileSync(target, content);
         }
-        const target = path.join(dir, 'setup', file);
-        fs.mkdirSync(path.dirname(target), { recursive: true });
-        fs.writeFileSync(target, content);
       }
+      written += 1;
     }
-    written += 1;
   });
   console.log(`full-stack pool: ${String(all.length)} specs, ${String(written)} new task dirs written to ${outDir}`);
   for (const [key, count] of [...coverage].sort()) console.log(`  ${key.padEnd(14)} ${String(count)}`);

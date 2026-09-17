@@ -49,7 +49,7 @@ async function main(): Promise<void> {
   const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) throw new Error('DEEPSEEK_API_KEY is not set');
   const n = Number(countArg);
-  const ids = fs.readdirSync(poolDir).filter((id) => !/-(p|ru)\d+$/.test(id) && fs.existsSync(path.join(poolDir, id, 'prompt.md'))).sort();
+  const ids = fs.readdirSync(poolDir).filter((id) => !/-(p\d+|ru\d*)$/.test(id) && fs.existsSync(path.join(poolDir, id, 'prompt.md'))).sort();
   let written = 0;
   const concurrency = Number(process.env.PARAPHRASE_CONCURRENCY ?? '4');
   const queue = ids.filter((id) => !fs.existsSync(path.join(poolDir, `${id}-${suffix}1`)));
@@ -61,9 +61,10 @@ async function main(): Promise<void> {
     }
   };
   const one = async (id: string): Promise<void> => {
-    // Benchmark tasks may already have a hand-written Russian variant.
-    if (lang === 'ru' && fs.existsSync(path.join(poolDir, `${id}-ru`))) return;
-    const prompt = fs.readFileSync(path.join(poolDir, id, 'prompt.md'), 'utf8').trim();
+    // A hand-written Russian variant is the better source for Russian paraphrases: Russian to Russian.
+    const handWritten = path.join(poolDir, `${id}-ru`, 'prompt.md');
+    const source = lang === 'ru' && fs.existsSync(handWritten) ? handWritten : path.join(poolDir, id, 'prompt.md');
+    const prompt = fs.readFileSync(source, 'utf8').trim();
     let variants: string[];
     try {
       variants = await paraphrase(prompt, n, apiKey, lang);
@@ -71,9 +72,10 @@ async function main(): Promise<void> {
       console.error(`${id}: ${String(error)}`);
       return;
     }
-    const templateRoot = path.join(BENCH_DIR, '..', 'template');
+    const taskMeta = JSON.parse(fs.readFileSync(path.join(poolDir, id, 'task.json'), 'utf8')) as { template?: string };
+    const templateRoot = path.join(BENCH_DIR, '..', taskMeta.template === 'fullstack' ? 'template-fullstack' : 'template');
     const setupRoot = path.join(poolDir, id, 'setup');
-    const pathsIn = (text: string) => text.match(/src\/[A-Za-z0-9_./-]+\.tsx?/g) ?? [];
+    const pathsIn = (text: string) => text.match(/\b(?:src|server|shared)\/[A-Za-z0-9_./-]+\.tsx?/g) ?? [];
     const known = new Set(pathsIn(prompt));
     const sane = variants.filter((text) =>
       pathsIn(text).every((p) => known.has(p) || fs.existsSync(path.join(templateRoot, p)) || fs.existsSync(path.join(setupRoot, p))),
