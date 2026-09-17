@@ -1,0 +1,8 @@
+{
+  "description": "Fine-tuned Qwen3.5 2B (v1.1 data) with the harness.",
+  "model": "ollama/qwen3.5-2b-agent:v1.1",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 600
+}

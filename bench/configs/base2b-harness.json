@@ -1,8 +1,8 @@
 {
-  "description": "Base Qwen3.5 2B (Q8) with AGENTS.md and skills, 15-minute limit.",
+  "description": "Base Qwen3.5 2B (Q8) with AGENTS.md and skills.",
   "model": "ollama/qwen3.5:2b-32k",
   "thinking": "off",
   "contextFiles": true,
   "skills": true,
-  "timeoutSec": 900
+  "timeoutSec": 600
 }

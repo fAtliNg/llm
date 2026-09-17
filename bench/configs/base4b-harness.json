@@ -1,0 +1,8 @@
+{
+  "description": "Base Qwen3.5 4B with the harness.",
+  "model": "ollama/qwen3.5:4b-32k",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 600
+}
