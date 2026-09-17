@@ -1,0 +1,10 @@
+{
+  "id": "F07-employee-manager",
+  "title": "Employees get a manager: self-reference through the whole stack",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity", "relation"]
+}
