@@ -5,7 +5,10 @@ runner the moment the model under test reaches outside its workspace or onto the
 
   python3 tools/guard.py <run-id>
 
-Violations: a tool call that references an absolute path outside bench/.work/<run-id> (system read-only
+This is a tripwire, not a sandbox: it reacts after the command has run. Use it inside a real sandbox
+(container, disposable server), never as the only protection on a personal machine.
+
+Violations: a tool call that references an absolute path outside the task's own workspace (system read-only
 locations such as /dev/null, /usr, /bin, /opt/homebrew, node's own paths are allowed), `cd` out of the
 workspace, network or privilege commands (curl, wget, ssh, scp, nc, sudo), and destructive commands aimed
 outside the workspace. On violation the runner and its keeper are killed and the reason is logged.
@@ -26,11 +29,17 @@ def say(msg):
     print(line, flush=True)
     open(log, "a").write(line + "\n")
 
-def violation(name, args):
+def violation(name, args, task_work=None):
+    """task_work: the workspace of the task being watched. Anything above it (the run directory,
+    other tasks, other runs) counts as outside: on 2026-09-17 a base 4B model ran `rm -rf` on its
+    whole run directory and the first version of this guard let it through."""
+    work = task_work or globals()["work"]
     text = json.dumps(args, ensure_ascii=False)
     cmd = args.get("command", "") if name == "bash" else ""
     if cmd and NET.search(cmd):
         return f"network/privileged command: {cmd[:160]}"
+    if cmd and re.search(r"(^|[\s;&|(])(rm|mv|rmdir|chmod|chown|ln|dd|truncate)\s[^;&|]*?[\s\"'](/|~|\.\./\.\.)", cmd):
+        return f"destructive command with an absolute or parent path: {cmd[:160]}"
     for path in ABS.findall(text):
         real = os.path.normpath(path)
         # Pi's system prompt points at its own docs under bench/node_modules: reading them is harmless.
@@ -80,7 +89,8 @@ while True:
             for c in e.get("message", {}).get("content", []):
                 if c.get("type") == "toolCall":
                     checked += 1
-                    why = violation(c.get("name", ""), c.get("arguments", {}) or {})
+                    task_work = os.path.join(work, os.path.relpath(root, results))
+                    why = violation(c.get("name", ""), c.get("arguments", {}) or {}, task_work)
                     if why:
                         stop(f"{os.path.relpath(root, results)}: {why}")
     runner = os.path.join(bench, "results", f"{run}.pid")
