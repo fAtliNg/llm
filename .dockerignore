@@ -4,6 +4,7 @@
 bench/results
 bench/.work
 bench/pool
+bench/pool-fs
 bench/dataset
 bench/reports
 bench/.env.local
