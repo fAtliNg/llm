@@ -1,0 +1,13 @@
+{
+  "id": "F01-due-date",
+  "title": "Optional due date through the whole stack",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "modify",
+  "difficulty": 2,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2"
+  ]
+}

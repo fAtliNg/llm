@@ -2,13 +2,13 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { HIDDEN_TESTS_DIR, TEMPLATE_DIR } from './paths.ts';
+import { HIDDEN_API_TESTS_DIR, HIDDEN_TESTS_DIR, templateDir } from './paths.ts';
 import type { AgentMetrics, Diagnostics, Grade, Task, ToolEvent } from './types.ts';
 import { listFiles } from './workspace.ts';
 
 const READ_LIKE = /^\s*(cat|head|tail|sed -n|grep|rg|less|find|ls|tree|wc)\b/;
 const VERIFY = /npm run (verify|test|typecheck|lint)|vitest|tsc|eslint/;
-const EXCLUDED = new Set(['node_modules', 'dist', 'coverage', '.DS_Store']);
+const EXCLUDED = new Set(['node_modules', 'dist', 'coverage', 'data', '.DS_Store']);
 
 function hash(file: string): string {
   return crypto.createHash('sha1').update(fs.readFileSync(file)).digest('hex');
@@ -18,8 +18,9 @@ function hash(file: string): string {
 function baselineHashes(task: Task): Map<string, string> {
   const relevant = (relative: string) => !relative.split(path.sep).some((part) => EXCLUDED.has(part));
   const hashes = new Map<string, string>();
-  for (const file of listFiles(TEMPLATE_DIR).filter(relevant)) {
-    hashes.set(file, hash(path.join(TEMPLATE_DIR, file)));
+  const template = templateDir(task.template);
+  for (const file of listFiles(template).filter(relevant)) {
+    hashes.set(file, hash(path.join(template, file)));
   }
   if (task.hasSetup) {
     const setupDir = path.join(task.dir, 'setup');
@@ -31,7 +32,9 @@ function baselineHashes(task: Task): Map<string, string> {
 /** Files that differ from the baseline: modified, added, or deleted. */
 export function changedFiles(workspace: string, task: Task): string[] {
   const relevant = (relative: string) =>
-    !relative.split(path.sep).some((part) => EXCLUDED.has(part)) && !relative.startsWith(HIDDEN_TESTS_DIR);
+    !relative.split(path.sep).some((part) => EXCLUDED.has(part)) &&
+    !relative.startsWith(HIDDEN_TESTS_DIR) &&
+    !relative.startsWith(HIDDEN_API_TESTS_DIR);
   const before = baselineHashes(task);
   const after = new Set(listFiles(workspace).filter(relevant));
   const changed: string[] = [];

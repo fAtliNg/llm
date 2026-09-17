@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { exec, tail } from './exec.ts';
-import { HIDDEN_TESTS_DIR } from './paths.ts';
+import { HIDDEN_API_TESTS_DIR, HIDDEN_TESTS_DIR } from './paths.ts';
 import type { Grade, Stage, Task } from './types.ts';
 import { listFiles, overlay, restore, snapshot } from './workspace.ts';
 
@@ -117,21 +117,38 @@ export async function grade(workspace: string, task: Task, outDir: string): Prom
   const format = await npmStage(workspace, 'format:check', path.join(outDir, 'format.log'));
   const tests = await npmStage(workspace, 'test', path.join(outDir, 'tests.log'));
 
-  const hiddenSource = path.join(task.dir, 'hidden');
+  // Hidden tests: `hidden/` goes into the web project, `hidden-api/` into the API project (full-stack tasks).
   let hiddenRun: Awaited<ReturnType<typeof vitest>> = {
     stage: { ok: true, tail: 'no hidden tests', seconds: 0 },
     passed: 0,
     failed: 0,
     output: '',
   };
-  if (fs.existsSync(hiddenSource)) {
-    const hiddenTarget = path.join(workspace, HIDDEN_TESTS_DIR);
-    fs.rmSync(hiddenTarget, { recursive: true, force: true });
-    fs.mkdirSync(hiddenTarget, { recursive: true });
-    fs.cpSync(hiddenSource, hiddenTarget, { recursive: true });
-    hiddenRun = await vitest(workspace, HIDDEN_TESTS_DIR, path.join(outDir, 'hidden.json'));
+  const suites = [
+    { source: path.join(task.dir, 'hidden'), target: HIDDEN_TESTS_DIR, json: 'hidden.json' },
+    { source: path.join(task.dir, 'hidden-api'), target: HIDDEN_API_TESTS_DIR, json: 'hidden-api.json' },
+  ].filter((suite) => fs.existsSync(suite.source));
+  if (suites.length > 0) {
+    const runs: Awaited<ReturnType<typeof vitest>>[] = [];
+    for (const suite of suites) {
+      const target = path.join(workspace, suite.target);
+      fs.rmSync(target, { recursive: true, force: true });
+      fs.mkdirSync(target, { recursive: true });
+      fs.cpSync(suite.source, target, { recursive: true });
+      runs.push(await vitest(workspace, suite.target, path.join(outDir, suite.json)));
+      fs.rmSync(target, { recursive: true, force: true });
+    }
+    hiddenRun = {
+      stage: {
+        ok: runs.every((run) => run.stage.ok),
+        tail: runs.map((run) => run.stage.tail).join('\n'),
+        seconds: runs.reduce((sum, run) => sum + run.stage.seconds, 0),
+      },
+      passed: runs.reduce((sum, run) => sum + run.passed, 0),
+      failed: runs.reduce((sum, run) => sum + run.failed, 0),
+      output: runs.map((run) => run.output).join('\n'),
+    };
     fs.writeFileSync(path.join(outDir, 'hidden.log'), hiddenRun.output);
-    fs.rmSync(hiddenTarget, { recursive: true, force: true });
   }
 
   const checks = await runChecks(workspace, task);

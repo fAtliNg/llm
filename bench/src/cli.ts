@@ -46,7 +46,7 @@ function stamp(): string {
 }
 
 function prepare(task: Task, workspace: string): void {
-  createWorkspace(workspace);
+  createWorkspace(workspace, task.template);
   if (task.hasSetup) overlay(workspace, path.join(task.dir, 'setup'));
 }
 

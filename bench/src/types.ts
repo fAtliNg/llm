@@ -1,6 +1,8 @@
 export type Layer = 'component' | 'form' | 'query' | 'routing' | 'test' | 'mock' | 'config' | 'cross';
 export type Work = 'create' | 'modify' | 'fix' | 'test' | 'refactor';
 
+export type TemplateName = 'frontend' | 'fullstack';
+
 export interface TaskMeta {
   id: string;
   title: string;
@@ -11,6 +13,8 @@ export interface TaskMeta {
   tags?: string[];
   /** Vitest filter for tests the agent is expected to write. Used by mutants. */
   testGlob?: string;
+  /** Which project template the task runs in. Default: the front-end only template (benchmark v1). */
+  template?: TemplateName;
 }
 
 export interface Task extends TaskMeta {
