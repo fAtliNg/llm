@@ -1,0 +1,9 @@
+We need an address book. Users open "Contacts" from the main navigation and see a table at `/contacts` with name, email, phone ("—" when there is none) and group. A "New contact" button opens `/contacts/new`, a form with a "Create" button that brings them back to the list.
+
+A contact has: "Name" (`name`, required, up to 100 characters, message "Name is required"), "Email" (`email`, a valid email, message "Enter a valid email", unique: a duplicate answers 409 with `{ "message": "A contact with this email already exists" }`), "Phone" (`phone`, optional: a plus and 7 to 15 digits, message "Use the format +123456789", null when empty), "Group" (`group`, a select with Family, Friends and Work stored as `family`, `friends`, `work`, default Friends) and `favorite`, a boolean that is not part of the form: new contacts are not favourites.
+
+Favourites: every row has a toggle button with the accessible name "Add <name> to favourites" or "Remove <name> from favourites"; it updates the contact with `PATCH /api/contacts/:contactId` and `{ "favorite": true }` or `false`. `GET /api/contacts` returns favourites first and then everyone by name, sorted in SQL, and the table follows that order right after a toggle, without a reload.
+
+Search: a field labelled "Search" above the table. `GET /api/contacts?q=...` returns the contacts whose name or email contains the text, case-insensitively, filtered in SQL; the page asks the server as the user types and shows "No matches" when nothing is found.
+
+It must be a real feature following the same layering as tasks: contract in `shared/contacts.ts`, a table with a migration and three seeded contacts, one of them a favourite, REST routes under `/api/contacts` (list, get, create, update with PATCH, delete) answering 400 for invalid bodies and 404 for unknown ids, RTK Query endpoints, and tests on both sides.

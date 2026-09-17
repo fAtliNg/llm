@@ -1,0 +1,15 @@
+{
+  "id": "F10-contacts-ru",
+  "title": "Контакты под ключ: поиск на сервере, избранные первыми, формат телефона",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru"
+  ]
+}
