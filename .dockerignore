@@ -1,0 +1,16 @@
+# keep the image small and free of anything private
+.git
+**/node_modules
+bench/results
+bench/.work
+bench/pool
+bench/dataset
+bench/reports
+bench/.env.local
+**/.env.local
+bench/pi-home/auth.json
+bench/pi-home/models-store.json
+bench/pi-home/sessions
+bench/pi-home/bin
+train
+docs
