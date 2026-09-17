@@ -27,6 +27,8 @@ export interface GenEntity {
   fields: GenField[];
   /** Seed rows without ids. */
   seeds: Record<string, string | number | boolean | null>[];
+  /** Russian plural noun for prompts. Present on entities whose "create end to end" tasks are generated from this spec. */
+  ru?: string;
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);

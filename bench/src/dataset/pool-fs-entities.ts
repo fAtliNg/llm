@@ -155,4 +155,162 @@ export const GEN_ENTITIES: GenEntity[] = [
       { subject: 'Typo in the footer', severity: 'low', resolved: true },
     ],
   },
+  // ---------- entities whose "create end to end" tasks are generated from the structure (pool-fs-wave-b.ts)
+  {
+    singular: 'supplier', plural: 'suppliers', ru: 'поставщики', columns: ['name', 'email', 'country'],
+    fields: [
+      { name: 'name', label: 'Name', kind: 'text', max: 100 },
+      { name: 'email', label: 'Email', kind: 'email', unique: true },
+      { name: 'country', label: 'Country', kind: 'enum', options: [['de', 'Germany'], ['fr', 'France'], ['pl', 'Poland']] },
+    ],
+    seeds: [
+      { name: 'Nordwind', email: 'sales@nordwind.example', country: 'de' },
+      { name: 'Lumiere', email: 'hello@lumiere.example', country: 'fr' },
+    ],
+  },
+  {
+    singular: 'course', plural: 'courses', ru: 'курсы', columns: ['title', 'level', 'hours', 'published'],
+    fields: [
+      { name: 'title', label: 'Title', kind: 'text', max: 120 },
+      { name: 'level', label: 'Level', kind: 'enum', options: [['beginner', 'Beginner'], ['intermediate', 'Intermediate'], ['advanced', 'Advanced']], default: 'beginner' },
+      { name: 'hours', label: 'Hours', kind: 'int', min: 1, max: 500 },
+      { name: 'published', label: 'Published', kind: 'bool', default: false },
+    ],
+    seeds: [
+      { title: 'SQL basics', level: 'beginner', hours: 12, published: true },
+      { title: 'Type-level TypeScript', level: 'advanced', hours: 30, published: false },
+    ],
+  },
+  {
+    singular: 'book', plural: 'books', ru: 'книги', columns: ['title', 'author', 'year', 'genre'],
+    fields: [
+      { name: 'title', label: 'Title', kind: 'text', max: 150 },
+      { name: 'author', label: 'Author', kind: 'text', max: 100 },
+      { name: 'year', label: 'Year', kind: 'int', min: 1450, max: 2100 },
+      { name: 'genre', label: 'Genre', kind: 'enum', options: [['fiction', 'Fiction'], ['science', 'Science'], ['history', 'History']] },
+    ],
+    seeds: [
+      { title: 'The Pragmatic Programmer', author: 'Hunt and Thomas', year: 1999, genre: 'science' },
+      { title: 'Dune', author: 'Frank Herbert', year: 1965, genre: 'fiction' },
+      { title: 'SPQR', author: 'Mary Beard', year: 2015, genre: 'history' },
+    ],
+  },
+  {
+    singular: 'movie', plural: 'movies', ru: 'фильмы', columns: ['title', 'year', 'rating', 'watched'],
+    fields: [
+      { name: 'title', label: 'Title', kind: 'text', max: 150 },
+      { name: 'year', label: 'Year', kind: 'int', min: 1888, max: 2100 },
+      { name: 'rating', label: 'Rating', kind: 'int', min: 1, max: 10 },
+      { name: 'watched', label: 'Watched', kind: 'bool', default: false },
+    ],
+    seeds: [
+      { title: 'Stalker', year: 1979, rating: 9, watched: true },
+      { title: 'Arrival', year: 2016, rating: 8, watched: false },
+    ],
+  },
+  {
+    singular: 'device', plural: 'devices', ru: 'устройства', columns: ['serial', 'model', 'status', 'purchasedOn'],
+    fields: [
+      { name: 'serial', label: 'Serial', kind: 'text', min: 5, max: 20, unique: true },
+      { name: 'model', label: 'Model', kind: 'text', max: 80 },
+      { name: 'status', label: 'Status', kind: 'enum', options: [['active', 'Active'], ['repair', 'In repair'], ['retired', 'Retired']], default: 'active' },
+      { name: 'purchasedOn', label: 'Purchased on', kind: 'date' },
+    ],
+    seeds: [
+      { serial: 'SN-10442', model: 'ThinkPad T14', status: 'active', purchasedOn: '2025-02-10' },
+      { serial: 'SN-20871', model: 'MacBook Air', status: 'repair', purchasedOn: '2024-06-01' },
+    ],
+  },
+  {
+    singular: 'subscription', plural: 'subscriptions', ru: 'подписки', columns: ['service', 'price', 'period', 'renewsOn'],
+    fields: [
+      { name: 'service', label: 'Service', kind: 'text', max: 80 },
+      { name: 'price', label: 'Price', kind: 'money' },
+      { name: 'period', label: 'Period', kind: 'enum', options: [['monthly', 'Monthly'], ['yearly', 'Yearly']], default: 'monthly' },
+      { name: 'renewsOn', label: 'Renews on', kind: 'date' },
+      { name: 'active', label: 'Active', kind: 'bool', default: true },
+    ],
+    seeds: [
+      { service: 'Cloud storage', price: 9.99, period: 'monthly', renewsOn: '2026-10-01', active: true },
+      { service: 'Domain name', price: 14.5, period: 'yearly', renewsOn: '2027-03-15', active: true },
+    ],
+  },
+  {
+    singular: 'meeting', plural: 'meetings', ru: 'встречи', columns: ['topic', 'date', 'durationMinutes', 'online'],
+    fields: [
+      { name: 'topic', label: 'Topic', kind: 'text', max: 120 },
+      { name: 'date', label: 'Date', kind: 'date' },
+      { name: 'durationMinutes', label: 'Duration (minutes)', kind: 'int', min: 5, max: 480 },
+      { name: 'online', label: 'Online', kind: 'bool', default: true },
+    ],
+    seeds: [
+      { topic: 'Quarterly review', date: '2026-10-02', durationMinutes: 90, online: false },
+      { topic: 'Design sync', date: '2026-10-03', durationMinutes: 30, online: true },
+    ],
+  },
+  {
+    singular: 'review', plural: 'reviews', ru: 'отзывы', columns: ['author', 'rating', 'approved'],
+    fields: [
+      { name: 'author', label: 'Author', kind: 'text', max: 80 },
+      { name: 'rating', label: 'Rating', kind: 'int', min: 1, max: 5 },
+      { name: 'comment', label: 'Comment', kind: 'textarea', max: 1000 },
+      { name: 'approved', label: 'Approved', kind: 'bool', default: false },
+    ],
+    seeds: [
+      { author: 'Marta', rating: 5, comment: 'Fast delivery, great support.', approved: true },
+      { author: 'Oleg', rating: 2, comment: 'The box arrived damaged.', approved: false },
+    ],
+  },
+  {
+    singular: 'shipment', plural: 'shipments', ru: 'отправления', columns: ['trackingCode', 'carrier', 'weight', 'deliveredOn'],
+    fields: [
+      { name: 'trackingCode', label: 'Tracking code', kind: 'text', min: 6, max: 30, unique: true },
+      { name: 'carrier', label: 'Carrier', kind: 'enum', options: [['dhl', 'DHL'], ['ups', 'UPS'], ['post', 'Post']] },
+      { name: 'weight', label: 'Weight (kg)', kind: 'money' },
+      { name: 'deliveredOn', label: 'Delivered on', kind: 'date', optional: true },
+    ],
+    seeds: [
+      { trackingCode: 'TRK-000451', carrier: 'dhl', weight: 2.4, deliveredOn: '2026-09-10' },
+      { trackingCode: 'TRK-000452', carrier: 'post', weight: 0.35, deliveredOn: null },
+    ],
+  },
+  {
+    singular: 'coupon', plural: 'coupons', ru: 'купоны', columns: ['code', 'discountPercent', 'expiresOn', 'active'],
+    fields: [
+      { name: 'code', label: 'Code', kind: 'text', min: 4, max: 20, unique: true },
+      { name: 'discountPercent', label: 'Discount (%)', kind: 'int', min: 1, max: 100 },
+      { name: 'expiresOn', label: 'Expires on', kind: 'date', optional: true },
+      { name: 'active', label: 'Active', kind: 'bool', default: true },
+    ],
+    seeds: [
+      { code: 'WELCOME10', discountPercent: 10, expiresOn: null, active: true },
+      { code: 'AUTUMN25', discountPercent: 25, expiresOn: '2026-11-30', active: false },
+    ],
+  },
+  {
+    singular: 'workout', plural: 'workouts', ru: 'тренировки', columns: ['name', 'kind', 'minutes', 'date'],
+    fields: [
+      { name: 'name', label: 'Name', kind: 'text', max: 80 },
+      { name: 'kind', label: 'Kind', kind: 'enum', options: [['run', 'Run'], ['ride', 'Ride'], ['swim', 'Swim']] },
+      { name: 'minutes', label: 'Minutes', kind: 'int', min: 1, max: 600 },
+      { name: 'date', label: 'Date', kind: 'date' },
+    ],
+    seeds: [
+      { name: 'Morning loop', kind: 'run', minutes: 42, date: '2026-09-12' },
+      { name: 'Hill repeats', kind: 'ride', minutes: 95, date: '2026-09-14' },
+    ],
+  },
+  {
+    singular: 'plant', plural: 'plants', ru: 'растения', columns: ['name', 'species', 'wateringDays', 'indoor'],
+    fields: [
+      { name: 'name', label: 'Name', kind: 'text', max: 60 },
+      { name: 'species', label: 'Species', kind: 'text', max: 100 },
+      { name: 'wateringDays', label: 'Water every (days)', kind: 'int', min: 1, max: 60 },
+      { name: 'indoor', label: 'Indoor', kind: 'bool', default: true },
+    ],
+    seeds: [
+      { name: 'Big fern', species: 'Nephrolepis exaltata', wateringDays: 3, indoor: true },
+      { name: 'Balcony rosemary', species: 'Salvia rosmarinus', wateringDays: 7, indoor: false },
+    ],
+  },
 ];

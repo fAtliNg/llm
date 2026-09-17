@@ -21,6 +21,10 @@ interface Spec {
   en: string;
   ru: string;
   checks?: Check[];
+  /** Starts from the clean template instead of the generated entity. */
+  fromScratch?: boolean;
+  difficulty?: 1 | 2 | 3;
+  formulation?: 'spec' | 'product';
   /** Changes the starting project: planted bugs. */
   plant?: (files: Map<string, string>) => void;
 }
@@ -43,7 +47,70 @@ const EXTRA_FIELDS: Record<string, { name: string; en: string; ru: string }> = {
   rooms: { name: 'capacity', en: '"Capacity" (`capacity`): a whole number from 1 to 200; existing rooms get 10; the table gets a "Capacity" column', ru: '"Capacity" (`capacity`): целое число от 1 до 200; существующие переговорные получают 10; в таблице появляется колонка "Capacity"' },
   recipes: { name: 'servings', en: '"Servings" (`servings`): a whole number from 1 to 20; existing recipes get 2; the table gets a "Servings" column', ru: '"Servings" (`servings`): целое число от 1 до 20; существующие рецепты получают 2; в таблице появляется колонка "Servings"' },
   tickets: { name: 'assignee', en: '"Assignee" (`assignee`): optional text up to 60 characters, null when empty; the table gets an "Assignee" column with the name or "Unassigned"', ru: '"Assignee" (`assignee`): необязательный текст до 60 символов, null если пусто; в таблице появляется колонка "Assignee" с именем или "Unassigned"' },
+  suppliers: { name: 'rating', en: '"Rating" (`rating`): a whole number from 1 to 5; existing suppliers get 3; the table gets a "Rating" column', ru: '"Rating" (`rating`): целое число от 1 до 5; существующие поставщики получают 3; в таблице появляется колонка "Rating"' },
+  courses: { name: 'teacher', en: '"Teacher" (`teacher`): optional text up to 80 characters, null when empty; the table gets a "Teacher" column with the name or "—"', ru: '"Teacher" (`teacher`): необязательный текст до 80 символов, null если пусто; в таблице появляется колонка "Teacher" с именем или "—"' },
+  books: { name: 'isbn', en: '"ISBN" (`isbn`): required text of exactly 13 digits, message "Enter 13 digits", unique among books (the API answers 409 with `{ "message": "A book with this ISBN already exists" }`); existing books get `9780000000001`, `9780000000002` and so on in the seed; the table gets an "ISBN" column', ru: '"ISBN" (`isbn`): обязательный текст ровно из 13 цифр, сообщение "Enter 13 digits", уникален среди книг (API отвечает 409 с `{ "message": "A book with this ISBN already exists" }`); существующие книги получают в сидах `9780000000001`, `9780000000002` и так далее; в таблице появляется колонка "ISBN"' },
+  movies: { name: 'director', en: '"Director" (`director`): required text up to 100 characters, message "Director is required"; existing movies get "Unknown"; the table gets a "Director" column', ru: '"Director" (`director`): обязательный текст до 100 символов, сообщение "Director is required"; существующие фильмы получают "Unknown"; в таблице появляется колонка "Director"' },
+  devices: { name: 'owner', en: '"Owner" (`owner`): optional text up to 80 characters, null when empty; the table gets an "Owner" column with the name or "Unassigned"', ru: '"Owner" (`owner`): необязательный текст до 80 символов, null если пусто; в таблице появляется колонка "Owner" с именем или "Unassigned"' },
+  subscriptions: { name: 'notes', en: '"Notes" (`notes`): an optional textarea up to 300 characters, stored as an empty string when empty; it appears only in the form', ru: '"Notes" (`notes`): необязательная textarea до 300 символов, при пустом значении хранится пустая строка; видна только в форме' },
+  meetings: { name: 'room', en: '"Room" (`room`): optional text up to 40 characters, null when empty; the table gets a "Room" column with the room or "—"', ru: '"Room" (`room`): необязательный текст до 40 символов, null если пусто; в таблице появляется колонка "Room" со значением или "—"' },
+  reviews: { name: 'source', en: '"Source" (`source`): a select with Website, Email and Phone stored as `website`, `email`, `phone`, default Website; the table gets a "Source" column', ru: '"Source" (`source`): селект с вариантами Website, Email и Phone, хранится как `website`, `email`, `phone`, по умолчанию Website; в таблице появляется колонка "Source"' },
+  shipments: { name: 'fragile', en: '"Fragile" (`fragile`): a checkbox, false by default; the table gets a "Fragile" column with Yes or No', ru: '"Fragile" (`fragile`): чекбокс, по умолчанию false; в таблице появляется колонка "Fragile" со значениями Yes или No' },
+  coupons: { name: 'maxUses', en: '"Max uses" (`maxUses`): an optional whole number from 1 to 10000, null when empty meaning unlimited; the table gets a "Max uses" column with the number or "Unlimited"', ru: '"Max uses" (`maxUses`): необязательное целое число от 1 до 10000, null если пусто (без ограничений); в таблице появляется колонка "Max uses" с числом или "Unlimited"' },
+  workouts: { name: 'distanceKm', en: '"Distance (km)" (`distanceKm`): an optional number greater than 0 with at most two decimals, null when empty; the table gets a "Distance" column with the number or "—"', ru: '"Distance (km)" (`distanceKm`): необязательное число больше 0, не больше двух знаков после запятой, null если пусто; в таблице появляется колонка "Distance" с числом или "—"' },
+  plants: { name: 'lastWateredOn', en: '"Last watered" (`lastWateredOn`): an optional ISO date, null when empty; the table gets a "Last watered" column with the date or "Never"', ru: '"Last watered" (`lastWateredOn`): необязательная ISO-дата, null если пусто; в таблице появляется колонка "Last watered" с датой или "Never"' },
 };
+
+const joinEn = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items[items.length - 1] ?? ''}` : (items[0] ?? ''));
+const joinRu = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} и ${items[items.length - 1] ?? ''}` : (items[0] ?? ''));
+
+/** Field rules in words, derived from the structure, so the prompt and the generated code cannot drift apart. */
+function ruleEn(e: GenEntity, f: GenField): string {
+  const n = names(e);
+  switch (f.kind) {
+    case 'text':
+      return `text, required, ${f.min ? `from ${String(f.min)} to ${String(f.max)} characters` : `up to ${String(f.max)} characters`}${f.unique ? `, unique among ${n.plural} (the API answers 409 with \`{ "message": "${duplicateMessage(e, f)}" }\`)` : ''}`;
+    case 'email':
+      return `a valid email, required${f.unique ? `, unique among ${n.plural} (the API answers 409 with \`{ "message": "${duplicateMessage(e, f)}" }\`)` : ''}`;
+    case 'textarea':
+      return `a textarea, ${f.optional ? 'optional, an empty string when empty' : 'required'}, up to ${String(f.max)} characters`;
+    case 'enum':
+      return `a select with ${joinEn(f.options.map(([, l]) => l))} stored as ${joinEn(f.options.map(([v]) => `\`${v}\``))}${f.default ? `, default ${f.options.find(([v]) => v === f.default)?.[1] ?? ''}` : ''}`;
+    case 'bool':
+      return `a checkbox, ${f.default ? 'checked' : 'unchecked'} by default`;
+    case 'int':
+      return `a number input, a whole number from ${String(f.min)} to ${String(f.max)}`;
+    case 'money':
+      return 'a number input, greater than 0 with at most two decimals';
+    case 'date':
+      return `a date input, ${f.optional ? 'optional, null when empty' : 'required'}, an ISO date`;
+  }
+}
+
+function ruleRu(e: GenEntity, f: GenField): string {
+  switch (f.kind) {
+    case 'text':
+      return `текст, обязательное, ${f.min ? `от ${String(f.min)} до ${String(f.max)} символов` : `до ${String(f.max)} символов`}${f.unique ? `, уникально (на повтор API отвечает 409 с \`{ "message": "${duplicateMessage(e, f)}" }\`)` : ''}`;
+    case 'email':
+      return `корректный email, обязательное${f.unique ? `, уникально (на повтор API отвечает 409 с \`{ "message": "${duplicateMessage(e, f)}" }\`)` : ''}`;
+    case 'textarea':
+      return `textarea, ${f.optional ? 'необязательное, пустая строка если пусто' : 'обязательное'}, до ${String(f.max)} символов`;
+    case 'enum':
+      return `селект с вариантами ${joinRu(f.options.map(([, l]) => l))}, хранится как ${joinRu(f.options.map(([v]) => `\`${v}\``))}${f.default ? `, по умолчанию ${f.options.find(([v]) => v === f.default)?.[1] ?? ''}` : ''}`;
+    case 'bool':
+      return `чекбокс, по умолчанию ${f.default ? 'отмечен' : 'не отмечен'}`;
+    case 'int':
+      return `числовое поле, целое число от ${String(f.min)} до ${String(f.max)}`;
+    case 'money':
+      return 'числовое поле, больше 0, не больше двух знаков после запятой';
+    case 'date':
+      return `поле даты, ${f.optional ? 'необязательное, null если пусто' : 'обязательное'}, ISO-дата`;
+  }
+}
+
+const fieldsEn = (e: GenEntity) => e.fields.map((f) => `"${f.label}" (\`${f.name}\`: ${ruleEn(e, f)})`).join('; ');
+const fieldsRu = (e: GenEntity) => e.fields.map((f) => `"${f.label}" (\`${f.name}\`: ${ruleRu(e, f)})`).join('; ');
+const columnLabels = (e: GenEntity) => e.columns.map((name) => `"${e.fields.find((f) => f.name === name)?.label ?? name}"`);
 
 function specs(): Spec[] {
   const out: Spec[] = [];
@@ -53,6 +120,29 @@ function specs(): Spec[] {
     const first = e.fields[0];
     if (!first) continue;
     const nameOf = `<${lower(first)}>`;
+    if (e.ru) {
+      const checks: Check[] = [
+        { type: 'file-exists', path: `shared/${k}.ts` },
+        { type: 'file-exists', path: `server/features/${k}/routes.ts` },
+        { type: 'file-exists', path: `server/features/${k}/routes.test.ts` },
+        { type: 'grep-count', path: 'server/app.ts', pattern: k, min: 1 },
+        { type: 'grep-count', path: 'server/db/schema.ts', pattern: 'MatchesContract', min: 2 },
+        { type: 'grep-count', path: 'src/app/router.tsx', pattern: k, min: 1 },
+        { type: 'command', label: 'a new migration exists', run: '[ "$(ls drizzle/*.sql | wc -l | tr -d " ")" -ge 2 ]', expect: 'pass' },
+      ];
+      const seedsEn = `${String(e.seeds.length)} seeded ${n.plural}`;
+      out.push({
+        family: 'entity', entity: e, layer: 'cross', work: 'create', fromScratch: true, difficulty: 3, formulation: 'spec', checks,
+        en: `Add ${n.Plural} end to end, following the same layering as tasks. Fields: ${fieldsEn(e)}. Contract in \`shared/${k}.ts\`, a table with a migration and ${seedsEn}, REST routes under \`/api/${k}\` (list, get, create, update with PATCH, delete) answering 400 for invalid bodies and 404 for unknown ids, with tests, RTK Query endpoints, a list page at \`/${k}\` with the columns ${joinEn(columnLabels(e))}, a "${n.Plural}" link in the main navigation, a "New ${n.singular}" button opening a form at \`/${k}/new\` with a "Create" button that returns to the list, and web tests. Work in stages and run \`npm run verify\` after each.`,
+        ru: `Добавь сущность ${n.Plural} (${e.ru}) под ключ, с той же раскладкой по слоям, что у задач. Поля: ${fieldsRu(e)}. Контракт в \`shared/${k}.ts\`, таблица с миграцией и сиды (записей: ${String(e.seeds.length)}), REST-маршруты под \`/api/${k}\` (список, получение, создание, обновление через PATCH, удаление), которые отвечают 400 на некорректные тела и 404 на неизвестные id, с тестами, эндпоинты RTK Query, страница списка по адресу \`/${k}\` с колонками ${joinRu(columnLabels(e))}, ссылка "${n.Plural}" в главной навигации, кнопка "New ${n.singular}", которая открывает форму по адресу \`/${k}/new\` с кнопкой "Create", возвращающей к списку, и веб-тесты. Работай этапами и после каждого запускай \`npm run verify\`.`,
+      });
+      out.push({
+        family: 'entity', entity: e, layer: 'cross', work: 'create', fromScratch: true, difficulty: 3, formulation: 'product', checks,
+        en: `We need to keep track of ${n.plural}. Users open "${n.Plural}" from the main navigation, see a table at \`/${k}\` with the columns ${joinEn(columnLabels(e))}, and add one on a separate page (\`/${k}/new\`, opened by a "New ${n.singular}" button) with a "Create" button that brings them back to the list. Fields: ${fieldsEn(e)}. It must be a real feature: stored in the database with a migration and ${seedsEn}, served by a REST API under \`/api/${k}\` with list, get, create, update and delete, covered by tests on both sides.`,
+        ru: `Нам нужно вести ${e.ru}. Пользователь открывает "${n.Plural}" из главной навигации, видит по адресу \`/${k}\` таблицу с колонками ${joinRu(columnLabels(e))} и добавляет запись на отдельной странице (\`/${k}/new\`, открывается кнопкой "New ${n.singular}") с кнопкой "Create", после которой возвращается к списку. Поля: ${fieldsRu(e)}. Это должна быть настоящая фича: данные лежат в базе (миграция и сиды, записей: ${String(e.seeds.length)}), отдаются через REST API под \`/api/${k}\` со списком, получением, созданием, обновлением и удалением, тесты есть с обеих сторон.`,
+      });
+    }
+
     const intro = { en: `The app already has ${n.Plural} at \`/${k}\` with an API under \`/api/${k}\`.`, ru: `В приложении уже есть раздел "${n.Plural}" по адресу \`/${k}\` с API под \`/api/${k}\`.` };
 
     out.push({
@@ -241,7 +331,7 @@ export function generateWaveB(outDir: string): void {
       if (new RegExp(`\\b${word}s?\\b`, 'i').test(spec.en)) throw new Error(`held-out entity "${word}" in: ${spec.en.slice(0, 80)}`);
     }
     coverage.set(spec.family, (coverage.get(spec.family) ?? 0) + 1);
-    const files = readSetup(spec.entity.plural);
+    const files = spec.fromScratch ? new Map<string, string>() : readSetup(spec.entity.plural);
     spec.plant?.(files);
     const baseId = `FB${String(i + 1).padStart(4, '0')}-${spec.family}-${spec.entity.plural}`;
     for (const [id, prompt, extraTags] of [
@@ -252,9 +342,9 @@ export function generateWaveB(outDir: string): void {
       if (fs.existsSync(dir)) continue;
       fs.mkdirSync(dir, { recursive: true });
       const meta = {
-        id, title: prompt.slice(0, 70), template: 'fullstack', layer: spec.layer, work: spec.work, difficulty: 2,
-        formulation: spec.work === 'fix' ? 'product' : 'spec',
-        tags: ['pool', 'fullstack', 'wave-b', spec.family, spec.entity.plural, ...extraTags],
+        id, title: prompt.slice(0, 70), template: 'fullstack', layer: spec.layer, work: spec.work, difficulty: spec.difficulty ?? 2,
+        formulation: spec.formulation ?? (spec.work === 'fix' ? 'product' : 'spec'),
+        tags: ['pool', 'fullstack', spec.fromScratch ? 'wave-a' : 'wave-b', spec.family, spec.entity.plural, ...extraTags],
       };
       fs.writeFileSync(path.join(dir, 'task.json'), JSON.stringify(meta, null, 2) + '\n');
       fs.writeFileSync(path.join(dir, 'prompt.md'), `${prompt}\n`);
