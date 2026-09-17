@@ -35,3 +35,4 @@ train/train.jsonl
 train/out/
 train/*.log
 train/models/
+__pycache__/
