@@ -1,0 +1,15 @@
+{
+  "id": "F08-invoices-ru",
+  "title": "Счета под ключ: переходы статусов и сумма к оплате",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": [
+    "fullstack",
+    "v2",
+    "held-out-entity",
+    "ru"
+  ]
+}

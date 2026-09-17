@@ -1,0 +1,10 @@
+{
+  "id": "F08-invoices",
+  "title": "Invoices end to end with status transitions and an outstanding total",
+  "template": "fullstack",
+  "layer": "cross",
+  "work": "create",
+  "difficulty": 3,
+  "formulation": "product",
+  "tags": ["fullstack", "v2", "held-out-entity"]
+}
