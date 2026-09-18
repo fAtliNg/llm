@@ -39,6 +39,8 @@ export interface BenchConfig {
   contextFiles: boolean;
   skills: boolean;
   timeoutSec: number;
+  /** Stop the agent after this many turns. Turns do not depend on how many agents share the GPU, minutes do. */
+  maxTurns?: number;
   tools?: string;
 }
 
@@ -84,6 +86,8 @@ export interface AgentMetrics {
   outputTokens: number;
   wallSeconds: number;
   timedOut: boolean;
+  /** Stopped by the turn cap (`maxTurns`). */
+  turnCapped?: boolean;
   exitCode: number | null;
   finalMessage: string;
   /** Provider error text when the model never answered (bad key, 404, 503). */

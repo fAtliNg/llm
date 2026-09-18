@@ -19,6 +19,8 @@ export interface ExecResult {
   stdout: string;
   stderr: string;
   timedOut: boolean;
+  /** True when `shouldStop` ended the process. */
+  stopped: boolean;
   seconds: number;
 }
 
@@ -27,6 +29,8 @@ export interface ExecOptions {
   timeoutMs?: number;
   env?: NodeJS.ProcessEnv;
   onStdoutLine?: (line: string) => void;
+  /** Called after every stdout line; returning true kills the process (used for the turn cap). */
+  shouldStop?: () => boolean;
 }
 
 /** Runs a command, captures output, kills the whole process group on timeout. */
@@ -44,6 +48,15 @@ export function exec(cmd: string, args: string[], options: ExecOptions): Promise
     let stderr = '';
     let pending = '';
     let timedOut = false;
+    let stopped = false;
+    const killTree = () => {
+      if (!child.pid) return;
+      try {
+        process.kill(-child.pid, 'SIGKILL');
+      } catch {
+        child.kill('SIGKILL');
+      }
+    };
 
     child.stdout.on('data', (chunk: Buffer) => {
       const text = chunk.toString();
@@ -53,6 +66,10 @@ export function exec(cmd: string, args: string[], options: ExecOptions): Promise
         const lines = pending.split('\n');
         pending = lines.pop() ?? '';
         for (const line of lines) options.onStdoutLine(line);
+        if (!stopped && options.shouldStop?.()) {
+          stopped = true;
+          killTree();
+        }
       }
     });
     child.stderr.on('data', (chunk: Buffer) => {
@@ -76,7 +93,7 @@ export function exec(cmd: string, args: string[], options: ExecOptions): Promise
       running.delete(child);
       if (timer) clearTimeout(timer);
       if (pending && options.onStdoutLine) options.onStdoutLine(pending);
-      resolve({ code, stdout, stderr, timedOut, seconds: (Date.now() - started) / 1000 });
+      resolve({ code, stdout, stderr, timedOut, stopped, seconds: (Date.now() - started) / 1000 });
     });
     child.on('error', (error) => {
       running.delete(child);

@@ -179,7 +179,7 @@ async function run(tasks: Task[], configNames: string[], reps: number, runId: st
       fs.writeFileSync(path.join(outDir, 'analysis.md'), analysisMarkdown({ task, config: configName, rep, agent, grade: result, diagnostics }));
       done += 1;
       const minutes = ((Date.now() - started) / 60000).toFixed(1);
-      line(task, result.solved, `${configName}, ${agent.timedOut ? 'timeout, ' : ''}${result.failureReason ?? 'solved'}, ${String(agent.turns)} turns, ${minutes} min`);
+      line(task, result.solved, `${configName}, ${agent.timedOut ? 'timeout, ' : ''}${agent.turnCapped ? 'turn cap, ' : ''}${result.failureReason ?? 'solved'}, ${String(agent.turns)} turns, ${minutes} min`);
       for (const comment of diagnostics.comments) console.log(`        · ${comment}`);
     }
   };

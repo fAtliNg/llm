@@ -104,7 +104,8 @@ export function comments(task: Task, agent: AgentMetrics, grade: Grade, changed:
   const cdOut = timeline.filter((e) => e.tool === 'bash' && /^\s*cd\s/.test(e.target)).length;
 
   if (agent.timedOut) out.push(`Timed out after ${minutes.toFixed(0)} min without finishing.`);
-  if (agent.exitCode !== 0 && !agent.timedOut) out.push(`Agent exited with code ${String(agent.exitCode)}.`);
+  if (agent.turnCapped) out.push(`Stopped by the turn cap after ${String(agent.turns)} turns.`);
+  if (agent.exitCode !== 0 && !agent.timedOut && !agent.turnCapped) out.push(`Agent exited with code ${String(agent.exitCode)}.`);
   if (timeline.length === 0) out.push('No tool calls at all: the model answered in prose.');
   if (edits === 0 && timeline.length > 0) out.push('Never edited or wrote a file.');
   if (bashReads >= 3 && bashReads > reads) {

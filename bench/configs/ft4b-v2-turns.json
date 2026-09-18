@@ -1,0 +1,9 @@
+{
+  "description": "Qwen3.5 4B fine-tuned on dataset v2, harness. Development runs: a cap of 80 turns and a generous 30-minute limit, so that the number of agents sharing the GPU does not decide the outcome. The laptop KPI stays: one agent, 15 minutes.",
+  "model": "ollama/qwen3.5-4b-agent:v2",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 1800,
+  "maxTurns": 80
+}

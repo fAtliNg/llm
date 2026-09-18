@@ -156,12 +156,14 @@ export async function runAgent(
     timeoutMs: config.timeoutSec * 1000,
     env: { PI_OFFLINE: '1', PI_SKIP_VERSION_CHECK: '1', PI_TELEMETRY: '0', PI_CODING_AGENT_DIR: PI_HOME },
     onStdoutLine: onLine,
+    shouldStop: () => config.maxTurns !== undefined && metrics.turns >= config.maxTurns,
   });
   transcript.end();
   fs.writeFileSync(path.join(outDir, 'agent-stderr.log'), result.stderr);
 
   metrics.wallSeconds = result.seconds;
   metrics.timedOut = result.timedOut;
+  metrics.turnCapped = result.stopped;
   metrics.exitCode = result.code;
   return metrics;
 }

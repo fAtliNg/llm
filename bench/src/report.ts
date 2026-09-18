@@ -157,7 +157,7 @@ export function report(runId?: string): string {
   for (const config of configs) {
     const counts = new Map<string, number>();
     for (const r of results.filter((x) => x.config === config && !x.grade.solved)) {
-      const key = r.agent.timedOut ? 'timeout' : (r.grade.failureReason ?? 'unknown');
+      const key = r.agent.timedOut ? 'timeout' : r.agent.turnCapped ? 'turn cap' : (r.grade.failureReason ?? 'unknown');
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
     for (const [reason, count] of [...counts].sort((a, b) => b[1] - a[1])) {
@@ -224,7 +224,7 @@ export function report(runId?: string): string {
     const tools = Object.entries(r.agent.toolCalls)
       .map(([name, count]) => `${name} ${String(count)}`)
       .join(', ');
-    const outcome = r.grade.solved ? 'solved' : r.agent.timedOut ? 'timeout' : (r.grade.failureReason ?? 'failed');
+    const outcome = r.grade.solved ? 'solved' : r.agent.timedOut ? 'timeout' : r.agent.turnCapped ? 'turn cap' : (r.grade.failureReason ?? 'failed');
     perTask.push(
       `| ${r.task.id} | ${r.config} | ${String(r.rep)} | ${outcome} | ${minutes(r.agent.wallSeconds)} | ${String(r.agent.turns)} | ${tools} | ${String(r.agent.toolErrors)} | ${String(r.agent.verifyRuns ?? 0)} | ${r.agent.firstEditAt === null || r.agent.firstEditAt === undefined ? '-' : minutes(r.agent.firstEditAt)} |`,
     );
