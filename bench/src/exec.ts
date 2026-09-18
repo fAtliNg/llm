@@ -98,7 +98,7 @@ export function exec(cmd: string, args: string[], options: ExecOptions): Promise
     child.on('error', (error) => {
       running.delete(child);
       if (timer) clearTimeout(timer);
-      resolve({ code: null, stdout, stderr: `${stderr}\n${String(error)}`, timedOut, seconds: 0 });
+      resolve({ code: null, stdout, stderr: `${stderr}\n${String(error)}`, timedOut, stopped, seconds: 0 });
     });
   });
 }
