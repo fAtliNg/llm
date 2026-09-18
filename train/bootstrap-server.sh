@@ -24,9 +24,9 @@ systemctl daemon-reload && systemctl restart ollama
 log "node 22"; command -v node >/dev/null || { curl -fsSL https://deb.nodesource.com/setup_22.x | bash - >/dev/null 2>&1; apt-get install -y -qq nodejs >/dev/null; }
 node --version
 if [[ -d /root/llm/bench ]]; then
-  log "npm ci"; (cd /root/llm/template && npm ci --silent 2>&1 | tail -1); (cd /root/llm/bench && npm ci --silent 2>&1 | tail -1)
-  sed -i 's/"timeoutSec": 1800/"timeoutSec": 600/; s/"timeoutSec": 900/"timeoutSec": 600/' /root/llm/bench/configs/*.json
-  (cd /root/llm/bench && node src/cli.ts validate T00-rename-button 2>&1 | grep -E "^(PASS|FAIL)")
+  log "npm ci"; (cd /root/llm/template && npm ci --silent 2>&1 | tail -1); (cd /root/llm/template-fullstack && npm ci --silent 2>&1 | tail -1); (cd /root/llm/bench && npm ci --silent 2>&1 | tail -1)
+  # Timeouts stay as in the configs (15 minutes for the full-stack iteration: the model must fit in that on a laptop).
+  (cd /root/llm/bench && node src/cli.ts validate F01-due-date 2>&1 | grep -E "^(PASS|FAIL)")
 else
   log "repo not found in /root/llm: rsync it from the Mac, then re-run"
 fi
