@@ -1,0 +1,8 @@
+{
+  "description": "Base Qwen3.5 9B (Q4_K_M) with the harness on the PC (RTX 4070 Super, Docker sandbox): 15-minute limit like the 4B runs.",
+  "model": "ollama/qwen3.5:9b-32k",
+  "thinking": "off",
+  "contextFiles": true,
+  "skills": true,
+  "timeoutSec": 900
+}
