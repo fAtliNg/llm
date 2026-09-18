@@ -35,7 +35,7 @@ loop() {
       alive && { echo "$(date '+%d.%m %H:%M') peak hours: pausing"; kill "$(cat results/$R.pid)"; }
     elif ! alive; then
       if tail -1 results/$R.log 2>/dev/null | grep -q "^results:"; then echo "$(date '+%d.%m %H:%M') complete"; break; fi
-      if tail -5 results/$R.log 2>/dev/null | grep -q "provider error"; then echo "$(date '+%d.%m %H:%M') provider error (balance? key?), not restarting"; break; fi
+      if awk '/^--- session/{buf=""} {buf=buf $0 "\n"} END{printf "%s", buf}' results/$R.log 2>/dev/null | grep -q "provider error"; then echo "$(date '+%d.%m %H:%M') provider error (balance? key?), not restarting"; break; fi
       start
     fi
     sleep 300
