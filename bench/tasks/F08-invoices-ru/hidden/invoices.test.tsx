@@ -12,7 +12,7 @@ async function outstanding() {
 }
 
 async function create(user: UserEvent, number: string, customer: string, amount: string) {
-  await user.click(await screen.findByRole('link', { name: 'New invoice' }));
+  await user.click((await screen.findAllByRole('link', { name: 'New invoice' }))[0]!);
   await user.type(await screen.findByLabelText('Number'), number);
   await user.type(screen.getByLabelText('Customer'), customer);
   await user.type(screen.getByLabelText('Amount'), amount);
@@ -25,7 +25,7 @@ describe('F08 invoices in the web app', () => {
     const nav = await screen.findByRole('navigation', { name: 'Main' });
     await user.click(within(nav).getByRole('link', { name: 'Invoices' }));
     expect(await screen.findByRole('heading', { name: 'Invoices' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'New invoice' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'New invoice' }).length).toBeGreaterThan(0);
   });
 
   it('creates a draft, formats the money and walks it through the statuses', async () => {

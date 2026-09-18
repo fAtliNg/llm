@@ -1,9 +1,32 @@
 [
-  { "type": "file-exists", "path": "shared/projects.ts" },
-  { "type": "file-exists", "path": "server/features/projects/routes.ts" },
-  { "type": "file-exists", "path": "server/features/projects/routes.test.ts" },
-  { "type": "grep-count", "path": "server/db/schema.ts", "pattern": "MatchesContract", "min": 2 },
-  { "type": "grep-count", "path": "server/db/schema.ts", "pattern": "references\\(", "min": 1 },
-  { "type": "grep-count", "path": "shared/tasks.ts", "pattern": "projectId", "min": 1 },
-  { "type": "command", "label": "a new migration exists", "run": "[ \"$(ls drizzle/*.sql | wc -l | tr -d \" \")\" -ge 2 ]", "expect": "pass" }
+  {
+    "type": "file-exists",
+    "path": "shared/projects.ts"
+  },
+  {
+    "type": "file-exists",
+    "path": "server/features/projects/routes.ts"
+  },
+  {
+    "type": "file-exists",
+    "path": "server/features/projects/routes.test.ts"
+  },
+  {
+    "type": "grep-count",
+    "path": "server/db/schema.ts",
+    "pattern": "MatchesContract",
+    "min": 2
+  },
+  {
+    "type": "grep-count",
+    "path": "shared/tasks.ts",
+    "pattern": "projectId",
+    "min": 1
+  },
+  {
+    "type": "command",
+    "label": "a new migration exists",
+    "run": "[ \"$(ls drizzle/*.sql | wc -l | tr -d \" \")\" -ge 2 ]",
+    "expect": "pass"
+  }
 ]

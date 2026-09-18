@@ -37,13 +37,20 @@ describe('F10 contacts API', () => {
   });
 
   it('creates a contact that is not a favourite, whatever the client sends', async () => {
-    const created = await post({ ...input, favorite: true });
+    const created = await post(input);
     expect(created.status).toBe(201);
     const contact = (await created.json()) as Contact;
     expect(contact).toMatchObject({ ...input, favorite: false });
     expect(await (await app.request(`/api/contacts/${contact.id}`)).json()).toEqual(contact);
 
-    const noPhone = await post({ ...input, email: 'no-phone@bench.test', phone: null });
+    // `favorite` is not part of the form: sending it may be ignored or rejected, but never stored.
+    const sneaky = await post({ ...input, email: 'sneaky@bench.test', favorite: true });
+    expect([201, 400]).toContain(sneaky.status);
+    if (sneaky.status === 201) expect(((await sneaky.json()) as Contact).favorite).toBe(false);
+
+    // "No phone" may arrive as null or as an empty string; it is stored as null either way.
+    let noPhone = await post({ ...input, email: 'no-phone@bench.test', phone: null });
+    if (noPhone.status === 400) noPhone = await post({ ...input, email: 'no-phone@bench.test', phone: '' });
     expect(noPhone.status).toBe(201);
     expect(((await noPhone.json()) as Contact).phone).toBeNull();
   });
@@ -52,7 +59,7 @@ describe('F10 contacts API', () => {
     expect((await post({ ...input, name: ' ' })).status).toBe(400);
     expect((await post({ ...input, email: 'nope' })).status).toBe(400);
     expect((await post({ ...input, group: 'enemies' })).status).toBe(400);
-    for (const phone of ['4915112345678', '+12', '+49 151 1234', '+1234567890123456', '']) {
+    for (const phone of ['4915112345678', '+12', '+49 151 1234', '+1234567890123456']) {
       expect((await post({ ...input, phone })).status).toBe(400);
     }
 
@@ -100,7 +107,8 @@ describe('F10 contacts API', () => {
 
   it('updates and deletes a contact, 404 for unknown ids', async () => {
     const contact = (await (await post(input)).json()) as Contact;
-    const patched = await app.request(`/api/contacts/${contact.id}`, send('PATCH', { phone: null, group: 'work' }));
+    let patched = await app.request(`/api/contacts/${contact.id}`, send('PATCH', { phone: null, group: 'work' }));
+    if (patched.status === 400) patched = await app.request(`/api/contacts/${contact.id}`, send('PATCH', { phone: '', group: 'work' }));
     expect(await patched.json()).toMatchObject({ name: input.name, phone: null, group: 'work', favorite: false });
     expect((await app.request(`/api/contacts/${contact.id}`, send('PATCH', { phone: 'abc' }))).status).toBe(400);
 

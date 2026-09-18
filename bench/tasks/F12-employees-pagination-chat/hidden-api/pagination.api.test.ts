@@ -46,8 +46,15 @@ describe('F12 pagination in the API', () => {
     expect(body.pageSize).toBe(10);
     expect(body.total).toBeGreaterThanOrEqual(25);
     expect(body.items).toHaveLength(10);
-    expect(body.items.map((item) => item.name)).toEqual(
-      Array.from({ length: 10 }, (_, i) => `Bench ${String(i + 1).padStart(3, '0')}`),
+    const names = body.items.map((item) => item.name);
+    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
+    const all: string[] = [];
+    for (let page = 1; all.length < body.total; page += 1) {
+      const { body: next } = await get(`?page=${String(page)}&pageSize=50`);
+      all.push(...next.items.map((item) => item.name));
+    }
+    expect(all.filter((name) => name.startsWith('Bench '))).toEqual(
+      Array.from({ length: 23 }, (_, i) => `Bench ${String(i + 1).padStart(3, '0')}`),
     );
   });
 

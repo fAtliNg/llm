@@ -44,8 +44,9 @@ describe('F05 bookings in the web app', () => {
 
     const row = await screen.findByRole('row', { name: /Bench Lambda-206/ });
     expect(within(row).getByText('Cosmos')).toBeInTheDocument();
-    expect(within(row).getByText('2031-09-10')).toBeInTheDocument();
-    expect(within(row).getByText('9:00–11:00')).toBeInTheDocument();
+    // The prompt does not fix the date format: any rendering of that date is fine.
+    expect(within(row).getByText(/2031|10\.09|Sep/)).toBeInTheDocument();
+    expect(within(row).getByText(/9:00–11:00/)).toBeInTheDocument();
   });
 
   it('validates the form before sending anything', async () => {
