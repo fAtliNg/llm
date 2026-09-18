@@ -37,26 +37,47 @@ bench() { # run-id config [tasks]
 }
 wait_pid() { while kill -0 "$1" 2>/dev/null; do sleep 60; done; }
 
+# Only one session at a time; the watchdog (cron, every 10 minutes) re-runs this script if it died.
+exec 9>/root/session.lock
+flock -n 9 || { echo "session already running"; exit 0; }
+if ! crontab -l 2>/dev/null | grep -q session-v2.sh; then
+  (crontab -l 2>/dev/null; echo "*/10 * * * * bash /root/session-v2.sh >> /root/session.log 2>&1") | crontab -
+fi
+
 log "== 0. Ollama: several models loaded at once, enough request slots"
 mkdir -p /etc/systemd/system/ollama.service.d
-printf '[Service]\nEnvironment="OLLAMA_NUM_PARALLEL=%s"\nEnvironment="OLLAMA_KEEP_ALIVE=24h"\nEnvironment="OLLAMA_MAX_LOADED_MODELS=3"\n' "$PARALLEL" > /etc/systemd/system/ollama.service.d/override.conf
-systemctl daemon-reload && systemctl restart ollama && sleep 4
+conf=$(printf '[Service]\nEnvironment="OLLAMA_NUM_PARALLEL=%s"\nEnvironment="OLLAMA_KEEP_ALIVE=24h"\nEnvironment="OLLAMA_MAX_LOADED_MODELS=3"\n' "$PARALLEL")
+# Restart only when the settings change: a restart would kill the requests of a running benchmark.
+if [[ "$(cat /etc/systemd/system/ollama.service.d/override.conf 2>/dev/null)" != "$conf" ]]; then
+  echo "$conf" > /etc/systemd/system/ollama.service.d/override.conf
+  systemctl daemon-reload && systemctl restart ollama && sleep 4
+fi
 ollama pull qwen3.5:4b >/dev/null 2>&1 && mk qwen3.5:4b-32k qwen3.5:4b ''
 ollama pull qwen3.5:9b >/dev/null 2>&1 && mk qwen3.5:9b-32k qwen3.5:9b ''
 
-if [[ "${WITH_BASE:-0}" == "1" ]]; then
-  log "== base models on this card (context for the fine-tuned numbers)"
-  bench base4b-v2 base4b-mac
-fi
+# After the fine-tuned models: the base models on this card (to separate "too slow" from "cannot") and the
+# local-teacher candidate. They run in the background; the watchdog keeps re-running this script, which
+# skips everything finished, so nothing idles overnight.
+after_main() {
+  for pair in "base4b-v2 base4b-mac" "base9b-v2 base9b-pc"; do
+    set -- $pair
+    [ -f "/root/llm/bench/results/$1.done" ] && continue
+    if tail -1 "/root/llm/bench/results/$1.log" 2>/dev/null | grep -q "^results:"; then touch "/root/llm/bench/results/$1.done"; continue; fi
+    kill -0 "$(cat /root/llm/bench/results/$1.pid 2>/dev/null)" 2>/dev/null && continue
+    bench "$1" "$2"
+  done
+}
 
 for s in $SIZES; do
   OUT="out/$s-v2"
   if ls "$OUT"/*.gguf >/dev/null 2>&1; then
     log "== $s: already trained ($OUT)"
   else
-    log "== $s: training on $DATA, max-seq $(maxseq $s)"
-    python train.py --data "$DATA" --base "$(hf_name $s)" --out "$OUT" --max-seq "$(maxseq $s)" --gguf "$(quant $s)" > "train-$s-v2.out" 2>&1 \
-      || { log "$s: training FAILED, see train-$s-v2.out"; tail -20 "train-$s-v2.out"; continue; }
+    fails=$(cat "$OUT.failures" 2>/dev/null || echo 0)
+    if (( fails >= 3 )); then log "== $s: training failed $fails times, giving up (see train-$s-v2.out)"; continue; fi
+    log "== $s: training on $DATA, max-seq $(maxseq $s) (attempt $((fails + 1)))"
+    python train.py --data "$DATA" --base "$(hf_name $s)" --out "$OUT" --max-seq "$(maxseq $s)" --gguf "$(quant $s)" >> "train-$s-v2.out" 2>&1 \
+      || { echo $((fails + 1)) > "$OUT.failures"; log "$s: training FAILED, see train-$s-v2.out"; tail -20 "train-$s-v2.out"; continue; }
   fi
   gguf=$(find "$OUT" -name "$(ggufglob $s)" | head -1)
   [ -n "$gguf" ] || { log "$s: no GGUF in $OUT"; continue; }
@@ -84,19 +105,25 @@ if not any(m["id"] == mid for m in models):
     models.append({**base, "id": mid, "name": f"Qwen3.5 {s} agent v2"})
     json.dump(d, open(p, "w"), indent=2)
 PY
+  if [ -f "/root/llm/bench/results/ft${s}-v2.done" ]; then log "== $s: benchmark already done"; continue; fi
   bench "ft${s}-v2" "ft${s}-v2"
   wait_pid "$(cat /root/llm/bench/results/ft${s}-v2.pid)"
+  grep -q "^results:" <(tail -1 "/root/llm/bench/results/ft${s}-v2.log") && touch "/root/llm/bench/results/ft${s}-v2.done"
   log "== $s: benchmark done"
   (cd /root/llm/bench && node src/cli.ts report --run-id "ft${s}-v2" > /dev/null 2>&1; sed -n '/Attempts and partial/,/Failure reasons/p' "results/report-ft${s}-v2.md")
 done
 
-if [[ "${WITH_TEACHER:-0}" == "1" ]]; then
+after_main
+if [[ "${WITH_TEACHER:-1}" == "1" ]] && [ ! -f /root/llm/bench/results/teacher35b-pilot.done ]; then
   log "== local teacher candidate: Qwen3.5-35B-A3B on the pilot tasks"
   ollama pull qwen3.5:35b-a3b >/dev/null 2>&1 && mk qwen3.5:35b-a3b-32k qwen3.5:35b-a3b ''
   cat > /root/llm/bench/configs/teacher35b.json <<'JSON'
 { "description": "Qwen3.5-35B-A3B as a local teacher candidate.", "model": "ollama/qwen3.5:35b-a3b-32k", "thinking": "off", "contextFiles": true, "skills": true, "timeoutSec": 900 }
 JSON
-  REPS=1 BENCH_TASKS_DIR=/root/llm/bench/pool-fs/tasks bench teacher35b-pilot teacher35b "$(cat /root/llm/bench/pilot-fs.txt)"
+  if ! kill -0 "$(cat /root/llm/bench/results/teacher35b-pilot.pid 2>/dev/null)" 2>/dev/null; then
+    REPS=1 BENCH_TASKS_DIR=/root/llm/bench/pool-fs/tasks bench teacher35b-pilot teacher35b "$(cat /root/llm/bench/pilot-fs.txt)"
+  fi
+  tail -1 /root/llm/bench/results/teacher35b-pilot.log 2>/dev/null | grep -q "^results:" && touch /root/llm/bench/results/teacher35b-pilot.done
 fi
 
 log "== session script done; benchmarks may still be running: tail -f /root/llm/bench/results/*.log"

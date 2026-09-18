@@ -135,7 +135,10 @@ def main() -> None:
             eval_steps=50,
             per_device_eval_batch_size=1,
             prediction_loss_only=True,
-            save_strategy="epoch",
+            # A checkpoint every 25 optimizer steps (about 200 examples): a crash costs minutes, not hours.
+            save_strategy="steps",
+            save_steps=25,
+            save_total_limit=2,
             output_dir=str(args.out / "checkpoints"),
             report_to="none",
             seed=42,
@@ -147,7 +150,11 @@ def main() -> None:
         instruction_part="<|im_start|>user\n",
         response_part="<|im_start|>assistant\n",
     )
-    stats = trainer.train()
+    # Resume from the last checkpoint when there is one (the session watchdog re-runs the script after a crash).
+    ckpts = sorted((args.out / "checkpoints").glob("checkpoint-*"), key=lambda p: int(p.name.split("-")[-1])) if (args.out / "checkpoints").exists() else []
+    if ckpts:
+        print("resuming from", ckpts[-1])
+    stats = trainer.train(resume_from_checkpoint=str(ckpts[-1]) if ckpts else None)
     print("train stats:", stats)
 
     adapter_dir = args.out / "lora"
