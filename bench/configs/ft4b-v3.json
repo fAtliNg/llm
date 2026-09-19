@@ -1,0 +1,1 @@
+{ "description": "Qwen3.5 4B fine-tuned on dataset v3 (second cycle: form-filtered teacher, repair, rescue, own successes), harness, 15-minute limit.", "model": "ollama/qwen3.5-4b-agent:v3", "thinking": "off", "contextFiles": true, "skills": true, "timeoutSec": 900 }
