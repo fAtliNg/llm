@@ -39,11 +39,47 @@ Full-stack TypeScript app in one package: React 19 SPA (Vite), Hono API, SQLite.
 - TypeScript is strict: no `any`, no non-null assertions outside tests, handle `undefined` from indexed access.
 - Stay inside the project directory. Use relative paths. Do not delete directories.
 
+## New entity: use the generator
+
+A whole new entity (its own table, API, list page and form) is not written by hand. Describe it in `entities/<plural>.json` and run:
+
+```
+npm run gen:entity -- entities/<plural>.json
+```
+
+It creates the contract, the table with a migration, seed rows, REST routes under `/api/<plural>` with tests, RTK Query endpoints, the form, the list, the pages at `/<plural>` and `/<plural>/new`, the route and the navigation link, all in the `tasks` patterns. `npm run verify` passes right after it. Then add only what the task needs beyond that: business rules, relations, extra endpoints, custom UI. The generator is not for changing an entity that already exists: edit that by hand.
+
+The description, `fields` in the order of the form:
+
+```json
+{
+  "singular": "employee",
+  "plural": "employees",
+  "fields": [
+    { "name": "name", "label": "Name", "kind": "text", "max": 100 },
+    { "name": "email", "label": "Email", "kind": "email", "unique": true },
+    {
+      "name": "department",
+      "label": "Department",
+      "kind": "enum",
+      "options": [
+        ["engineering", "Engineering"],
+        ["design", "Design"]
+      ],
+      "default": "engineering"
+    },
+    { "name": "startDate", "label": "Start date", "kind": "date", "optional": true }
+  ]
+}
+```
+
+Field kinds: `text` (`max`, optional `min`, `unique`), `email` (`unique`), `textarea` (`max`, `optional`), `enum` (`options` as `[value, label]` pairs, optional `default`), `bool` (`default`), `int` (`min`, `max`), `money` (up to two decimals, greater than 0), `date` (ISO date, `optional` makes it nullable). Optional keys: `columns` (field names shown in the table, the first names the row and must be a text or email field; by default the first text field and up to three others) and `seeds` (at least two rows; by default two are made up). A unique field answers 409 with `{ "message": "A <singular> with this <label> already exists" }`; a required text field shows `<Label> is required`.
+
 ## Work in stages
 
 A feature that crosses layers is built in this order, and `npm run verify` must pass before moving to the next stage:
 
-1. Contract in `shared/`, table in `server/db/schema.ts`, `npm run db:generate`, seed rows if useful.
+1. Contract in `shared/`, table in `server/db/schema.ts`, `npm run db:generate`, seed rows if useful. For a whole new entity this stage and stages 2–5 come from `npm run gen:entity`: run it, verify, then adapt.
 2. Routes and their tests, registered in `server/app.ts`.
 3. RTK Query endpoints.
 4. Components, page, route, navigation link.

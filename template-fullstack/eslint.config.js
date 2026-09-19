@@ -45,7 +45,7 @@ export default tseslint.config(
 
   {
     // The API runs in Node, not in the browser.
-    files: ['server/**', 'drizzle.config.ts'],
+    files: ['server/**', 'scripts/**', 'drizzle.config.ts'],
     languageOptions: { globals: globals.node },
     rules: { 'react-refresh/only-export-components': 'off' },
   },

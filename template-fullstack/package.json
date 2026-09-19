@@ -15,6 +15,7 @@
     "preview": "vite preview",
     "db:generate": "drizzle-kit generate",
     "db:seed": "tsx server/db/seed.ts",
+    "gen:entity": "tsx scripts/gen-entity.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

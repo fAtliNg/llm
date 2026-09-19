@@ -25,5 +25,13 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "server", "shared", "vite.config.ts", "drizzle.config.ts", "eslint.config.js"]
+  "include": [
+    "src",
+    "server",
+    "shared",
+    "scripts",
+    "vite.config.ts",
+    "drizzle.config.ts",
+    "eslint.config.js"
+  ]
 }
