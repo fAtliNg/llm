@@ -1,78 +1,73 @@
-# Замер v2 на ПК, промежуточный (20 из 36 задач), 2026-09-20
+# Замер v2 на ПК, промежуточный (32 из 36 задач), 2026-09-20
 
-Остановлен в 00:24 на выключение ПК; прогон продолжается с места остановки (`~/kpi-queue2.sh` на ПК). Условия: один агент, 15 минут, Docker, стенд v2.0.
+Остановлен в 13:07 на выключение ПК (остались F11-ru и F12 ×3); прогон продолжается с места остановки (`~/kpi-queue2.sh` на ПК). Условия: один агент, 15 минут, Docker, стенд v2.0.
 
-
-### Solved by layer
-
-| config | cross | query | all |
-|---|---|---|---|
-| ft4b-v2 | 0% (0/17) | 100% (3/3) | 15% (3/20) |
+| ft4b-v2 | 0% (0/29) | 100% (3/3) | 9% (3/32) |
 
 ### Solved by difficulty
 
 | config | 1 | 2 | 3 | all |
 |---|---|---|---|---|
-| ft4b-v2 | - | 25% (3/12) | 0% (0/8) | 15% (3/20) |
+| ft4b-v2 | - | 21% (3/14) | 0% (0/18) | 9% (3/32) |
 
 ### Solved by formulation
 
 | config | spec | product | all |
 |---|---|---|---|
-| ft4b-v2 | - | 15% (3/20) | 15% (3/20) |
+| ft4b-v2 | - | 9% (3/32) | 9% (3/32) |
 
 ### Solved by prompt language and style
 
 | config | en | ru | ru chat | all |
 |---|---|---|---|---|
-| ft4b-v2 | 14% (1/7) | 17% (1/6) | 14% (1/7) | 15% (3/20) |
+| ft4b-v2 | 9% (1/11) | 10% (1/10) | 9% (1/11) | 9% (3/32) |
 
 ### Solved by benchmark version
 
 | config | v1 front-end | v2 full-stack | all |
 |---|---|---|---|
-| ft4b-v2 | - | 15% (3/20) | 15% (3/20) |
+| ft4b-v2 | - | 9% (3/32) | 9% (3/32) |
 
 ### Attempts and partial score
 
 | config | scope | tasks | attempts/task | solved per attempt | solved in any attempt | solved in every attempt | hidden tests passed |
 |---|---|---|---|---|---|---|---|
-| ft4b-v2 | all | 20 | 1.0 | 15% (3/20) | 15% (3/20) | 15% (3/20) | 39% |
-| ft4b-v2 | difficulty 2-3 | 20 | 1.0 | 15% (3/20) | 15% (3/20) | 15% (3/20) | 39% |
-| ft4b-v2 | difficulty 3 | 8 | 1.0 | 0% (0/8) | 0% (0/8) | 0% (0/8) | 2% |
-| ft4b-v2 | v2, difficulty 2-3 | 20 | 1.0 | 15% (3/20) | 15% (3/20) | 15% (3/20) | 39% |
+| ft4b-v2 | all | 32 | 1.0 | 9% (3/32) | 9% (3/32) | 9% (3/32) | 28% |
+| ft4b-v2 | difficulty 2-3 | 32 | 1.0 | 9% (3/32) | 9% (3/32) | 9% (3/32) | 28% |
+| ft4b-v2 | difficulty 3 | 18 | 1.0 | 0% (0/18) | 0% (0/18) | 0% (0/18) | 2% |
+| ft4b-v2 | v2, difficulty 2-3 | 32 | 1.0 | 9% (3/32) | 9% (3/32) | 9% (3/32) | 28% |
 
 ### Failure reasons
 
 | config | reason | count |
 |---|---|---|
-| ft4b-v2 | timeout | 10 |
-| ft4b-v2 | typecheck | 6 |
+| ft4b-v2 | timeout | 17 |
+| ft4b-v2 | typecheck | 11 |
 | ft4b-v2 | wrong-behavior | 1 |
 
 ### Agent behaviour
 
 | config | runs | ran verify | tool errors/run | turns/run | minutes/run |
 |---|---|---|---|---|---|
-| ft4b-v2 | 20 | 85% (17/20) | 8.8 | 51.6 | 10.6 |
+| ft4b-v2 | 32 | 69% (22/32) | 8.5 | 53.9 | 11.1 |
 
 ### Trajectory shape
 
 | config | runs | calls before first edit | calls after last green verify | ends on green verify | saw red verify | repaired after red | never edited |
 |---|---|---|---|---|---|---|---|
-| ft4b-v2 | 20 | 22.6 | 4.1 | 15% (3/20) | 10% (2/20) | 50% (1/2) | 0% (0/20) |
+| ft4b-v2 | 32 | 24.8 | 10.3 | 9% (3/32) | 9% (3/32) | 33% (1/3) | 0% (0/32) |
 
 ### Safety
 
 | config | runs | runs that left the workspace | runs with destructive commands | runs with network calls | calls with absolute paths |
 |---|---|---|---|---|---|
-| ft4b-v2 | 20 | 10% (2/20) | 0% (0/20) | 0% (0/20) | 0% (3/1362) |
+| ft4b-v2 | 32 | 6% (2/32) | 0% (0/32) | 0% (0/32) | 0% (3/2304) |
 
 ### Time per config
 
 | config | runs | median min | mean min | max min | total hours |
 |---|---|---|---|---|---|
-| ft4b-v2 | 20 | 15.0 | 10.6 | 15.3 | 3.5 |
+| ft4b-v2 | 32 | 15.0 | 11.1 | 15.3 | 5.9 |
 
 ### Per task
 
@@ -98,6 +93,18 @@
 | F06-bookings-fix-overlap-ru | ft4b-v2 | 1 | solved | 1.3 | 19 | bash 11, read 6, edit 4 | 3 | 3 | 0.2 |
 | F07-employee-manager | ft4b-v2 | 1 | typecheck | 4.2 | 30 | bash 5, read 45, edit 7, write 1 | 5 | 0 | 0.5 |
 | F07-employee-manager-chat | ft4b-v2 | 1 | timeout | 15.3 | 105 | bash 50, read 31, edit 19, write 15 | 23 | 11 | 0.4 |
+| F07-employee-manager-ru | ft4b-v2 | 1 | typecheck | 4.1 | 42 | bash 9, read 35, edit 13, write 4, search 1 | 8 | 0 | 0.3 |
+| F08-invoices | ft4b-v2 | 1 | typecheck | 12.3 | 81 | bash 18, read 68, write 25, edit 9 | 10 | 0 | 0.4 |
+| F08-invoices-chat | ft4b-v2 | 1 | typecheck | 1.6 | 37 | bash 34, write 9, read 1, edit 1 | 4 | 0 | 0.3 |
+| F08-invoices-ru | ft4b-v2 | 1 | typecheck | 10.7 | 86 | read 42, bash 42, write 9, edit 19 | 12 | 11 | 0.4 |
+| F09-projects | ft4b-v2 | 1 | timeout | 15.0 | 92 | bash 25, write 35, edit 7, read 38 | 5 | 3 | 0.3 |
+| F09-projects-chat | ft4b-v2 | 1 | timeout | 15.0 | 48 | read 33, bash 7, write 8, edit 22 | 15 | 0 | 0.5 |
+| F09-projects-ru | ft4b-v2 | 1 | timeout | 15.0 | 35 | bash 8, read 38, write 10, edit 4 | 3 | 0 | 2.6 |
+| F10-contacts | ft4b-v2 | 1 | typecheck | 10.5 | 39 | read 40, bash 16, write 5, edit 4 | 3 | 0 | 0.8 |
+| F10-contacts-chat | ft4b-v2 | 1 | timeout | 15.0 | 43 | bash 11, read 48, write 4, edit 11 | 8 | 0 | 0.8 |
+| F10-contacts-ru | ft4b-v2 | 1 | timeout | 15.0 | 50 | bash 12, read 44, write 11, edit 8 | 5 | 3 | 0.8 |
+| F11-bookings-cancel | ft4b-v2 | 1 | timeout | 15.0 | 73 | read 40, bash 16, edit 26, write 6 | 15 | 1 | 0.5 |
+| F11-bookings-cancel-chat | ft4b-v2 | 1 | timeout | 15.0 | 65 | bash 33, write 8, edit 16, read 7, batch 2 | 8 | 3 | 0.8 |
 
 ### Observations per run
 
@@ -281,6 +288,126 @@
 - Did not touch files the reference solution changes: drizzle/0002_modern_union_jack.sql, drizzle/meta/0002_snapshot.json, src/features/employees/employee-form.test.tsx, src/features/employees/employee-list.tsx, src/pages/employee-new-page.tsx, src/pages/employees-page.test.tsx.
 - Result does not typecheck: see typecheck.log.
 - changed: - drizzle/0000_init.sql, - drizzle/0001_add_employees.sql, - drizzle/meta/0000_snapshot.json, - drizzle/meta/0001_snapshot.json, - drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/db/seed.ts, ~ server/features/employees/routes.test.ts, ~ server/features/employees/routes.ts, ~ server/test-db.ts, ~ shared/employees.ts, ~ src/features/employees/employee-form.tsx
+
+**F07-employee-manager-ru · ft4b-v2 · rep 1** — failed: typecheck, 4.1 min
+- shape: bash(read)×2 → read×10 → bash(read) → read×4 → bash(read)! → bash(read)×2 → read×3 → bash(read) → edit → edit! → edit → bash → read → edit! → read → edit! → edit → read → edit! → read → write → read → write → edit → read → edit×2 → edit! → read → write → read×2 → read! → bash(read) → read → edit → read×2 → edit → read → search! → read×4 → write
+- 5 failed edit/write calls (wrong path or oldText not found).
+- Never ran the verification (npm run verify / tests).
+- 42 turns for a difficulty 3 task.
+- Did not touch files the reference solution changes: drizzle/0002_modern_union_jack.sql, server/db/seed.ts, server/features/employees/routes.test.ts, src/features/employees/employee-form.test.tsx, src/features/employees/employee-list.tsx, src/pages/employee-new-page.tsx, src/pages/employees-page.test.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0002_absurd_lucky_pierre.sql, + drizzle/meta/0002_snapshot.json, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/features/employees/routes.ts, ~ shared/employees.ts, ~ src/features/employees/employee-form.tsx
+
+**F08-invoices · ft4b-v2 · rep 1** — failed: typecheck, 12.3 min
+- shape: bash(read) → read×36 → read! → write×3 → bash → read → bash(read) → bash → read! → bash(read)×2 → write → edit! → read → edit → edit! → edit → read → write×2 → edit! → write×3 → read×2 → write → read×2 → bash(read) → read×3 → edit! → write×2 → read×2 → bash(read)×2 → bash(read)! → bash(read)×3 → write×2 → read! → bash(read) → read×3 → bash(read) → read×3 → edit!×2 → read → edit → bash(read) → write → read → write×2 → read×2 → bash(read) → read×3 → write×5 → bash(read) → read×2 → write×3 → read×2
+- 6 failed edit/write calls (wrong path or oldText not found).
+- Never ran the verification (npm run verify / tests).
+- 81 turns for a difficulty 3 task.
+- 0.91M input tokens processed: the context grew large and was re-sent every turn.
+- Did not touch files the reference solution changes: drizzle/0001_perpetual_colonel_america.sql, drizzle/meta/0001_snapshot.json, server/features/invoices/routes.test.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/invoices/invoice-form.test.tsx, src/features/invoices/invoice-list.tsx, src/pages/invoice-new-page.tsx, src/pages/invoices-page.test.tsx, src/pages/invoices-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0001_accounts.sql, + server/features/invoices/routes.ts, + shared/invoices.ts, + src/features/invoices/api.ts, + src/features/invoices/invoice-badges.tsx, + src/features/invoices/invoice-form.tsx, + src/features/invoices/model.ts, + src/pages/invoices-edit-page.tsx, + src/pages/invoices-list-page.tsx, + src/pages/invoices-new-page.tsx, ~ drizzle/meta/_journal.json, ~ server/app.ts, ~ server/db/schema.ts, ~ server/db/seed.ts
+
+**F08-invoices-chat · ft4b-v2 · rep 1** — failed: typecheck, 1.6 min
+- shape: bash(read) → bash×5 → bash(read)×2 → bash(read)! → bash → bash(read)×3 → write×4 → bash(read) → write×3 → bash → bash(read) → bash → bash(read) → bash! → bash → bash(read)×3 → bash → bash(read) → bash! → bash(read) → bash(read)! → write → bash → write → bash(read)×3 → bash → read → bash(read) → edit
+- Read files through bash 20 times (cat/grep/sed) versus 1 read calls.
+- Never ran the verification (npm run verify / tests).
+- 37 turns for a difficulty 3 task.
+- Did not touch files the reference solution changes: drizzle/0001_perpetual_colonel_america.sql, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/invoices/api.ts, src/features/invoices/invoice-form.test.tsx, src/features/invoices/invoice-form.tsx, src/features/invoices/invoice-list.tsx, src/pages/invoice-new-page.tsx, src/pages/invoices-page.test.tsx, src/pages/invoices-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/meta/0001_snapshot.json, + server/db/0000_invoices.sql, + server/features/invoices/routes.test.ts, + server/features/invoices/routes.ts, + shared/invoices.ts, + src/features/invoices/model.ts, ~ drizzle/meta/_journal.json, ~ server/app.ts, ~ server/db/schema.ts, ~ server/db/seed.ts
+
+**F08-invoices-ru · ft4b-v2 · rep 1** — failed: typecheck, 10.7 min
+- shape: read → bash(read)×2 → read×14 → bash(read) → read×5 → read! → bash(read) → read×4 → bash(read) → read! → read×3 → bash(read) → read×3 → bash(read) → write → edit! → bash(read) → edit → edit! → bash(read)! → bash(read) → edit → edit! → bash(read) → edit → bash → edit → bash → bash(read) → edit×2 → bash(verify) → write×2 → edit! → read → write → bash(verify) → bash(read) → bash → bash(read) → write×2 → bash(verify) → write → bash(verify) → write×2 → bash(read) → bash(verify) → read×3 → bash(read) → edit×2 → bash(verify) → bash(read) → edit → bash(read) → read → edit → bash(verify) → read! → bash(read)×2 → edit → bash(verify) → read → bash(read)×2 → bash(read)! → bash(read)×2 → edit! → read → edit → bash(verify) → bash(read) → bash(verify) → read → bash(read) → bash(verify) → edit! → bash(read) → edit! → read
+- 7 failed edit/write calls (wrong path or oldText not found).
+- Repeated identical bash commands 7 times.
+- Ran verification 11 times.
+- 86 turns for a difficulty 3 task.
+- 0.71M input tokens processed: the context grew large and was re-sent every turn.
+- Did not touch files the reference solution changes: drizzle/0001_perpetual_colonel_america.sql, server/app.ts, server/features/invoices/routes.test.ts, server/features/invoices/routes.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/invoices/api.ts, src/features/invoices/invoice-form.test.tsx, src/features/invoices/invoice-form.tsx, src/features/invoices/invoice-list.tsx, src/features/invoices/model.ts, src/pages/invoice-new-page.tsx, src/pages/invoices-page.test.tsx, src/pages/invoices-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0001_tense_tiger_shark.sql, + drizzle/meta/0001_snapshot.json, + shared/invoices.ts, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/db/seed.ts
+
+**F09-projects · ft4b-v2 · rep 1** — failed: typecheck, 15.0 min
+- shape: bash(read) → bash×11 → bash(read) → write → edit! → read → edit×2 → read → write → bash → bash(read) → edit → bash → read → write×3 → edit → read → write×9 → read! → bash(read) → read → write×2 → read×2 → write → read! → bash(read) → read×3 → bash(read) → read×3 → write×3 → read×7 → edit → read×2 → read! → bash(read)×2 → bash(verify) → read → write → bash(verify) → read×2 → write → read → write×4 → read×3 → write → read → bash(verify) → read → write → bash(read) → write×2 → read → write → edit! → write×2 → read×2 → write → read → write
+- Timed out after 15 min without finishing.
+- 2 failed edit/write calls (wrong path or oldText not found).
+- 92 turns for a difficulty 3 task.
+- 0.95M input tokens processed: the context grew large and was re-sent every turn.
+- Did not touch files the reference solution changes: drizzle/0001_add_projects.sql, server/features/projects/routes.test.ts, server/features/tasks/routes.test.ts, server/features/tasks/routes.ts, shared/tasks.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/projects/project-form.test.tsx, src/features/tasks/api.test.ts, src/features/tasks/api.ts, src/features/tasks/task-form.test.tsx, src/features/tasks/task-form.tsx, src/features/tasks/task-list.tsx, src/pages/project-new-page.tsx, src/pages/projects-page.test.tsx, src/pages/task-edit-page.tsx, src/pages/task-new-page.tsx, src/pages/task-project.test.tsx, src/pages/tasks-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0001_empty_edwin_jarvis.sql, + drizzle/0002_new_micromax.sql, + drizzle/0003_add_project_id_to_tasks.sql, + drizzle/meta/0001_snapshot.json, + drizzle/meta/0002_snapshot.json, + server/features/projects/routes.ts, + shared/projects.ts, + src/features/projects/api.ts, + src/features/projects/delete-project-button.tsx, + src/features/projects/delete-project-dialog.tsx, + src/features/projects/model.ts, + src/features/projects/project-badges.tsx, + src/features/projects/project-form.tsx, + src/features/projects/project-list.test.tsx, + src/features/projects/project-list.tsx, + src/features/projects/project-new-form.tsx, + src/pages/projects-page.tsx, ~ drizzle/meta/_journal.json, ~ server/app.ts, ~ server/db/schema.ts, ~ server/db/seed.ts
+
+**F09-projects-chat · ft4b-v2 · rep 1** — failed: typecheck, 15.0 min
+- shape: read → bash(read) → read×8 → bash(read) → read×14 → bash(read)×2 → read×2 → read! → write → edit!×2 → read → write×2 → edit → edit! → edit → write → edit → write → edit!×2 → read → bash(read) → write → edit!×2 → read → edit! → read → write → read → edit! → edit×3 → edit! → edit → edit! → read → edit → write → edit!×2 → read → edit → bash(read) → bash!
+- Timed out after 15 min without finishing.
+- 13 failed edit/write calls (wrong path or oldText not found).
+- Never ran the verification (npm run verify / tests).
+- 48 turns for a difficulty 3 task.
+- Did not touch files the reference solution changes: drizzle/0001_add_projects.sql, drizzle/meta/0001_snapshot.json, drizzle/meta/_journal.json, server/features/projects/routes.test.ts, server/features/tasks/routes.test.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/projects/api.ts, src/features/projects/model.ts, src/features/projects/project-form.test.tsx, src/features/projects/project-form.tsx, src/features/projects/project-list.tsx, src/features/tasks/api.test.ts, src/features/tasks/api.ts, src/features/tasks/task-form.test.tsx, src/features/tasks/task-form.tsx, src/features/tasks/task-list.tsx, src/pages/project-new-page.tsx, src/pages/projects-page.test.tsx, src/pages/projects-page.tsx, src/pages/task-edit-page.tsx, src/pages/task-new-page.tsx, src/pages/task-project.test.tsx, src/pages/tasks-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + server/features/projects/routes.ts, + shared/projects.ts, ~ server/app.ts, ~ server/db/schema.ts, ~ server/db/seed.ts, ~ server/features/tasks/routes.ts, ~ shared/tasks.ts
+
+**F09-projects-ru · ft4b-v2 · rep 1** — failed: typecheck, 15.0 min
+- shape: bash(read)×2 → read×34 → bash(read) → write → edit×2 → write → bash → read → write → bash → read×2 → write → bash! → edit! → write×2 → bash! → read → write → bash → write → edit → write×2
+- Timed out after 15 min without finishing.
+- 1 failed edit/write calls (wrong path or oldText not found).
+- Repeated identical bash commands 3 times.
+- Never ran the verification (npm run verify / tests).
+- 35 turns for a difficulty 3 task.
+- Did not touch files the reference solution changes: drizzle/0001_add_projects.sql, server/app.ts, server/features/projects/routes.test.ts, server/features/tasks/routes.test.ts, server/features/tasks/routes.ts, shared/tasks.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/projects/api.ts, src/features/projects/model.ts, src/features/projects/project-form.test.tsx, src/features/projects/project-form.tsx, src/features/projects/project-list.tsx, src/features/tasks/api.test.ts, src/features/tasks/api.ts, src/features/tasks/task-form.test.tsx, src/features/tasks/task-form.tsx, src/features/tasks/task-list.tsx, src/pages/project-new-page.tsx, src/pages/projects-page.test.tsx, src/pages/projects-page.tsx, src/pages/task-edit-page.tsx, src/pages/task-new-page.tsx, src/pages/task-project.test.tsx, src/pages/tasks-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0001_ancient_korvac.sql, + drizzle/meta/0001_snapshot.json, + server/features/projects/routes.ts, + shared/projects.ts, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/db/seed.ts
+
+**F10-contacts · ft4b-v2 · rep 1** — failed: typecheck, 10.5 min
+- shape: read×5 → bash(read) → read×2 → read! → read → bash(read) → read×18 → bash(read) → read×2 → bash(read) → read×3 → bash(read)! → read×2 → bash(read) → write → read → write → edit → edit! → read → edit → read → write×3 → read → bash(read) → bash → read → bash(read) → bash → bash(read)×2 → read → bash(read) → bash → edit → bash×2
+- 1 failed edit/write calls (wrong path or oldText not found).
+- Never ran the verification (npm run verify / tests).
+- 39 turns for a difficulty 3 task.
+- Did not touch files the reference solution changes: drizzle/0001_add_contacts.sql, drizzle/meta/0001_snapshot.json, server/app.ts, server/db/seed.ts, server/features/contacts/routes.test.ts, server/features/contacts/routes.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/contacts/api.ts, src/features/contacts/contact-form.test.tsx, src/features/contacts/contact-form.tsx, src/features/contacts/contact-list.tsx, src/features/contacts/model.ts, src/pages/contact-new-page.tsx, src/pages/contacts-page.test.tsx, src/pages/contacts-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + shared/contacts.ts, - drizzle/0000_init.sql, - drizzle/meta/0000_snapshot.json, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts
+
+**F10-contacts-chat · ft4b-v2 · rep 1** — failed: typecheck, 15.0 min
+- shape: bash(read)×2 → read×25 → bash(read) → read → read! → read×8 → read! → bash(read)! → read×4 → write → edit! → write → edit! → read → edit×2 → bash → edit → read → edit → bash → read → write → bash×2 → edit → write! → edit! → edit×2 → read×4 → bash(read) → edit! → read → bash×2
+- Timed out after 15 min without finishing.
+- 5 failed edit/write calls (wrong path or oldText not found).
+- Never ran the verification (npm run verify / tests).
+- 43 turns for a difficulty 3 task.
+- Did not touch files the reference solution changes: drizzle/0001_add_contacts.sql, drizzle/meta/0001_snapshot.json, server/app.ts, server/features/contacts/routes.test.ts, server/features/contacts/routes.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/contacts/api.ts, src/features/contacts/contact-form.test.tsx, src/features/contacts/contact-form.tsx, src/features/contacts/contact-list.tsx, src/features/contacts/model.ts, src/pages/contact-new-page.tsx, src/pages/contacts-page.test.tsx, src/pages/contacts-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0001_contacts.sql, + shared/contacts.ts, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/db/seed.ts
+
+**F10-contacts-ru · ft4b-v2 · rep 1** — failed: typecheck, 15.0 min
+- shape: bash(read) → read×24 → bash(read) → read×4 → write → edit → read → write → read → write → bash → read → write → edit! → read → write → edit → write×2 → read → bash(verify) → edit!×2 → read → edit → read → edit → read×3 → bash(read) → read → bash(verify) → bash → bash! → read! → read → bash(read)×2 → read×2 → bash(read) → write×2 → edit → bash(verify) → write×2 → read
+- Timed out after 15 min without finishing.
+- 3 failed edit/write calls (wrong path or oldText not found).
+- 50 turns for a difficulty 3 task.
+- Did not touch files the reference solution changes: drizzle/0001_add_contacts.sql, server/app.ts, src/api/base-api.ts, src/app/root-layout.tsx, src/app/router.tsx, src/features/contacts/api.ts, src/features/contacts/contact-form.test.tsx, src/features/contacts/contact-form.tsx, src/features/contacts/contact-list.tsx, src/features/contacts/model.ts, src/pages/contact-new-page.tsx, src/pages/contacts-page.test.tsx, src/pages/contacts-page.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0001_colorful_dragon_lord.sql, + drizzle/meta/0001_snapshot.json, + server/features/contacts/routes.test.ts, + server/features/contacts/routes.ts, + shared/contacts.ts, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/db/seed.ts
+
+**F11-bookings-cancel · ft4b-v2 · rep 1** — failed: typecheck, 15.0 min
+- shape: read×2 → bash(read) → read×10 → read! → read → bash(read) → read×3 → bash(read)×3 → edit! → read → edit!×3 → edit×2 → write → bash → edit → bash → read×2 → edit → edit! → read → edit!×2 → read → edit×2 → read → edit! → bash(read) → write → edit! → read → edit! → edit → bash(read)×3 → write×4 → edit! → read×2 → edit → read×2 → edit → bash(read)×3 → edit → read×2 → edit×2 → read → bash(verify)! → bash(read) → read×4 → edit → read → edit! → read×2 → edit! → read×2
+- Timed out after 15 min without finishing.
+- 13 failed edit/write calls (wrong path or oldText not found).
+- 73 turns for a difficulty 2 task.
+- 0.55M input tokens processed: the context grew large and was re-sent every turn.
+- Did not touch files the reference solution changes: drizzle/0002_add_booking_cancelled_at.sql, src/features/bookings/cancel-booking-button.tsx, src/pages/bookings-page.test.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0002_gray_alex_power.sql, + drizzle/meta/0002_snapshot.json, + src/features/bookings/cancel-button.tsx, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/db/seed.ts, ~ server/features/bookings/routes.test.ts, ~ server/features/bookings/routes.ts, ~ shared/bookings.ts, ~ src/features/bookings/api.ts, ~ src/features/bookings/booking-list.tsx
+
+**F11-bookings-cancel-chat · ft4b-v2 · rep 1** — failed: typecheck, 15.0 min
+- shape: bash(read) → bash×11 → bash(read) → write → edit → bash → bash(read) → edit! → edit → read → edit×3 → write×2 → edit×3 → edit! → read → edit! → write → edit → bash → bash! → bash(read) → write → edit → bash(verify) → bash(read)×4 → read → edit → edit! → bash → write×2 → edit → bash(read)×3 → bash(verify) → write → batch! → bash(verify) → batch! → read → bash(read) → read×3 → bash(read)! → bash(read)×2
+- Timed out after 15 min without finishing.
+- Read files through bash 15 times (cat/grep/sed) versus 7 read calls.
+- 4 failed edit/write calls (wrong path or oldText not found).
+- Kept working 3.4 min after the last edit.
+- 65 turns for a difficulty 2 task.
+- 0.61M input tokens processed: the context grew large and was re-sent every turn.
+- Did not touch files the reference solution changes: drizzle/0002_add_booking_cancelled_at.sql, server/db/seed.ts, src/pages/bookings-page.test.tsx.
+- Result does not typecheck: see typecheck.log.
+- changed: + drizzle/0002_large_bishop.sql, + drizzle/meta/0002_snapshot.json, + src/features/bookings/cancel-booking-button.tsx, ~ drizzle/meta/_journal.json, ~ server/db/schema.ts, ~ server/features/bookings/routes.test.ts, ~ server/features/bookings/routes.ts, ~ shared/bookings.ts, ~ src/features/bookings/api.ts, ~ src/features/bookings/booking-list.tsx, ~ src/features/bookings/model.ts
 
 
 written to /work/llm/bench/results/report-kpi-ft4b-v2.md
