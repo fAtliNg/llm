@@ -55,7 +55,7 @@ async function runChecks(workspace: string, task: Task): Promise<{ ok: boolean; 
   const failures: string[] = [];
   for (const check of task.checks) {
     if (check.type === 'command') {
-      const result = await exec('/bin/zsh', ['-c', check.run], { cwd: workspace, timeoutMs: STAGE_TIMEOUT });
+      const result = await exec('/bin/bash', ['-c', check.run], { cwd: workspace, timeoutMs: STAGE_TIMEOUT });
       const failed = result.code !== 0 || result.timedOut;
       if ((check.expect === 'fail') !== failed) {
         failures.push(`${check.label ?? check.run}: expected to ${check.expect}, exit ${String(result.code)}`);
