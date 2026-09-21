@@ -16,6 +16,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/guide/introduction' },
       { text: 'Concepts', link: '/concepts/overview' },
+      { text: 'Objects', link: '/objects/' },
       { text: 'Reference', link: '/reference/entity-spec' },
       { text: 'Internals', link: '/internals/pipeline' },
     ],
@@ -37,6 +38,17 @@ export default defineConfig({
           { text: 'Generated code', link: '/concepts/generated-code' },
           { text: 'Rules and hooks', link: '/concepts/rules-and-hooks' },
           { text: 'The model', link: '/concepts/the-model' },
+        ],
+      },
+      {
+        text: 'Objects',
+        items: [
+          { text: 'Overview', link: '/objects/' },
+          { text: 'Page', link: '/objects/page' },
+          { text: 'Table', link: '/objects/table' },
+          { text: 'Form', link: '/objects/form' },
+          { text: 'Panel', link: '/objects/panel' },
+          { text: 'Field', link: '/objects/field' },
         ],
       },
       {
