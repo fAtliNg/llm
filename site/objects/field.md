@@ -1,6 +1,22 @@
 # Field
 
-`type: "field"`. The smallest building block; every container is props plus a list of these. A field is one control from the component library and never contains other objects.
+The smallest building block; every container is a few keys plus a `fields` list of these. A field is one component from the component library and never contains other objects.
+
+## Keys
+
+| Key | Type | Meaning |
+|---|---|---|
+| `type` | string | Name of a component folder in `src/components/ui`: `button`, `input`, `select`… This is how the field is matched to its component |
+| `id` | string | Unique within the description |
+| `props` | object | Props passed to the component. The set of allowed keys is exactly the component's props type; anything else is an error |
+
+```json
+{ "type": "button", "id": "save", "props": { "variant": "outline", "size": "sm", "children": "Save" } }
+```
+
+::: info Draft
+More keys to be added.
+:::
 
 ## Component library
 
@@ -13,15 +29,15 @@ src/components/ui/button/
 └── styles.css    extra CSS for this component; empty until needed
 ```
 
-Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing is added on demand and the model never runs `npx shadcn add`; a control named in a description always exists. Two registry names are absent because shadcn 4 retired them: `form` (replaced by `field`) and `toast` (replaced by `sonner`).
+Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing is added on demand and the model never runs `npx shadcn add`; a component named in a description always exists. Two registry names are absent because shadcn 4 retired them: `form` (replaced by `field`) and `toast` (replaced by `sonner`).
 
 ## Controls
 
-`control` is the shadcn name. The full registry as of 2026-09-21, grouped by what a control does in a description. ✓ marks the 13 controls the base app used before the whole registry was added; today all of them are present.
+`type` is the shadcn name, one per folder in `src/components/ui`. The full registry as of 2026-09-21, grouped by what a component does in a description. ✓ marks the 13 components the base app used before the whole registry was added; today all of them are present.
 
 ### Input
 
-| `control` | In base app | What it is |
+| `type` | In base app | What it is |
 |---|---|---|
 | `input` | ✓ | One-line text: text, email, number, date, password |
 | `textarea` | ✓ | Multi-line text |
@@ -42,7 +58,7 @@ Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing i
 
 ### Display
 
-| `control` | In base app | What it is |
+| `type` | In base app | What it is |
 |---|---|---|
 | `badge` | ✓ | Small status chip |
 | `alert` | ✓ | A callout with a title and text |
@@ -63,7 +79,7 @@ Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing i
 
 ### Action
 
-| `control` | In base app | What it is |
+| `type` | In base app | What it is |
 |---|---|---|
 | `button` | ✓ | Button or link styled as one |
 | `button-group` | | Buttons joined into one bar |
@@ -74,7 +90,7 @@ Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing i
 
 ### Overlay
 
-| `control` | In base app | What it is |
+| `type` | In base app | What it is |
 |---|---|---|
 | `dialog` | ✓ | Modal window |
 | `alert-dialog` | | Modal that must be confirmed or cancelled |
@@ -85,7 +101,7 @@ Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing i
 
 ### Layout and navigation
 
-| `control` | In base app | What it is |
+| `type` | In base app | What it is |
 |---|---|---|
 | `tabs` | | Tabbed sections |
 | `accordion` | | Expandable sections, one or many open |
@@ -103,7 +119,7 @@ Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing i
 
 Added to shadcn for chat interfaces; listed for completeness, unlikely in a description.
 
-| `control` | In base app | What it is |
+| `type` | In base app | What it is |
 |---|---|---|
 | `message` | | A chat message with avatar, header, footer |
 | `bubble` | | Message bubble with variants, reactions, grouping |
@@ -112,12 +128,10 @@ Added to shadcn for chat interfaces; listed for completeness, unlikely in a desc
 | `marker` | | Inline status or system note in a conversation |
 | `questionnaire` | | Multi-step questionnaire |
 
-::: info Draft
-Which controls a description may actually use, and the props of each, are still to be decided. Open question: whether `control` is a prop of `type: "field"` (as here) or each control is its own `type`.
-:::
+## Props per component
 
-## Props
+`props` mirrors the component's TypeScript props, so the reference for each `type` is the component file itself, `src/components/ui/<type>/<type>.tsx`. For example `button` accepts `variant` (`default`, `outline`, `secondary`, `ghost`, `destructive`, `link`), `size` (`default`, `xs`, `sm`, `lg`, `icon`…) and every native `<button>` attribute.
 
 ::: info Draft
-To be described.
+Which components a description may actually use, and a per-component props table, are still to be decided.
 :::

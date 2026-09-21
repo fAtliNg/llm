@@ -4,30 +4,34 @@ Everything the library builds is described by JSON objects. There are five kinds
 
 | `type` | What it is | Made of |
 |---|---|---|
-| [`page`](./page) | A route in the app with a heading and content | props + `items` |
-| [`table`](./table) | A list of rows with columns | props + `items` |
-| [`form`](./form) | Inputs with validation and a submit | props + `items` |
-| [`panel`](./panel) | A form-like layout without inputs or validation: text, badges, buttons | props + `items` |
-| [`field`](./field) | The smallest building block: one control from the component library | props |
+| [`page`](./page) | A route in the app with a heading and content | `id`, `name`, `fields` |
+| [`table`](./table) | A list of rows with columns | `id`, `name`, `fields` |
+| [`form`](./form) | Inputs with validation and a submit | `id`, `name`, `fields` |
+| [`panel`](./panel) | A form-like layout without inputs or validation: text, badges, buttons | `id`, `name`, `fields` |
+| [`field`](./field) | The smallest building block: one component from `src/components/ui` | `id`, `props` |
 
-The first four are **containers**: a few props of their own plus an `items` array of fields. A field is the **atom**; it never contains other objects.
+The first four are **containers**. Each has `id`, `name` and `fields`: an array of fields in display order. A field is the **atom**; it never contains other objects. Its `type` is the name of a component folder in `src/components/ui`, and its `props` are that component's props.
 
 ```json
 {
   "type": "page",
-  "items": [
-    { "type": "field", "control": "text", "value": "Hello" },
-    { "type": "field", "control": "button", "label": "Save" }
+  "id": "employees",
+  "name": "Employees",
+  "fields": [
+    { "type": "input", "id": "search", "props": { "placeholder": "Search" } },
+    { "type": "button", "id": "create", "props": { "variant": "default", "children": "New employee" } }
   ]
 }
 ```
 
-::: info Draft
-Only `type` is fixed so far. The props of each object are described on its own page as they are decided.
-:::
-
 ## Conventions
 
-- `type` is always present and is one of `page`, `table`, `form`, `panel`, `field`.
-- Containers hold fields in `items`, in display order.
-- Unknown props are an error, not ignored: a description is checked before anything is generated.
+- `type` is always present. For a container it is one of `page`, `table`, `form`, `panel`; for a field it is a component name.
+- `id` is unique within the description; it becomes the stable handle for tests, references and generated names.
+- Containers hold fields in `fields`, in display order.
+- A field's `props` must match the props of its component, no more and no less: the description is checked against the component's TypeScript props before anything is generated.
+- Unknown keys are an error, not ignored.
+
+::: info Draft
+More keys will be added to both containers and fields as they are decided.
+:::

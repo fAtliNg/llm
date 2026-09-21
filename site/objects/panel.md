@@ -6,12 +6,15 @@
 Working name. Alternatives considered: `view`, `section`. The difference from `form` is exactly one thing: nothing is entered or validated.
 :::
 
-## Props
+## Keys
+
+| Key | Type | Meaning |
+|---|---|---|
+| `type` | `"panel"` | What this object is |
+| `id` | string | Unique within the description |
+| `name` | string | Human-readable name |
+| `fields` | [Field](./field)[] | Things to display or trigger, in order; nothing collects input |
 
 ::: info Draft
-To be described.
+More keys to be added.
 :::
-
-## Items
-
-An array of [fields](./field) that display or trigger, never collect input.
