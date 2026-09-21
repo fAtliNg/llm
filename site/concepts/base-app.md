@@ -1,6 +1,6 @@
 # The base app
 
-React 19 (Vite), Hono API, SQLite with Drizzle, RTK Query, zod, Vitest, and the whole shadcn/ui set in `src/components/ui`.
+React 19 (Vite), Hono API, SQLite with Drizzle, RTK Query, zod, Vitest, and the whole shadcn/ui set in `src/components/ui`. The typeface is Inter (variable, self-hosted).
 
 ## Colours
 

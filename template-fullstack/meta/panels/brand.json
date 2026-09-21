@@ -1,0 +1,42 @@
+{
+  "type": "panel",
+  "id": "brand",
+  "fields": {
+    "logo": {
+      "type": "image",
+      "props": {
+        "src": "/logo.svg",
+        "alt": "",
+        "width": 24,
+        "height": 24
+      }
+    },
+    "name": {
+      "type": "text",
+      "props": {
+        "children": "Blueprint",
+        "variant": "subheading"
+      }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        {
+          "valign": "middle",
+          "gap": 8,
+          "columns": [
+            {
+              "field": "logo",
+              "width": "auto"
+            },
+            {
+              "field": "name",
+              "width": "auto"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

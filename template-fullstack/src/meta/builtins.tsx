@@ -2,7 +2,6 @@ import { icons, type LucideIcon } from 'lucide-react';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -28,9 +27,32 @@ function pascal(kebab: string): string {
   return kebab.replace(/(^|-)([a-z0-9])/g, (_, __, c: string) => c.toUpperCase());
 }
 
+/** Brand marks lucide no longer ships; same outline style, 24-unit viewBox. */
+const BRAND: Record<string, string> = {
+  github:
+    'M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4M9 18c-4.51 2-5-2-7-2',
+};
+
 /** A lucide icon by name; with `href` it is a link (external ones open in a new tab). */
 export function MetaIcon({ id, props }: { id: string; props: IconField['props'] }) {
-  const Icon = (icons as Record<string, LucideIcon>)[pascal(props.name)];
+  const brand = BRAND[props.name];
+  const Icon: LucideIcon | undefined = brand
+    ? (((p: { size?: number; 'aria-hidden'?: boolean }) => (
+        <svg
+          width={p.size}
+          height={p.size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden={p['aria-hidden']}
+        >
+          <path d={brand} />
+        </svg>
+      )) as unknown as LucideIcon)
+    : (icons as Record<string, LucideIcon>)[pascal(props.name)];
   if (!Icon) {
     return (
       <span data-meta-id={id} className="text-xs text-destructive">
@@ -118,13 +140,15 @@ export function MetaTheme({ id }: { id: string }) {
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
-  const Icon = theme === 'dark' ? icons.Sun : icons.Moon;
+  const Icon = theme === 'dark' ? icons.Moon : icons.Sun;
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={theme === 'dark'}
       data-meta-id={id}
       aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground"
+      className="relative inline-flex h-[22px] w-10 shrink-0 items-center rounded-full border border-border bg-muted transition-colors"
       onClick={() => {
         const next = theme === 'dark' ? 'light' : 'dark';
         try {
@@ -136,7 +160,14 @@ export function MetaTheme({ id }: { id: string }) {
         for (const cb of listeners) cb();
       }}
     >
-      <Icon size={18} aria-hidden />
+      <span
+        className={cn(
+          'absolute top-px left-px flex size-[18px] items-center justify-center rounded-full bg-background text-foreground shadow transition-transform',
+          theme === 'dark' && 'translate-x-[18px]',
+        )}
+      >
+        <Icon size={12} aria-hidden />
+      </span>
     </button>
   );
 }
@@ -180,15 +211,22 @@ export function MetaSearch({ id, props }: { id: string; props: SearchField['prop
       : index.filter((e) => e.name.toLowerCase().includes(q) || e.text.includes(q)).slice(0, 8);
   return (
     <div data-meta-id={id} className="relative">
-      <Input
-        type="search"
-        placeholder={props.placeholder}
-        aria-label={props.placeholder}
-        value={query}
-        onChange={(event) => {
-          setQuery(event.target.value);
-        }}
-      />
+      <div className="flex h-10 items-center gap-2 rounded-lg bg-muted px-3 text-sm text-muted-foreground focus-within:ring-2 focus-within:ring-ring/50">
+        <icons.Search size={16} aria-hidden />
+        <input
+          type="search"
+          placeholder={props.placeholder}
+          aria-label={props.placeholder}
+          value={query}
+          onChange={(event) => {
+            setQuery(event.target.value);
+          }}
+          className="w-full min-w-0 bg-transparent outline-none placeholder:text-muted-foreground"
+        />
+        <kbd className="rounded border border-border bg-background px-1.5 py-0.5 font-sans text-xs">
+          ⌘K
+        </kbd>
+      </div>
       {hits.length > 0 && (
         <ul className="absolute top-full left-0 z-20 mt-1 w-72 rounded-lg border bg-popover p-1 shadow-md">
           {hits.map((hit) => (
@@ -220,7 +258,7 @@ export function MetaPager({ id }: { id: string }) {
   const next = at >= 0 ? metaNav[at + 1] : undefined;
   const box = 'block rounded-lg border px-4 py-3 transition-colors hover:border-primary';
   return (
-    <nav data-meta-id={id} aria-label="Pager" className="grid grid-cols-2 gap-4 border-t pt-6">
+    <nav data-meta-id={id} aria-label="Pager" className="grid grid-cols-2 gap-4">
       <div>
         {prev && (
           <NavLink to={prev.to} className={box}>

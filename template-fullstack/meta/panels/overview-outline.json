@@ -16,21 +16,6 @@
         "variant": "link",
         "href": "#parts"
       }
-    },
-    "edit": {
-      "type": "text",
-      "props": {
-        "children": "Edit this page",
-        "variant": "link",
-        "href": "https://github.com/OWNER/REPO"
-      }
-    },
-    "updated": {
-      "type": "text",
-      "props": {
-        "children": "Last updated: September 21, 2026",
-        "variant": "muted"
-      }
     }
   },
   "grid": {
@@ -60,25 +45,6 @@
           "border": {
             "left": "1px solid var(--border)"
           }
-        },
-        {
-          "gap": 0,
-          "columns": [
-            {
-              "field": "edit"
-            }
-          ],
-          "margin": "24px 0 8px",
-          "padding": "0 0 0 16px"
-        },
-        {
-          "gap": 0,
-          "columns": [
-            {
-              "field": "updated"
-            }
-          ],
-          "padding": "0 0 0 16px"
         }
       ]
     }

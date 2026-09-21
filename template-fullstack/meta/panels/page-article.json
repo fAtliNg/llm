@@ -74,6 +74,28 @@
     },
     "page-keys": {
       "type": "table"
+    },
+    "edit-icon": {
+      "type": "icon",
+      "props": {
+        "name": "square-pen",
+        "size": 14
+      }
+    },
+    "edit": {
+      "type": "text",
+      "props": {
+        "children": "Edit this page",
+        "variant": "link",
+        "href": "https://github.com/OWNER/REPO"
+      }
+    },
+    "updated": {
+      "type": "text",
+      "props": {
+        "children": "Last updated: 21.09.2026, 12:51",
+        "variant": "muted"
+      }
     }
   },
   "grid": {
@@ -188,13 +210,36 @@
           "margin": "0"
         },
         {
+          "gap": 6,
+          "valign": "middle",
+          "margin": "48px 0 0",
+          "padding": "24px 0 0",
+          "border": {
+            "top": "1px solid var(--border)"
+          },
+          "columns": [
+            {
+              "field": "edit-icon",
+              "width": "auto"
+            },
+            {
+              "field": "edit",
+              "width": "auto"
+            },
+            {
+              "field": "updated",
+              "align": "right"
+            }
+          ]
+        },
+        {
           "gap": 0,
           "columns": [
             {
               "field": "pager"
             }
           ],
-          "margin": "48px 0 0"
+          "margin": "24px 0 0"
         }
       ]
     }

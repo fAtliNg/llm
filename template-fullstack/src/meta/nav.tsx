@@ -11,7 +11,7 @@ const STYLES = {
     ),
   plain: ({ isActive }: { isActive: boolean }) =>
     cn(
-      'py-1 text-sm font-medium transition-colors',
+      'py-1 text-sm leading-6 font-medium transition-colors',
       isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
     ),
 };

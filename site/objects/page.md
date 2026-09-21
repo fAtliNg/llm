@@ -37,7 +37,7 @@ A grid is `{ "rows": Row[] }`, top to bottom. A **row** is `{ "columns": Column[
 | `gap` | number \| string | Space between the columns, default 16 | — |
 | `width` | string | — | Any CSS grid track size: `"240px"`, `"25%"`, `"auto"`, `"minmax(0, 688px)"`. Columns without it share what is left equally |
 
-All optional. Without `align`/`valign`, content stretches to the cell, which is what inputs and textareas want; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`). `background` is any CSS background: a color (`"#f4f4f5"`), a theme variable (`"var(--muted)"`, which follows dark mode), a gradient.
+All optional. A cell lays its content out as a column: without `align`/`valign` the content stretches to the cell, which is what inputs and textareas want; with `height` on the cell, `valign` centres the content inside it; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`). `background` is any CSS background: a color (`"#f4f4f5"`), a theme variable (`"var(--muted)"`, which follows dark mode), a gradient.
 
 ```json
 { "valign": "middle", "columns": [{ "field": "email" }, { "field": "status", "align": "left" }] }

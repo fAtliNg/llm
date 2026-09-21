@@ -37,7 +37,7 @@ const TEXT_CLASS: Record<TextField['props']['variant'], string> = {
   subheading: 'text-lg leading-7 font-semibold',
   body: 'text-base leading-7',
   muted: 'text-sm leading-6 text-muted-foreground',
-  small: 'text-xs leading-5 font-semibold tracking-wide text-foreground',
+  small: 'text-sm leading-6 font-bold text-foreground',
   code: 'rounded-lg bg-muted px-5 py-4 font-mono text-sm leading-6 whitespace-pre overflow-x-auto',
   link: 'text-sm font-medium text-primary hover:underline',
 };
@@ -109,9 +109,13 @@ const ALIGN = { top: 'start', middle: 'center', bottom: 'end' } as const;
 
 /** Inline styles for a row (grid) or a column (grid item): alignment falls through from row to column. */
 function boxStyle(box: MetaRow | MetaColumn, isRow: boolean): CSSProperties {
-  const style: CSSProperties = {};
-  if (box.align) style[isRow ? 'justifyItems' : 'justifySelf'] = JUSTIFY[box.align];
-  if (box.valign) style[isRow ? 'alignItems' : 'alignSelf'] = ALIGN[box.valign];
+  // A row aligns its cells; a cell is a flex column and aligns its own content, so alignment also
+  // works when the cell has a height of its own.
+  const style: CSSProperties = isRow
+    ? { justifyContent: 'start' }
+    : { display: 'flex', flexDirection: 'column' };
+  if (box.align) style[isRow ? 'justifyItems' : 'alignItems'] = JUSTIFY[box.align];
+  if (box.valign) style[isRow ? 'alignItems' : 'justifyContent'] = ALIGN[box.valign];
   if (box.margin !== undefined) style.margin = box.margin;
   if (box.padding !== undefined) style.padding = box.padding;
   if (box.background !== undefined) style.background = box.background;
@@ -146,7 +150,7 @@ function Grid({
 }) {
   const grid = gridFor(grids, useDevice());
   return (
-    <div className="flex flex-col">
+    <div>
       {grid.rows.map((row, index) => (
         <div
           key={index}
