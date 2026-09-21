@@ -41,7 +41,7 @@ Full-stack TypeScript app in one package: React 19 SPA (Vite), Hono API, SQLite.
 
 ## Pages: describe them in meta
 
-A page is `meta/pages/<id>.json` with `type`, `id` (= file name), `name` (the URL is derived from it), `fields` (every field once, keyed by id: `{ "type": "button", "props": { … } }` with a component from `src/components/ui` and its props) and `layout`: a grid per screen size, `desktop` required, `tablet` and `mobile` optional, each `{ "rows": [{ "columns": [{ "field": "<id>" }] }] }`. Nothing to run: the app reads `meta/` at startup (`src/meta/`) and builds the route, the navigation link and the page from it. `npm run verify` opens every page in meta and checks it.
+A page is `meta/pages/<id>.json` with `type`, `id` (= file name), `name` (the URL is derived from it), `fields` (every field once, keyed by id: `{ "type": "button", "props": { … } }` with a component from `src/components/ui` and its props) and `layout`: a grid per screen size, `desktop` required, `tablet` and `mobile` optional, each `{ "rows": [{ "columns": [{ "field": "<id>" }] }] }`. Rows and columns take optional `align` (left/center/right), `valign` (top/middle/bottom), `margin` and `padding` (px number or CSS string). Nothing to run: the app reads `meta/` at startup (`src/meta/`) and builds the route, the navigation link and the page from it. `npm run verify` opens every page in meta and checks it.
 
 ## New entity: use the generator
 
