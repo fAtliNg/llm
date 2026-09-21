@@ -1,5 +1,8 @@
 import { type CSSProperties, createElement, type ReactNode } from 'react';
 
+import { cn } from '@/lib/utils';
+import '@/meta/theme';
+
 import {
   MetaIcon,
   MetaImage,
@@ -10,7 +13,7 @@ import {
 } from '@/meta/builtins';
 import { componentFor } from '@/meta/components';
 import { useDevice } from '@/meta/device';
-import { findPanel, findTable } from '@/meta/load';
+import { css, findPanel, findTable } from '@/meta/load';
 import { MetaNav } from '@/meta/nav';
 import {
   type ComponentField,
@@ -31,22 +34,17 @@ import {
   type TextField,
 } from '@/meta/schema';
 
-const TEXT_CLASS: Record<TextField['props']['variant'], string> = {
-  title: 'text-[32px] leading-10 font-bold tracking-tight',
-  heading: 'text-2xl leading-8 font-semibold tracking-tight',
-  subheading: 'text-lg leading-7 font-semibold',
-  body: 'text-base leading-7',
-  muted: 'text-sm leading-6 text-muted-foreground',
-  small: 'text-sm leading-6 font-bold text-foreground',
-  code: 'rounded-lg bg-muted px-5 py-4 font-mono text-sm leading-6 whitespace-pre overflow-x-auto',
-  link: 'text-sm font-medium text-primary hover:underline',
+/** Sizes, weights and colours of every variant come from the theme (`meta/themes`), as `.meta-text-<variant>`. */
+const TEXT_EXTRA: Partial<Record<TextField['props']['variant'], string>> = {
+  code: 'overflow-x-auto whitespace-pre',
+  link: 'hover:underline',
 };
 
 function Text({ id, field }: { id: string; field: TextField }) {
   const { variant, children, href } = field.props;
   if (variant === 'link') {
     return (
-      <a data-meta-id={id} href={href ?? '#'} className={TEXT_CLASS.link}>
+      <a data-meta-id={id} href={href ?? '#'} className={cn('meta-text-link', TEXT_EXTRA.link)}>
         {children}
       </a>
     );
@@ -62,7 +60,7 @@ function Text({ id, field }: { id: string; field: TextField }) {
             ? 'pre'
             : 'p';
   return (
-    <Tag data-meta-id={id} className={TEXT_CLASS[variant]}>
+    <Tag data-meta-id={id} className={cn(`meta-text-${variant}`, TEXT_EXTRA[variant])}>
       {children}
     </Tag>
   );
@@ -118,12 +116,12 @@ function boxStyle(box: MetaRow | MetaColumn, isRow: boolean): CSSProperties {
   if (box.valign) style[isRow ? 'alignItems' : 'justifyContent'] = ALIGN[box.valign];
   if (box.margin !== undefined) style.margin = box.margin;
   if (box.padding !== undefined) style.padding = box.padding;
-  if (box.background !== undefined) style.background = box.background;
+  if (box.background !== undefined) style.background = css(box.background);
   if (box.border) {
-    if (box.border.top) style.borderTop = box.border.top;
-    if (box.border.right) style.borderRight = box.border.right;
-    if (box.border.bottom) style.borderBottom = box.border.bottom;
-    if (box.border.left) style.borderLeft = box.border.left;
+    if (box.border.top) style.borderTop = css(box.border.top);
+    if (box.border.right) style.borderRight = css(box.border.right);
+    if (box.border.bottom) style.borderBottom = css(box.border.bottom);
+    if (box.border.left) style.borderLeft = css(box.border.left);
   }
   if (box.height !== undefined) style.height = box.height;
   if (box.maxWidth !== undefined) style.maxWidth = box.maxWidth;
@@ -184,8 +182,8 @@ function Grid({
 /** A page straight from its meta: the heading (unless the page draws its own), then its grid. */
 export function MetaPageView({ page }: { page: MetaPage }) {
   return (
-    <section data-meta-page={page.id} style={{ background: page.background }}>
-      {page.heading && <h1 className="mb-4 text-2xl font-semibold">{page.name}</h1>}
+    <section data-meta-page={page.id} style={{ background: css(page.background) }}>
+      {page.heading && <h1 className="meta-text-title mb-4">{page.name}</h1>}
       <Grid fields={page.fields} grids={page.grid} />
     </section>
   );
@@ -194,7 +192,7 @@ export function MetaPageView({ page }: { page: MetaPage }) {
 /** A panel placed in a column: its own fields and grid; `slot` passes through to a nested `children`. */
 export function MetaPanelView({ panel, slot }: { panel: MetaPanel; slot?: ReactNode }) {
   return (
-    <div data-meta-id={panel.id} style={{ background: panel.background }}>
+    <div data-meta-id={panel.id} style={{ background: css(panel.background) }}>
       <Grid fields={panel.fields} grids={panel.grid} slot={slot} />
     </div>
   );
@@ -203,7 +201,7 @@ export function MetaPanelView({ panel, slot }: { panel: MetaPanel; slot?: ReactN
 /** A layout around whatever it is given: its grid, with the `children` field showing `children`. */
 export function MetaLayoutView({ layout, children }: { layout: MetaLayout; children: ReactNode }) {
   return (
-    <div data-meta-id={`layout:${layout.id}`} style={{ background: layout.background }}>
+    <div data-meta-id={`layout:${layout.id}`} style={{ background: css(layout.background) }}>
       <Grid fields={layout.fields} grids={layout.grid} slot={children} />
     </div>
   );

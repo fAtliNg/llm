@@ -304,6 +304,81 @@ export const tableSchema = z
     }
   });
 
+/** Colour tokens every theme must define: the ones the component library is painted with. */
+export const REQUIRED_TOKENS = [
+  'background',
+  'foreground',
+  'card',
+  'card-foreground',
+  'popover',
+  'popover-foreground',
+  'primary',
+  'primary-foreground',
+  'secondary',
+  'secondary-foreground',
+  'muted',
+  'muted-foreground',
+  'accent',
+  'accent-foreground',
+  'destructive',
+  'border',
+  'input',
+  'ring',
+  'sidebar',
+  'sidebar-foreground',
+  'sidebar-primary',
+  'sidebar-primary-foreground',
+  'sidebar-accent',
+  'sidebar-accent-foreground',
+  'sidebar-border',
+  'sidebar-ring',
+] as const;
+
+export const TEXT_VARIANTS = [
+  'title',
+  'heading',
+  'subheading',
+  'body',
+  'muted',
+  'small',
+  'code',
+  'link',
+] as const;
+
+const textStyleSchema = z.strictObject({
+  size: z.number().positive(),
+  lineHeight: z.number().positive(),
+  weight: z.number().int().min(100).max(900).default(400),
+  letterSpacing: z.string().optional(),
+  family: z.enum(['sans', 'mono']).default('sans'),
+  /** Colours are `$token` references into the theme's own colours. */
+  color: z.string().regex(/^\$[a-z0-9-]+$/, 'a $token'),
+  background: z
+    .string()
+    .regex(/^\$[a-z0-9-]+$/, 'a $token')
+    .optional(),
+  padding: spacingSchema.optional(),
+  radius: z.number().int().min(0).optional(),
+});
+
+/**
+ * A theme: the colour tokens the app and the meta refer to as `$token`, and the typography. One file
+ * per theme in `meta/themes`; every theme defines the same tokens.
+ */
+export const themeSchema = z.strictObject({
+  type: z.literal('theme'),
+  id: metaId,
+  /** A dark theme also sets the `dark` class the component library uses for its dark styles. */
+  dark: z.boolean().default(false),
+  colors: z.record(z.string().regex(/^[a-z0-9-]+$/), z.string().trim().min(1)),
+  typography: z.strictObject({
+    fonts: z.strictObject({ sans: z.string().min(1), mono: z.string().min(1) }),
+    base: textStyleSchema,
+    text: z.object(Object.fromEntries(TEXT_VARIANTS.map((v) => [v, textStyleSchema]))),
+  }),
+});
+
+export type MetaTheme = z.infer<typeof themeSchema>;
 export type MetaTable = z.infer<typeof tableSchema>;
 export type MetaPanel = z.infer<typeof panelSchema>;
 export type MetaColumn = z.infer<typeof columnSchema>;

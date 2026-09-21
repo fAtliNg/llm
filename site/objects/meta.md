@@ -9,6 +9,9 @@ meta/
 │   └── employee-new.json
 ├── layouts/
 │   └── docs.json
+├── themes/
+│   ├── light.json
+│   └── dark.json
 ├── tables/
 │   └── employees.json
 ├── forms/

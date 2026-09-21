@@ -7,6 +7,7 @@ Everything the library builds is described by JSON objects, the **meta** of the 
 | [`page`](./page) | A route in the app with a heading and content | `id`, `name`, `layout`, `fields`, `grid` |
 | [`layout`](./layout) | A frame around pages: header, menu, footer and the place for the page | `id`, `fields`, `grid` |
 | [`table`](./table) | Columns and rows | `id`, `columns`, `rows` |
+| [`theme`](./theme) | Colours and typography; the file name is the theme name | `id`, `dark`, `colors`, `typography` |
 | [`form`](./form) | Inputs with validation and a submit | `id`, `name`, … |
 | [`panel`](./panel) | Fields and a grid without a URL, placed in a column so it can hold many fields | `id`, `fields`, `grid` |
 | [`field`](./field) | The smallest building block: one component from `src/components/ui` | `id`, `props` |

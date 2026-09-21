@@ -48,75 +48,9 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Palette of the VitePress default theme (light): brand #3451b2, page #ffffff, alt #f6f6f7, text 60/60/67. */
 :root {
-  --background: #ffffff;
-  --foreground: rgba(60, 60, 67, 1);
-  --card: #ffffff;
-  --card-foreground: rgba(60, 60, 67, 1);
-  --popover: #ffffff;
-  --popover-foreground: rgba(60, 60, 67, 1);
-  --primary: #3451b2;
-  --primary-foreground: #ffffff;
-  --secondary: #f6f6f7;
-  --secondary-foreground: rgba(60, 60, 67, 1);
-  --muted: #f6f6f7;
-  --muted-foreground: rgba(60, 60, 67, 0.78);
-  --accent: #f1f1f2;
-  --accent-foreground: rgba(60, 60, 67, 1);
-  --destructive: #d13b3b;
-  --border: #e2e2e3;
-  --input: #e2e2e3;
-  --ring: #3451b2;
-  --chart-1: #3451b2;
-  --chart-2: #3a5ccc;
-  --chart-3: #6b7cd9;
-  --chart-4: #a8b1ff;
-  --chart-5: #c8cdf5;
+  /* Colours come from meta/themes at startup (src/meta/theme.ts); only the shape lives here. */
   --radius: 0.5rem;
-  --sidebar: #f6f6f7;
-  --sidebar-foreground: rgba(60, 60, 67, 1);
-  --sidebar-primary: #3451b2;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e4e4e9;
-  --sidebar-accent-foreground: rgba(60, 60, 67, 1);
-  --sidebar-border: #e2e2e3;
-  --sidebar-ring: #3451b2;
-}
-
-/* VitePress dark: page #1b1b1f, alt #161618, text 255/255/245 at 86%, brand #a8b1ff. */
-.dark {
-  --background: #1b1b1f;
-  --foreground: rgba(255, 255, 245, 0.86);
-  --card: #202127;
-  --card-foreground: rgba(255, 255, 245, 0.86);
-  --popover: #202127;
-  --popover-foreground: rgba(255, 255, 245, 0.86);
-  --primary: #a8b1ff;
-  --primary-foreground: #1b1b1f;
-  --secondary: #202127;
-  --secondary-foreground: rgba(255, 255, 245, 0.86);
-  --muted: #161618;
-  --muted-foreground: rgba(235, 235, 245, 0.6);
-  --accent: #2e2e32;
-  --accent-foreground: rgba(255, 255, 245, 0.86);
-  --destructive: #f66f81;
-  --border: #3c3f44;
-  --input: #3c3f44;
-  --ring: #a8b1ff;
-  --chart-1: #a8b1ff;
-  --chart-2: #5c73e7;
-  --chart-3: #3e63dd;
-  --chart-4: #3451b2;
-  --chart-5: #2f3e8f;
-  --sidebar: #161618;
-  --sidebar-foreground: rgba(255, 255, 245, 0.86);
-  --sidebar-primary: #a8b1ff;
-  --sidebar-primary-foreground: #1b1b1f;
-  --sidebar-accent: #2e2e32;
-  --sidebar-accent-foreground: rgba(255, 255, 245, 0.86);
-  --sidebar-border: #3c3f44;
-  --sidebar-ring: #a8b1ff;
 }
 
 @layer base {

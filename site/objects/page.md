@@ -37,7 +37,7 @@ A grid is `{ "rows": Row[] }`, top to bottom. A **row** is `{ "columns": Column[
 | `gap` | number \| string | Space between the columns, default 16 | — |
 | `width` | string | — | Any CSS grid track size: `"240px"`, `"25%"`, `"auto"`, `"minmax(0, 688px)"`. Columns without it share what is left equally |
 
-All optional. A cell lays its content out as a column: without `align`/`valign` the content stretches to the cell, which is what inputs and textareas want; with `height` on the cell, `valign` centres the content inside it; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`). `background` is any CSS background: a color (`"#f4f4f5"`), a theme variable (`"var(--muted)"`, which follows dark mode), a gradient.
+All optional. A cell lays its content out as a column: without `align`/`valign` the content stretches to the cell, which is what inputs and textareas want; with `height` on the cell, `valign` centres the content inside it; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`). `background` is any CSS background: a [theme token](./theme) (`"$muted"`, which follows the active theme), a colour, a gradient.
 
 ```json
 { "valign": "middle", "columns": [{ "field": "email" }, { "field": "status", "align": "left" }] }
@@ -49,7 +49,7 @@ All optional. A cell lays its content out as a column: without `align`/`valign` 
 A sticky header row and a sticky, scrolling sidebar column, as in a documentation site:
 
 ```json
-{ "sticky": true, "top": 0, "height": 64, "background": "var(--background)", "border": { "bottom": "1px solid var(--border)" }, "columns": [{ "field": "header" }] }
+{ "sticky": true, "top": 0, "height": 64, "background": "$background", "border": { "bottom": "1px solid $border" }, "columns": [{ "field": "header" }] }
 ```
 ```json
 { "field": "sidebar", "width": "272px", "sticky": true, "top": 64, "height": "calc(100vh - 64px)", "scroll": true }

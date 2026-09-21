@@ -30,7 +30,7 @@ A layout has no `name` and no URL: it never opens by itself.
     "desktop": {
       "rows": [
         { "valign": "middle", "columns": [{ "field": "brand", "width": "160px" }, { "field": "menu", "align": "right" }] },
-        { "columns": [{ "field": "sidebar", "width": "220px", "valign": "top", "background": "var(--muted)", "padding": 8 }, { "field": "content" }] },
+        { "columns": [{ "field": "sidebar", "width": "220px", "valign": "top", "background": "$muted", "padding": 8 }, { "field": "content" }] },
         { "columns": [{ "field": "footer", "align": "center" }] }
       ]
     },
@@ -61,7 +61,7 @@ Three field types come from the app, not from the component library. They are wh
 | `text` | `children` (the text); `variant`: `"title"` (h1), `"heading"` (h2), `"subheading"` (h3), `"body"` (default), `"muted"`, `"small"` (a group label), `"code"` (a preformatted block), `"link"` (with `href`) | A heading, a paragraph, a code block, a link; the component library has no plain-text component |
 | `icon` | `name` (a lucide icon, kebab-case), `size` (default 20), `label`, `href` (makes it a link; external ones open in a new tab) | An icon, on its own or as a link |
 | `image` | `src`, `alt`, `width`, `height` | An image, e.g. the logo from `public/` |
-| `theme` | none | A light/dark switch; the choice is kept in `localStorage` and follows the system preference until set |
+| `theme` | none | Switches between the first light and the first dark [theme](./theme); the choice is kept in `localStorage` and follows the system preference until set |
 | `search` | `placeholder` | A search box over page names and text fields; hits are links to the pages |
 | `pager` | none | Previous and next page, in navigation order |
 

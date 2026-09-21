@@ -7,10 +7,13 @@ import {
   type MetaPage,
   type MetaPanel,
   type MetaTable,
+  type MetaTheme,
   pageSchema,
   pageUrl,
   panelSchema,
+  REQUIRED_TOKENS,
   tableSchema,
+  themeSchema,
 } from '@/meta/schema';
 import type { z } from 'zod';
 
@@ -26,6 +29,7 @@ const layoutFiles = import.meta.glob('../../meta/layouts/*.json', {
 });
 const panelFiles = import.meta.glob('../../meta/panels/*.json', { eager: true, import: 'default' });
 const tableFiles = import.meta.glob('../../meta/tables/*.json', { eager: true, import: 'default' });
+const themeFiles = import.meta.glob('../../meta/themes/*.json', { eager: true, import: 'default' });
 
 function parseFolder<T extends { id: string; fields?: Record<string, { type: string }> }>(
   files: Record<string, unknown>,
@@ -64,13 +68,55 @@ function parseFolder<T extends { id: string; fields?: Record<string, { type: str
   return items;
 }
 
+/** Every `$token` written in a value: backgrounds, borders, text colours. */
+function tokensIn(value: unknown, found: Set<string>): void {
+  if (typeof value === 'string') {
+    for (const m of value.matchAll(/\$([a-z0-9-]+)/g)) found.add(m[1] ?? '');
+  } else if (Array.isArray(value)) {
+    for (const v of value) tokensIn(v, found);
+  } else if (value && typeof value === 'object') {
+    for (const v of Object.values(value)) tokensIn(v, found);
+  }
+}
+
 function load(): {
   pages: MetaPage[];
   layouts: MetaLayout[];
   panels: MetaPanel[];
   tables: MetaTable[];
+  themes: MetaTheme[];
 } {
   const errors: string[] = [];
+  const themes = parseFolder(themeFiles, 'themes', themeSchema, errors);
+  if (themes.length === 0) errors.push('meta/themes: at least one theme is needed');
+  const tokenSets = themes.map((t) => new Set(Object.keys(t.colors)));
+  for (const theme of themes) {
+    for (const token of REQUIRED_TOKENS) {
+      if (!(token in theme.colors))
+        errors.push(`meta/themes/${theme.id}.json: colors: "${token}" is missing`);
+    }
+    const used = new Set<string>();
+    tokensIn(theme.typography, used);
+    for (const token of used) {
+      if (!(token in theme.colors))
+        errors.push(`meta/themes/${theme.id}.json: typography refers to $${token}, not in colors`);
+    }
+  }
+  const first = tokenSets[0];
+  if (first) {
+    for (const [i, set] of tokenSets.entries()) {
+      for (const token of first)
+        if (!set.has(token))
+          errors.push(
+            `meta/themes/${themes[i]?.id ?? ''}.json: colors: "${token}" is in ${themes[0]?.id ?? ''} but not here`,
+          );
+      for (const token of set)
+        if (!first.has(token))
+          errors.push(
+            `meta/themes/${themes[0]?.id ?? ''}.json: colors: "${token}" is in ${themes[i]?.id ?? ''} but not here`,
+          );
+    }
+  }
   const pages = parseFolder(pageFiles, 'pages', pageSchema, errors);
   const layouts = parseFolder(layoutFiles, 'layouts', layoutSchema, errors);
   const panels = parseFolder(panelFiles, 'panels', panelSchema, errors);
@@ -78,6 +124,20 @@ function load(): {
   const layoutIds = new Set(layouts.map((l) => l.id));
   const panelIds = new Set(panels.map((p) => p.id));
   const tableIds = new Set(tables.map((t) => t.id));
+
+  // Every $token used anywhere must be a colour of the themes.
+  const known = tokenSets[0] ?? new Set<string>();
+  for (const [file, item] of [
+    ...pages.map((p) => [`meta/pages/${p.id}.json`, p] as const),
+    ...layouts.map((l) => [`meta/layouts/${l.id}.json`, l] as const),
+    ...panels.map((p) => [`meta/panels/${p.id}.json`, p] as const),
+  ]) {
+    const used = new Set<string>();
+    tokensIn(item, used);
+    for (const token of used) {
+      if (!known.has(token)) errors.push(`${file}: $${token} is not a colour of the themes`);
+    }
+  }
 
   // A `{ "type": "panel" }` field must name a panel that exists; a panel must not contain itself.
   const holders = [
@@ -129,13 +189,19 @@ function load(): {
   if (errors.length > 0) throw new Error(`invalid meta:\n  ${errors.join('\n  ')}`);
   // Navigation order: `order` first, then the rest by name.
   pages.sort((a, b) => (a.order ?? 1e9) - (b.order ?? 1e9) || a.name.localeCompare(b.name));
-  return { pages, layouts, panels, tables };
+  return { pages, layouts, panels, tables, themes };
 }
 
 const loaded = load();
 
 export const metaPages: MetaPage[] = loaded.pages;
 export const metaTables: MetaTable[] = loaded.tables;
+export const metaThemes: MetaTheme[] = loaded.themes;
+
+/** `$token` -> `var(--token)`, so a meta value becomes CSS that follows the active theme. */
+export function css(value: string | number | undefined): string | number | undefined {
+  return typeof value === 'string' ? value.replace(/\$([a-z0-9-]+)/g, 'var(--$1)') : value;
+}
 
 export function findTable(id: string): MetaTable | undefined {
   return metaTables.find((table) => table.id === id);

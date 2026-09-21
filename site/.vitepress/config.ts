@@ -47,6 +47,7 @@ export default defineConfig({
           { text: 'The meta folder', link: '/objects/meta' },
           { text: 'Page', link: '/objects/page' },
           { text: 'Layout', link: '/objects/layout' },
+          { text: 'Theme', link: '/objects/theme' },
           { text: 'Table', link: '/objects/table' },
           { text: 'Form', link: '/objects/form' },
           { text: 'Panel', link: '/objects/panel' },

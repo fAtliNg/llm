@@ -47,7 +47,7 @@
               "padding": "0 32px",
               "height": 63,
               "border": {
-                "bottom": "1px solid var(--border)"
+                "bottom": "1px solid $border"
               },
               "valign": "middle"
             },
@@ -66,8 +66,8 @@
               "width": "auto",
               "padding": "0 24px",
               "border": {
-                "left": "1px solid var(--border)",
-                "right": "1px solid var(--border)"
+                "left": "1px solid $border",
+                "right": "1px solid $border"
               },
               "height": 24,
               "valign": "middle"

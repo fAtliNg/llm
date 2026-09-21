@@ -1,6 +1,8 @@
 import { icons, type LucideIcon } from 'lucide-react';
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
+
+import { applyTheme, defaultTheme, storeTheme } from '@/meta/theme';
 
 import {
   Table,
@@ -11,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { metaPages, metaPanels } from '@/meta/load';
+import { metaPages, metaPanels, metaThemes } from '@/meta/load';
 import { metaNav } from '@/meta/nav-links';
 import {
   type IconField,
@@ -108,62 +110,46 @@ export function MetaImage({ id, props }: { id: string; props: ImageField['props'
 
 /* theme ------------------------------------------------------------------------------------------ */
 
-const THEME_KEY = 'theme';
 const listeners = new Set<() => void>();
 
-function readTheme(): 'light' | 'dark' {
-  try {
-    const stored = localStorage.getItem(THEME_KEY);
-    if (stored === 'light' || stored === 'dark') return stored;
-  } catch {
-    // Storage may be unavailable; fall through to the system preference.
-  }
-  return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+function currentThemeId(): string {
+  return document.documentElement.dataset.theme ?? defaultTheme().id;
 }
 
-function applyTheme(theme: 'light' | 'dark'): void {
-  document.documentElement.classList.toggle('dark', theme === 'dark');
-}
-
-/** Light/dark switch. The class `dark` on <html> drives every colour; the choice survives reloads. */
+/** Switches between the themes in `meta/themes`: the first light one and the first dark one. */
 export function MetaTheme({ id }: { id: string }) {
-  const theme = useSyncExternalStore(
+  const current = useSyncExternalStore(
     (cb) => {
       listeners.add(cb);
       return () => listeners.delete(cb);
     },
-    readTheme,
-    () => 'light' as const,
+    currentThemeId,
+    () => metaThemes[0]?.id ?? 'light',
   );
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
-  const Icon = theme === 'dark' ? icons.Moon : icons.Sun;
+  const active = metaThemes.find((t) => t.id === current);
+  const isDark = active?.dark ?? false;
+  const other = metaThemes.find((t) => t.dark !== isDark);
+  const Icon = isDark ? icons.Moon : icons.Sun;
   return (
     <button
       type="button"
       role="switch"
-      aria-checked={theme === 'dark'}
+      aria-checked={isDark}
       data-meta-id={id}
-      aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="relative inline-flex h-[22px] w-10 shrink-0 items-center rounded-full border border-border bg-muted transition-colors"
+      aria-label={other ? `Switch to ${other.id} theme` : 'Theme'}
+      disabled={!other}
+      className="relative inline-flex h-[22px] w-10 shrink-0 items-center rounded-full border border-input bg-muted transition-colors"
       onClick={() => {
-        const next = theme === 'dark' ? 'light' : 'dark';
-        try {
-          localStorage.setItem(THEME_KEY, next);
-        } catch {
-          // Without storage the choice lasts for this page only.
-        }
-        applyTheme(next);
+        if (!other) return;
+        applyTheme(other);
+        storeTheme(other);
         for (const cb of listeners) cb();
       }}
     >
       <span
         className={cn(
           'absolute top-px left-px flex size-[18px] items-center justify-center rounded-full bg-background text-foreground shadow transition-transform',
-          theme === 'dark' && 'translate-x-[18px]',
+          isDark && 'translate-x-[18px]',
         )}
       >
         <Icon size={12} aria-hidden />
