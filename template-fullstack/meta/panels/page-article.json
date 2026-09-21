@@ -2,14 +2,26 @@
   "type": "panel",
   "id": "page-article",
   "fields": {
-    "h1": { "type": "text", "props": { "children": "Page", "variant": "title" } },
+    "h1": {
+      "type": "text",
+      "props": {
+        "children": "Page",
+        "variant": "title"
+      }
+    },
     "p1": {
       "type": "text",
       "props": {
         "children": "type: \"page\". A route in the app: a heading, content, a link in the main navigation. Pages are the top of the tree; everything else is reached from one."
       }
     },
-    "h2": { "type": "text", "props": { "children": "Keys", "variant": "heading" } },
+    "h2": {
+      "type": "text",
+      "props": {
+        "children": "Keys",
+        "variant": "heading"
+      }
+    },
     "k1": {
       "type": "text",
       "props": {
@@ -30,7 +42,10 @@
     },
     "h3": {
       "type": "text",
-      "props": { "children": "How a page becomes a route", "variant": "heading" }
+      "props": {
+        "children": "How a page becomes a route",
+        "variant": "heading"
+      }
     },
     "p3": {
       "type": "text",
@@ -43,20 +58,144 @@
       "props": {
         "children": "Props are unchecked at load: a typo in a prop reaches the DOM as an unknown attribute. A check against the component types is on the roadmap."
       }
+    },
+    "keys-note": {
+      "type": "text",
+      "props": {
+        "children": "Row and column keys",
+        "variant": "subheading"
+      }
+    },
+    "box-keys": {
+      "type": "table"
+    },
+    "pager": {
+      "type": "pager"
+    },
+    "page-keys": {
+      "type": "table"
     }
   },
   "grid": {
     "desktop": {
       "rows": [
-        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "h2" }], "margin": "24px 0 16px" },
-        { "gap": 0, "columns": [{ "field": "k1" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "k2" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "k3" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "h3" }], "margin": "24px 0 16px" },
-        { "gap": 0, "columns": [{ "field": "p3" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "tip" }], "margin": "0" }
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h1"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "p1"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h2"
+            }
+          ],
+          "margin": "24px 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "k1"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "k2"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "k3"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "page-keys"
+            }
+          ],
+          "margin": "0 0 24px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "keys-note"
+            }
+          ],
+          "margin": "0 0 12px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "box-keys"
+            }
+          ],
+          "margin": "0 0 24px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h3"
+            }
+          ],
+          "margin": "24px 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "p3"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "tip"
+            }
+          ],
+          "margin": "0"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "pager"
+            }
+          ],
+          "margin": "48px 0 0"
+        }
       ]
     }
   }

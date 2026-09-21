@@ -3,11 +3,16 @@
   "id": "introduction",
   "name": "Introduction",
   "section": "Guide",
+  "order": 1,
   "layout": "docs",
   "heading": false,
   "fields": {
-    "introduction-article": { "type": "panel" },
-    "introduction-outline": { "type": "panel" }
+    "introduction-article": {
+      "type": "panel"
+    },
+    "introduction-outline": {
+      "type": "panel"
+    }
   },
   "grid": {
     "desktop": {
@@ -15,14 +20,31 @@
         {
           "gap": 64,
           "columns": [
-            { "field": "introduction-article", "width": "minmax(0, 688px)" },
-            { "field": "introduction-outline", "width": "224px", "sticky": true, "top": 96 }
+            {
+              "field": "introduction-article",
+              "width": "minmax(0, 688px)"
+            },
+            {
+              "field": "introduction-outline",
+              "width": "224px",
+              "sticky": true,
+              "top": 96
+            }
           ]
         }
       ]
     },
     "tablet": {
-      "rows": [{ "columns": [{ "field": "introduction-article", "width": "minmax(0, 688px)" }] }]
+      "rows": [
+        {
+          "columns": [
+            {
+              "field": "introduction-article",
+              "width": "minmax(0, 688px)"
+            }
+          ]
+        }
+      ]
     }
   }
 }

@@ -2,7 +2,13 @@
   "type": "panel",
   "id": "objects-article",
   "fields": {
-    "h1": { "type": "text", "props": { "children": "Objects", "variant": "title" } },
+    "h1": {
+      "type": "text",
+      "props": {
+        "children": "Objects",
+        "variant": "title"
+      }
+    },
     "p1": {
       "type": "text",
       "props": {
@@ -22,7 +28,13 @@
         "children": "{\n  \"type\": \"page\",\n  \"id\": \"employees\",\n  \"name\": \"Employees\",\n  \"layout\": \"docs\",\n  \"fields\": {\n    \"search\": { \"type\": \"input\", \"props\": { \"placeholder\": \"Search\" } },\n    \"create\": { \"type\": \"button\", \"props\": { \"children\": \"New employee\" } }\n  },\n  \"grid\": {\n    \"desktop\": { \"rows\": [{ \"columns\": [{ \"field\": \"search\" }, { \"field\": \"create\" }] }] }\n  }\n}"
       }
     },
-    "h2": { "type": "text", "props": { "children": "Conventions", "variant": "heading" } },
+    "h2": {
+      "type": "text",
+      "props": {
+        "children": "Conventions",
+        "variant": "heading"
+      }
+    },
     "c1": {
       "type": "text",
       "props": {
@@ -46,20 +58,116 @@
       "props": {
         "children": "Draft: more keys will be added to both containers and fields as they are decided."
       }
+    },
+    "objects": {
+      "type": "table"
+    },
+    "pager": {
+      "type": "pager"
     }
   },
   "grid": {
     "desktop": {
       "rows": [
-        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "p2" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "code" }], "margin": "0 0 24px" },
-        { "gap": 0, "columns": [{ "field": "h2" }], "margin": "24px 0 16px" },
-        { "gap": 0, "columns": [{ "field": "c1" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "c2" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "c3" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "info" }], "margin": "0" }
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h1"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "p1"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "objects"
+            }
+          ],
+          "margin": "0 0 24px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "p2"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "code"
+            }
+          ],
+          "margin": "0 0 24px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h2"
+            }
+          ],
+          "margin": "24px 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "c1"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "c2"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "c3"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "info"
+            }
+          ],
+          "margin": "0"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "pager"
+            }
+          ],
+          "margin": "48px 0 0"
+        }
       ]
     }
   }

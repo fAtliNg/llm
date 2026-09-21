@@ -2,7 +2,13 @@
   "type": "panel",
   "id": "getting-started-article",
   "fields": {
-    "h1": { "type": "text", "props": { "children": "Getting started", "variant": "title" } },
+    "h1": {
+      "type": "text",
+      "props": {
+        "children": "Getting started",
+        "variant": "title"
+      }
+    },
     "s1": {
       "type": "text",
       "props": {
@@ -23,17 +29,72 @@
     },
     "code": {
       "type": "text",
-      "props": { "variant": "code", "children": "npm install\nnpm run dev\nnpm run verify" }
+      "props": {
+        "variant": "code",
+        "children": "npm install\nnpm run dev\nnpm run verify"
+      }
+    },
+    "pager": {
+      "type": "pager"
     }
   },
   "grid": {
     "desktop": {
       "rows": [
-        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "s1" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "s2" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "s3" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "code" }], "margin": "0" }
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h1"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "s1"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "s2"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "s3"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "code"
+            }
+          ],
+          "margin": "0"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "pager"
+            }
+          ],
+          "margin": "48px 0 0"
+        }
       ]
     }
   }

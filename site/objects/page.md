@@ -11,6 +11,7 @@
 | `name` | string | Heading of the page and its label in the navigation. **The URL is derived from it**: `"New employee"` opens at `/new-employee` (lowercase, anything but letters and digits becomes a dash) |
 | `layout` | string | Optional: the [layout](./layout) (frame) the page is shown in, by id from `meta/layouts`. Without it the page stands alone |
 | `section` | string | Optional: a group name for navigation (`"Guide"`, `"Objects"`); a `nav` field can show one section, or one link per section |
+| `order` | number | Optional: position in navigation and in previous/next, lowest first; pages without it follow, by name |
 | `heading` | boolean | Default `true`: the page draws `name` as its heading. Set `false` when the page draws its own title |
 | `background` | string | Optional: background of the whole page, any CSS value |
 | `fields` | object | Every field of the page once, keyed by its id (unique within the file). A field is either a [component](./field), `{ "type": "button", "props": { … } }`, or a reference to another object, `{ "type": "table" }`, whose meta lives in its own folder under the same id |

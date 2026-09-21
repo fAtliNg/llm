@@ -52,13 +52,57 @@ export const textFieldSchema = z.strictObject({
     href: z.string().optional(),
   }),
 });
-export const BUILTIN_TYPES = ['children', 'nav', 'text'] as const;
+/** A lucide icon by name (kebab-case, as on lucide.dev), optionally a link. */
+export const iconFieldSchema = z.strictObject({
+  type: z.literal('icon'),
+  props: z.strictObject({
+    name: z.string().regex(/^[a-z][a-z0-9-]*$/, 'a lucide icon name, e.g. github or sun'),
+    size: z.number().int().positive().default(20),
+    label: z.string().optional(),
+    href: z.string().optional(),
+  }),
+});
+export const imageFieldSchema = z.strictObject({
+  type: z.literal('image'),
+  props: z.strictObject({
+    src: z.string().min(1),
+    alt: z.string().default(''),
+    width: z.number().int().positive().optional(),
+    height: z.number().int().positive().optional(),
+  }),
+});
+/** Light/dark switch; the choice is kept in localStorage. */
+export const themeFieldSchema = z.strictObject({ type: z.literal('theme') });
+/** Search over page names and text fields; results link to the pages. */
+export const searchFieldSchema = z.strictObject({
+  type: z.literal('search'),
+  props: z
+    .strictObject({ placeholder: z.string().default('Search') })
+    .default({ placeholder: 'Search' }),
+});
+/** Previous and next page links, in navigation order. */
+export const pagerFieldSchema = z.strictObject({ type: z.literal('pager') });
+export const BUILTIN_TYPES = [
+  'children',
+  'nav',
+  'text',
+  'icon',
+  'image',
+  'theme',
+  'search',
+  'pager',
+] as const;
 
 export const fieldSchema = z.union([
   containerRefSchema,
   childrenFieldSchema,
   navFieldSchema,
   textFieldSchema,
+  iconFieldSchema,
+  imageFieldSchema,
+  themeFieldSchema,
+  searchFieldSchema,
+  pagerFieldSchema,
   componentFieldSchema,
 ]);
 
@@ -156,6 +200,8 @@ export const pageSchema = z
     layout: metaId.optional(),
     /** A group name for navigation: a `nav` field can show one section only. */
     section: z.string().trim().min(1).optional(),
+    /** Position in navigation (and in previous/next), lowest first; pages without it follow, by name. */
+    order: z.number().int().optional(),
     /** Hide the automatic heading (when the page draws its own title). */
     heading: z.boolean().default(true),
     background: backgroundSchema.optional(),
@@ -228,6 +274,37 @@ export const panelSchema = z
   })
   .superRefine(checkGrids);
 
+/**
+ * A table: columns and, for now, the rows themselves. Placed in a column as `{ "type": "table" }` under
+ * its id. Rows from an API come later.
+ */
+export const tableSchema = z
+  .strictObject({
+    type: z.literal('table'),
+    id: metaId,
+    caption: z.string().optional(),
+    columns: z
+      .array(
+        z.strictObject({
+          key: z.string().regex(/^[a-zA-Z][a-zA-Z0-9]*$/),
+          label: z.string(),
+          width: z.string().optional(),
+          align: alignSchema.optional(),
+        }),
+      )
+      .min(1),
+    rows: z
+      .array(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])))
+      .default([]),
+  })
+  .superRefine((table, ctx) => {
+    const keys = table.columns.map((c) => c.key);
+    for (const dup of keys.filter((x, i) => keys.indexOf(x) !== i)) {
+      ctx.addIssue({ code: 'custom', message: `columns: key "${dup}" is used twice` });
+    }
+  });
+
+export type MetaTable = z.infer<typeof tableSchema>;
 export type MetaPanel = z.infer<typeof panelSchema>;
 export type MetaColumn = z.infer<typeof columnSchema>;
 export type MetaRow = z.infer<typeof rowSchema>;
@@ -262,6 +339,9 @@ export function isContainerRef(field: MetaField): field is ContainerRef {
 
 export type NavField = z.infer<typeof navFieldSchema>;
 export type TextField = z.infer<typeof textFieldSchema>;
+export type IconField = z.infer<typeof iconFieldSchema>;
+export type ImageField = z.infer<typeof imageFieldSchema>;
+export type SearchField = z.infer<typeof searchFieldSchema>;
 
 // A component field's `type` is any string, so TypeScript cannot narrow the union on `type` alone.
 export function isNav(field: MetaField): field is NavField {
@@ -270,6 +350,18 @@ export function isNav(field: MetaField): field is NavField {
 
 export function isText(field: MetaField): field is TextField {
   return field.type === 'text';
+}
+
+export function isIcon(field: MetaField): field is IconField {
+  return field.type === 'icon';
+}
+
+export function isImage(field: MetaField): field is ImageField {
+  return field.type === 'image';
+}
+
+export function isSearch(field: MetaField): field is SearchField {
+  return field.type === 'search';
 }
 
 export function isBuiltin(field: MetaField): boolean {

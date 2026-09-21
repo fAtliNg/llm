@@ -6,7 +6,7 @@ Everything the library builds is described by JSON objects, the **meta** of the 
 |---|---|---|
 | [`page`](./page) | A route in the app with a heading and content | `id`, `name`, `layout`, `fields`, `grid` |
 | [`layout`](./layout) | A frame around pages: header, menu, footer and the place for the page | `id`, `fields`, `grid` |
-| [`table`](./table) | A list of rows with columns | `id`, `name`, … |
+| [`table`](./table) | Columns and rows | `id`, `columns`, `rows` |
 | [`form`](./form) | Inputs with validation and a submit | `id`, `name`, … |
 | [`panel`](./panel) | Fields and a grid without a URL, placed in a column so it can hold many fields | `id`, `fields`, `grid` |
 | [`field`](./field) | The smallest building block: one component from `src/components/ui` | `id`, `props` |
@@ -32,7 +32,7 @@ The first four are **containers**. Each has `id` and `name`, declares its fields
 
 ## Conventions
 
-- `type` is always present. For a container it is one of `page`, `layout`, `table`, `form`, `panel`; for a field it is a component name or a built-in (`children`, `nav`, `text`).
+- `type` is always present. For a container it is one of `page`, `layout`, `table`, `form`, `panel`; for a field it is a component name or a built-in (`children`, `nav`, `text`, `icon`, `image`, `theme`, `search`, `pager`).
 - `id` is unique within its folder for containers and within the file for fields; it is the stable handle for layouts, tests and references.
 - Containers define fields once and place them per screen size (`desktop` required, `tablet` and `mobile` optional) on a grid: `rows` top to bottom, `columns` left to right, one field per column.
 - A field's `props` must match the props of its component, no more and no less: the description is checked against the component's TypeScript props before anything is generated.

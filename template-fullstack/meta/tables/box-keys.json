@@ -1,0 +1,66 @@
+{
+  "type": "table",
+  "id": "box-keys",
+  "columns": [
+    {
+      "key": "key",
+      "label": "Key",
+      "width": "110px"
+    },
+    {
+      "key": "row",
+      "label": "On a row"
+    },
+    {
+      "key": "column",
+      "label": "On a column"
+    }
+  ],
+  "rows": [
+    {
+      "key": "align",
+      "row": "Horizontal alignment of content in every cell",
+      "column": "The same for this cell; overrides the row"
+    },
+    {
+      "key": "valign",
+      "row": "Vertical alignment of content in every cell",
+      "column": "The same for this cell; overrides the row"
+    },
+    {
+      "key": "margin, padding",
+      "row": "Space around / inside the row",
+      "column": "Space around / inside the cell"
+    },
+    {
+      "key": "background",
+      "row": "Background of the row",
+      "column": "Background of the cell"
+    },
+    {
+      "key": "border",
+      "row": "Per side: top, right, bottom, left",
+      "column": "The same for the cell"
+    },
+    {
+      "key": "sticky, top",
+      "row": "The row stays in view while the page scrolls (a header)",
+      "column": "The cell stays in view (a sidebar, an outline)"
+    },
+    {
+      "key": "height, maxWidth, scroll",
+      "row": "Size of the row; content scrolls inside",
+      "column": "The same for the cell"
+    },
+    {
+      "key": "gap",
+      "row": "Space between the columns, default 16",
+      "column": "—"
+    },
+    {
+      "key": "width",
+      "row": "—",
+      "column": "Any CSS grid track size: 240px, 25%, auto, minmax(0, 688px)"
+    }
+  ]
+}

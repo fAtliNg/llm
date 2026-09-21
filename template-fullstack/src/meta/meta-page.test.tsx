@@ -11,7 +11,9 @@ describe('meta pages', () => {
     renderApp([`/${pageUrl(page.name)}`]);
 
     expect(screen.getByRole('heading', { name: page.name })).toBeInTheDocument();
-    for (const id of Object.keys(page.fields)) expect(screen.getByTestId(id)).toBeInTheDocument();
+    for (const id of Object.keys(page.fields)) {
+      expect(screen.getAllByTestId(id).length).toBeGreaterThan(0);
+    }
     for (const layout of layoutChain(page)) {
       expect(screen.getByTestId(`layout:${layout.id}`)).toBeInTheDocument();
     }

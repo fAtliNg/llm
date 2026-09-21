@@ -59,8 +59,15 @@ Three field types come from the app, not from the component library. They are wh
 | `children` | none | Where the page is shown. Layouts only; exactly one per layout |
 | `nav` | `orientation`: `"horizontal"` (default) or `"vertical"`; `variant`: `"pills"` (default, the active link has a filled background) or `"plain"` (text links, the active one in the brand colour); `section`: only pages of that section; `sections: true`: one link per section, to its first page (a top menu) | Links to pages, the current one highlighted |
 | `text` | `children` (the text); `variant`: `"title"` (h1), `"heading"` (h2), `"subheading"` (h3), `"body"` (default), `"muted"`, `"small"` (a group label), `"code"` (a preformatted block), `"link"` (with `href`) | A heading, a paragraph, a code block, a link; the component library has no plain-text component |
+| `icon` | `name` (a lucide icon, kebab-case), `size` (default 20), `label`, `href` (makes it a link; external ones open in a new tab) | An icon, on its own or as a link |
+| `image` | `src`, `alt`, `width`, `height` | An image, e.g. the logo from `public/` |
+| `theme` | none | A light/dark switch; the choice is kept in `localStorage` and follows the system preference until set |
+| `search` | `placeholder` | A search box over page names and text fields; hits are links to the pages |
+| `pager` | none | Previous and next page, in navigation order |
 
-`nav` and `text` work on pages too.
+Navigation order is the pages' `order`, lowest first; pages without it follow, by name.
+
+All of them work on pages and panels too.
 
 ## Checks
 

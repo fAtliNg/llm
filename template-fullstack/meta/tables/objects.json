@@ -1,0 +1,52 @@
+{
+  "type": "table",
+  "id": "objects",
+  "columns": [
+    {
+      "key": "type",
+      "label": "type",
+      "width": "90px"
+    },
+    {
+      "key": "what",
+      "label": "What it is"
+    },
+    {
+      "key": "made",
+      "label": "Made of",
+      "width": "180px"
+    }
+  ],
+  "rows": [
+    {
+      "type": "page",
+      "what": "A route in the app with a heading and content",
+      "made": "id, name, layout, fields, grid"
+    },
+    {
+      "type": "layout",
+      "what": "A frame around pages: header, menu, footer and the place for the page",
+      "made": "id, fields, grid"
+    },
+    {
+      "type": "panel",
+      "what": "Fields and a grid without a URL, placed in a column so it can hold many fields",
+      "made": "id, fields, grid"
+    },
+    {
+      "type": "table",
+      "what": "Columns and rows",
+      "made": "id, columns, rows"
+    },
+    {
+      "type": "form",
+      "what": "Inputs with validation and a submit",
+      "made": "coming next"
+    },
+    {
+      "type": "field",
+      "what": "The smallest building block: one component from src/components/ui",
+      "made": "type, props"
+    }
+  ]
+}

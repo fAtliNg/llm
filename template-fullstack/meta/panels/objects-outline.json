@@ -2,10 +2,35 @@
   "type": "panel",
   "id": "objects-outline",
   "fields": {
-    "title": { "type": "text", "props": { "children": "On this page", "variant": "small" } },
+    "title": {
+      "type": "text",
+      "props": {
+        "children": "On this page",
+        "variant": "small"
+      }
+    },
     "l1": {
       "type": "text",
-      "props": { "children": "Conventions", "variant": "link", "href": "#conventions" }
+      "props": {
+        "children": "Conventions",
+        "variant": "link",
+        "href": "#conventions"
+      }
+    },
+    "edit": {
+      "type": "text",
+      "props": {
+        "children": "Edit this page",
+        "variant": "link",
+        "href": "https://github.com/OWNER/REPO"
+      }
+    },
+    "updated": {
+      "type": "text",
+      "props": {
+        "children": "Last updated: September 21, 2026",
+        "variant": "muted"
+      }
     }
   },
   "grid": {
@@ -13,16 +38,47 @@
       "rows": [
         {
           "gap": 0,
-          "columns": [{ "field": "title" }],
+          "columns": [
+            {
+              "field": "title"
+            }
+          ],
           "margin": "0 0 8px",
           "padding": "0 0 0 16px",
-          "border": { "left": "1px solid var(--border)" }
+          "border": {
+            "left": "1px solid var(--border)"
+          }
         },
         {
           "gap": 0,
-          "columns": [{ "field": "l1" }],
+          "columns": [
+            {
+              "field": "l1"
+            }
+          ],
           "padding": "0 0 0 16px",
-          "border": { "left": "1px solid var(--border)" }
+          "border": {
+            "left": "1px solid var(--border)"
+          }
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "edit"
+            }
+          ],
+          "margin": "24px 0 8px",
+          "padding": "0 0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "updated"
+            }
+          ],
+          "padding": "0 0 0 16px"
         }
       ]
     }

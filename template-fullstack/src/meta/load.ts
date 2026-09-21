@@ -6,9 +6,11 @@ import {
   type MetaLayout,
   type MetaPage,
   type MetaPanel,
+  type MetaTable,
   pageSchema,
   pageUrl,
   panelSchema,
+  tableSchema,
 } from '@/meta/schema';
 import type { z } from 'zod';
 
@@ -23,8 +25,9 @@ const layoutFiles = import.meta.glob('../../meta/layouts/*.json', {
   import: 'default',
 });
 const panelFiles = import.meta.glob('../../meta/panels/*.json', { eager: true, import: 'default' });
+const tableFiles = import.meta.glob('../../meta/tables/*.json', { eager: true, import: 'default' });
 
-function parseFolder<T extends { id: string; fields: Record<string, { type: string }> }>(
+function parseFolder<T extends { id: string; fields?: Record<string, { type: string }> }>(
   files: Record<string, unknown>,
   folder: string,
   schema: z.ZodType<T>,
@@ -45,7 +48,7 @@ function parseFolder<T extends { id: string; fields: Record<string, { type: stri
       errors.push(`${rel}: id "${parsed.data.id}" must equal the file name`);
       continue;
     }
-    for (const [id, field] of Object.entries(parsed.data.fields)) {
+    for (const [id, field] of Object.entries(parsed.data.fields ?? {})) {
       const f = field as MetaPage['fields'][string];
       if (isContainerRef(f) || isBuiltin(f)) continue;
       try {
@@ -61,13 +64,20 @@ function parseFolder<T extends { id: string; fields: Record<string, { type: stri
   return items;
 }
 
-function load(): { pages: MetaPage[]; layouts: MetaLayout[]; panels: MetaPanel[] } {
+function load(): {
+  pages: MetaPage[];
+  layouts: MetaLayout[];
+  panels: MetaPanel[];
+  tables: MetaTable[];
+} {
   const errors: string[] = [];
   const pages = parseFolder(pageFiles, 'pages', pageSchema, errors);
   const layouts = parseFolder(layoutFiles, 'layouts', layoutSchema, errors);
   const panels = parseFolder(panelFiles, 'panels', panelSchema, errors);
+  const tables = parseFolder(tableFiles, 'tables', tableSchema, errors);
   const layoutIds = new Set(layouts.map((l) => l.id));
   const panelIds = new Set(panels.map((p) => p.id));
+  const tableIds = new Set(tables.map((t) => t.id));
 
   // A `{ "type": "panel" }` field must name a panel that exists; a panel must not contain itself.
   const holders = [
@@ -77,6 +87,9 @@ function load(): { pages: MetaPage[]; layouts: MetaLayout[]; panels: MetaPanel[]
   ];
   for (const holder of holders) {
     for (const [id, field] of Object.entries(holder.fields)) {
+      if (field.type === 'table' && !tableIds.has(id)) {
+        errors.push(`${holder.file}: fields.${id}: no table "${id}" in meta/tables`);
+      }
       if (field.type !== 'panel') continue;
       if (!panelIds.has(id))
         errors.push(`${holder.file}: fields.${id}: no panel "${id}" in meta/panels`);
@@ -114,12 +127,19 @@ function load(): { pages: MetaPage[]; layouts: MetaLayout[]; panels: MetaPanel[]
   }
 
   if (errors.length > 0) throw new Error(`invalid meta:\n  ${errors.join('\n  ')}`);
-  return { pages, layouts, panels };
+  // Navigation order: `order` first, then the rest by name.
+  pages.sort((a, b) => (a.order ?? 1e9) - (b.order ?? 1e9) || a.name.localeCompare(b.name));
+  return { pages, layouts, panels, tables };
 }
 
 const loaded = load();
 
 export const metaPages: MetaPage[] = loaded.pages;
+export const metaTables: MetaTable[] = loaded.tables;
+
+export function findTable(id: string): MetaTable | undefined {
+  return metaTables.find((table) => table.id === id);
+}
 export const metaLayouts: MetaLayout[] = loaded.layouts;
 export const metaPanels: MetaPanel[] = loaded.panels;
 

@@ -1,14 +1,25 @@
 import { type CSSProperties, createElement, type ReactNode } from 'react';
 
+import {
+  MetaIcon,
+  MetaImage,
+  MetaPager,
+  MetaSearch,
+  MetaTableView,
+  MetaTheme,
+} from '@/meta/builtins';
 import { componentFor } from '@/meta/components';
 import { useDevice } from '@/meta/device';
-import { findPanel } from '@/meta/load';
+import { findPanel, findTable } from '@/meta/load';
 import { MetaNav } from '@/meta/nav';
 import {
   type ComponentField,
   gridFor,
   isContainerRef,
+  isIcon,
+  isImage,
   isNav,
+  isSearch,
   isText,
   type MetaColumn,
   type MetaField,
@@ -62,9 +73,18 @@ function Field({ id, field, slot }: { id: string; field: MetaField; slot: ReactN
   if (field.type === 'children') return <div data-meta-id={id}>{slot}</div>;
   if (isNav(field)) return <MetaNav id={id} {...field.props} />;
   if (isText(field)) return <Text id={id} field={field} />;
+  if (isIcon(field)) return <MetaIcon id={id} props={field.props} />;
+  if (isImage(field)) return <MetaImage id={id} props={field.props} />;
+  if (isSearch(field)) return <MetaSearch id={id} props={field.props} />;
+  if (field.type === 'theme') return <MetaTheme id={id} />;
+  if (field.type === 'pager') return <MetaPager id={id} />;
   if (field.type === 'panel') {
     const panel = findPanel(id);
     return panel ? <MetaPanelView panel={panel} slot={slot} /> : null;
+  }
+  if (field.type === 'table') {
+    const table = findTable(id);
+    return table ? <MetaTableView table={table} /> : null;
   }
   if (isContainerRef(field)) {
     // Rendered by a later step; until then the page shows where it goes.

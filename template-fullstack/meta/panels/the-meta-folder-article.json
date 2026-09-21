@@ -2,7 +2,13 @@
   "type": "panel",
   "id": "the-meta-folder-article",
   "fields": {
-    "h1": { "type": "text", "props": { "children": "The meta folder", "variant": "title" } },
+    "h1": {
+      "type": "text",
+      "props": {
+        "children": "The meta folder",
+        "variant": "title"
+      }
+    },
     "p1": {
       "type": "text",
       "props": {
@@ -16,7 +22,13 @@
         "children": "meta/\n├── pages/\n│   ├── objects.json\n│   └── page.json\n├── layouts/\n│   └── docs.json\n└── panels/\n    ├── header.json\n    └── sidebar.json"
       }
     },
-    "h2": { "type": "text", "props": { "children": "Rules", "variant": "heading" } },
+    "h2": {
+      "type": "text",
+      "props": {
+        "children": "Rules",
+        "variant": "heading"
+      }
+    },
     "r1": {
       "type": "text",
       "props": {
@@ -40,19 +52,95 @@
       "props": {
         "children": "Meta is read, not compiled. The app loads meta/ at startup and builds routes, navigation and pages from it; there is no generation step."
       }
+    },
+    "pager": {
+      "type": "pager"
     }
   },
   "grid": {
     "desktop": {
       "rows": [
-        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
-        { "gap": 0, "columns": [{ "field": "code" }], "margin": "0 0 24px" },
-        { "gap": 0, "columns": [{ "field": "h2" }], "margin": "24px 0 16px" },
-        { "gap": 0, "columns": [{ "field": "r1" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "r2" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "r3" }], "margin": "0 0 8px" },
-        { "gap": 0, "columns": [{ "field": "r4" }], "margin": "0" }
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h1"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "p1"
+            }
+          ],
+          "margin": "0 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "code"
+            }
+          ],
+          "margin": "0 0 24px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "h2"
+            }
+          ],
+          "margin": "24px 0 16px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "r1"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "r2"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "r3"
+            }
+          ],
+          "margin": "0 0 8px"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "r4"
+            }
+          ],
+          "margin": "0"
+        },
+        {
+          "gap": 0,
+          "columns": [
+            {
+              "field": "pager"
+            }
+          ],
+          "margin": "48px 0 0"
+        }
       ]
     }
   }

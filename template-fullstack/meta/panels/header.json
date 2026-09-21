@@ -3,9 +3,12 @@
   "id": "header",
   "fields": {
     "logo": {
-      "type": "badge",
+      "type": "image",
       "props": {
-        "children": "≡"
+        "src": "/logo.svg",
+        "alt": "",
+        "width": 24,
+        "height": 24
       }
     },
     "brand": {
@@ -16,10 +19,9 @@
       }
     },
     "search": {
-      "type": "input",
+      "type": "search",
       "props": {
-        "placeholder": "Search",
-        "aria-label": "Search"
+        "placeholder": "Search"
       }
     },
     "menu": {
@@ -30,12 +32,16 @@
         "sections": true
       }
     },
+    "theme": {
+      "type": "theme"
+    },
     "github": {
-      "type": "button",
+      "type": "icon",
       "props": {
-        "variant": "ghost",
-        "size": "sm",
-        "children": "GitHub"
+        "name": "git-branch",
+        "size": 20,
+        "label": "GitHub",
+        "href": "https://github.com/OWNER/REPO"
       }
     }
   },
@@ -67,6 +73,11 @@
               "align": "right"
             },
             {
+              "field": "theme",
+              "width": "auto",
+              "margin": "0 0 0 16px"
+            },
+            {
               "field": "github",
               "width": "auto"
             }
@@ -89,9 +100,12 @@
               "field": "brand"
             },
             {
+              "field": "theme",
+              "width": "auto"
+            },
+            {
               "field": "github",
-              "width": "auto",
-              "align": "right"
+              "width": "auto"
             }
           ]
         }

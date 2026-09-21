@@ -1,0 +1,62 @@
+{
+  "type": "table",
+  "id": "page-keys",
+  "columns": [
+    {
+      "key": "key",
+      "label": "Key",
+      "width": "120px"
+    },
+    {
+      "key": "type",
+      "label": "Type",
+      "width": "110px"
+    },
+    {
+      "key": "meaning",
+      "label": "Meaning"
+    }
+  ],
+  "rows": [
+    {
+      "key": "type",
+      "type": "\"page\"",
+      "meaning": "What this object is"
+    },
+    {
+      "key": "id",
+      "type": "string",
+      "meaning": "Unique among pages; equals the file name meta/pages/<id>.json"
+    },
+    {
+      "key": "name",
+      "type": "string",
+      "meaning": "Heading of the page and its label in the navigation. The URL is derived from it: \"New employee\" opens at /new-employee"
+    },
+    {
+      "key": "layout",
+      "type": "string",
+      "meaning": "Optional: the layout (frame) the page is shown in, by id from meta/layouts"
+    },
+    {
+      "key": "section",
+      "type": "string",
+      "meaning": "Optional: a group name for navigation; a nav field can show one section, or one link per section"
+    },
+    {
+      "key": "order",
+      "type": "number",
+      "meaning": "Optional: position in navigation and in previous/next, lowest first"
+    },
+    {
+      "key": "fields",
+      "type": "object",
+      "meaning": "Every field of the page once, keyed by its id"
+    },
+    {
+      "key": "grid",
+      "type": "object",
+      "meaning": "Where the fields go, per screen size: desktop (required), tablet and mobile (optional)"
+    }
+  ]
+}
