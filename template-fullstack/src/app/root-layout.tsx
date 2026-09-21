@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router';
 
-import { metaNav } from '@/meta/routes';
+import { metaNav } from '@/meta/nav';
 import { cn } from '@/lib/utils';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>

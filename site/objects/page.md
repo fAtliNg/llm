@@ -26,13 +26,13 @@
 
 ## How a page becomes a route
 
-Nothing is generated. The app reads `meta/pages/*.json` itself (`src/meta/pages.ts`, through Vite's `import.meta.glob`) and builds from them, at startup:
+Nothing is generated and the router knows no page by name. `src/app/router.tsx` has the hand-written routes and then **one universal route**, `*`, handled by `src/meta/meta-route.tsx`: it takes the URL, looks for a page in `meta/pages` whose `name` maps to it, and renders that page, or the 404 page when there is none.
 
-- one route per page, `path` = URL from `name`, mounted under the root layout by `src/app/router.tsx` (`...metaRoutes`);
-- one link per page in the main navigation (`src/app/root-layout.tsx`, `metaNav`);
-- the page itself, rendered by `src/meta/meta-page.tsx`: the heading, then each field in order. A component field is the component from `src/components/ui/<type>` with `props` spread onto it and `data-meta-id` set to the field id; a reference to an object that has no renderer yet shows a placeholder in its place.
+- `src/meta/pages.ts` loads `meta/pages/*.json` (Vite's `import.meta.glob`), validates them and answers `findPage(url)`.
+- `src/meta/meta-page.tsx` renders a page: the heading, then each field in order. A component field is the component from `src/components/ui/<type>` with `props` spread onto it and `data-meta-id` set to the field id; a reference to an object that has no renderer yet shows a placeholder in its place.
+- `src/meta/nav.ts` gives the main navigation one link per page.
 
-Add a file, and the page exists; in `npm run dev` it appears without a restart. Delete the file, and the route and the link are gone.
+Add a file, and its URL answers; in `npm run dev` it appears without a restart. Delete the file, and the same URL is a 404 again.
 
 ## Checks
 

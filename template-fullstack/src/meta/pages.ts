@@ -46,3 +46,9 @@ function load(): MetaPage[] {
 }
 
 export const metaPages: MetaPage[] = load();
+
+/** The page that opens at a URL path (without the leading slash), if meta has one. */
+export function findPage(urlPath: string): MetaPage | undefined {
+  const wanted = urlPath.replace(/^\/+|\/+$/g, '');
+  return metaPages.find((page) => pageUrl(page.name) === wanted);
+}

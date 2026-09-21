@@ -14,6 +14,12 @@ describe('meta pages', () => {
     for (const field of page.fields) expect(screen.getByTestId(field.id)).toBeInTheDocument();
   });
 
+  it('shows the 404 page for a URL that no meta page has', () => {
+    renderApp(['/no-such-page']);
+
+    expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
+  });
+
   it('links every page from the main navigation', () => {
     renderApp(['/']);
 
