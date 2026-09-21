@@ -4,7 +4,7 @@ Full-stack TypeScript app in one package: React 19 SPA (Vite), Hono API, SQLite.
 
 ## Stack (pinned versions in package.json)
 
-- UI: shadcn/ui components in `src/components/ui` (Radix via `radix-ui`), Tailwind 4, icons from `lucide-react`.
+- UI: the full shadcn/ui set in `src/components/ui`, one folder per component (`button/button.tsx`, `button/index.ts`, `button/styles.css`), imported as `@/components/ui/button`. Radix via `radix-ui`, Tailwind 4, icons from `lucide-react`. Never add a component by hand or with `npx shadcn add`: everything the registry has is already here. Extra CSS for a component goes into its `styles.css`.
 - Data on the client: Redux Toolkit 2 + RTK Query. One API in `src/api/base-api.ts`; features add endpoints with `injectEndpoints`.
 - Forms: react-hook-form + zod 4, rendered with `Field` components and `Controller`.
 - Routing: React Router 8 in library mode, routes in `src/app/router.tsx`.

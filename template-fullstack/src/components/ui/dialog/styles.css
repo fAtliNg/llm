@@ -1,0 +1,3 @@
+/* Styles for the dialog component beyond its Tailwind classes. Empty by design; add rules here when the
+   component needs something classes cannot express. For Tailwind utilities inside this file use
+   @reference "../../../index.css"; then @apply works. */

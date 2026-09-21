@@ -4,11 +4,20 @@
 
 ## Component library
 
-The base app uses **shadcn/ui** (v4.21, style `radix-nova`) on Tailwind 4 with Radix primitives and `lucide-react` icons. shadcn components are not a dependency: they are source files copied into `src/components/ui/` with `npx shadcn add <name>`. The base app ships with 13 of them (marked ✓ below); any other one is added on demand, with the same command, before a description can use it.
+The base app uses **shadcn/ui** (v4.21, style `radix-nova`) on Tailwind 4 with Radix primitives and `lucide-react` icons. shadcn components are not a dependency but source files, and the base app ships with **the whole registry**: 61 components, one folder each under `src/components/ui/`:
+
+```
+src/components/ui/button/
+├── button.tsx    the component, as published by shadcn
+├── index.ts      re-exports it and imports the styles
+└── styles.css    extra CSS for this component; empty until needed
+```
+
+Imports stay short: `import { Button } from '@/components/ui/button'`. Nothing is added on demand and the model never runs `npx shadcn add`; a control named in a description always exists. Two registry names are absent because shadcn 4 retired them: `form` (replaced by `field`) and `toast` (replaced by `sonner`).
 
 ## Controls
 
-`control` is the shadcn name. The full registry as of 2026-09-21, grouped by what a control does in a description:
+`control` is the shadcn name. The full registry as of 2026-09-21, grouped by what a control does in a description. ✓ marks the 13 controls the base app used before the whole registry was added; today all of them are present.
 
 ### Input
 
@@ -29,7 +38,6 @@ The base app uses **shadcn/ui** (v4.21, style `radix-nova`) on Tailwind 4 with R
 | `toggle` | | A pressed/unpressed button |
 | `toggle-group` | | A set of toggles, single or multiple |
 | `field` | ✓ | Label, control, description and error laid out together |
-| `form` | | react-hook-form wiring around fields |
 | `label` | ✓ | Label for a control |
 
 ### Display
@@ -73,8 +81,7 @@ The base app uses **shadcn/ui** (v4.21, style `radix-nova`) on Tailwind 4 with R
 | `sheet` | | Panel sliding in from an edge |
 | `drawer` | | Bottom drawer, touch friendly |
 | `popover` | | Small floating panel anchored to a trigger |
-| `toast` | | Brief notification (legacy) |
-| `sonner` | | Brief notification (current) |
+| `sonner` | | Brief notification (toasts) |
 
 ### Layout and navigation
 
