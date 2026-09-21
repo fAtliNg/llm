@@ -39,6 +39,10 @@ Full-stack TypeScript app in one package: React 19 SPA (Vite), Hono API, SQLite.
 - TypeScript is strict: no `any`, no non-null assertions outside tests, handle `undefined` from indexed access.
 - Stay inside the project directory. Use relative paths. Do not delete directories.
 
+## Pages: describe them in meta
+
+A page is `meta/pages/<id>.json` with `type`, `id`, `name` (the URL is derived from it) and `fields`: components from `src/components/ui` as `{ "type": "button", "id": "create", "props": { … } }`, where `props` are exactly that component's props. Run `npm run gen:meta`; it writes `src/generated/` (never edit that folder, change the meta) and wires routes and navigation. Then `npm run verify`: a type error in `src/generated` means a prop the component does not accept.
+
 ## New entity: use the generator
 
 A whole new entity (its own table, API, list page and form) is not written by hand. Describe it in `entities/<plural>.json` and run:

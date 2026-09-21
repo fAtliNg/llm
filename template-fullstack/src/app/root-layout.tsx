@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router';
 
+import { generatedNav } from '@/generated/nav';
 import { cn } from '@/lib/utils';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -20,6 +21,11 @@ export function RootLayout() {
           <NavLink to="/tasks/new" className={navLinkClass}>
             New task
           </NavLink>
+          {generatedNav.map((link) => (
+            <NavLink key={link.to} to={link.to} className={navLinkClass}>
+              {link.label}
+            </NavLink>
+          ))}
         </nav>
       </header>
       <main className="mx-auto max-w-4xl px-4 py-6">

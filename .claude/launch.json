@@ -28,6 +28,15 @@
         "--strictPort"
       ],
       "port": 5174
+    },
+    {
+      "name": "fullstack-dev",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=/Users/sergey/.nvm/versions/node/v22.23.2/bin:$PATH; cd template-fullstack && npm run dev"
+      ],
+      "port": 5173
     }
   ]
 }

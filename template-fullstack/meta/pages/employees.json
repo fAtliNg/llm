@@ -1,0 +1,18 @@
+{
+  "type": "page",
+  "id": "employees",
+  "name": "Employees",
+  "fields": [
+    {
+      "type": "input",
+      "id": "search",
+      "props": { "placeholder": "Search employees", "aria-label": "Search" }
+    },
+    {
+      "type": "button",
+      "id": "create",
+      "props": { "variant": "outline", "children": "New employee" }
+    },
+    { "type": "table", "id": "employees" }
+  ]
+}

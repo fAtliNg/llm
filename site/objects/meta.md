@@ -20,7 +20,7 @@ meta/
 - **File name is the id.** `meta/tables/employees.json` is the object with `"id": "employees"`, and a reference from another object is just that id. Ids are unique within a folder; the folder tells the type, so a page and a table may both be called `employees`.
 - **One object per file.** Small files are what the model reads and edits reliably; a change to one form touches one file.
 - **The folder tells the type.** `type` inside the file must agree with the folder it is in; a mismatch is an error.
-- **Meta is source, not output.** It is committed, reviewed in diffs and regenerated from on demand. Generated code never edits meta.
+- **Meta is source, not output.** It is committed, reviewed in diffs and regenerated from on demand with `npm run gen:meta`. Generated code lands in `src/generated/`, which the generator owns and rewrites; generated code never edits meta.
 - **Fields have no files of their own.** A field exists only inside the `fields` of its container.
 
 ## Why here, and not elsewhere
