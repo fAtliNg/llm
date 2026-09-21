@@ -12,7 +12,27 @@
 | `fields` | object | Every field of the page once, keyed by its id (unique within the file). A field is either a [component](./field), `{ "type": "button", "props": { … } }`, or a reference to another object, `{ "type": "table" }`, whose meta lives in its own folder under the same id |
 | `layout` | object | Where the fields go, per screen size: `desktop` (required), `tablet` and `mobile` (optional). A missing size uses the next wider one: mobile → tablet → desktop |
 
-A layout is `{ "rows": Row[] }`, top to bottom. A **row** is `{ "columns": Column[] }`: its columns sit side by side and share the width equally. A **column** is `{ "field": "<id>" }`: one cell, one field by id. Width and alignment will be column keys.
+A layout is `{ "rows": Row[] }`, top to bottom. A **row** is `{ "columns": Column[] }`: its columns sit side by side and share the width equally. A **column** is `{ "field": "<id>" }`: one cell, one field by id. Both take the optional box keys below.
+
+### Row and column keys
+
+| Key | Type | On a row | On a column |
+|---|---|---|---|
+| `align` | `"left"` \| `"center"` \| `"right"` | Horizontal alignment of content in every cell | The same for this cell; overrides the row |
+| `valign` | `"top"` \| `"middle"` \| `"bottom"` | Vertical alignment of content in every cell | The same for this cell; overrides the row |
+| `margin` | number \| string | Space around the row | Space around the cell |
+| `padding` | number \| string | Space inside the row, around all cells | Space inside the cell |
+
+All optional. Without `align`/`valign`, content stretches to the cell, which is what inputs and textareas want; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`).
+
+```json
+{ "valign": "middle", "columns": [{ "field": "email" }, { "field": "status", "align": "left" }] }
+```
+```json
+{ "align": "right", "margin": "16px 0 0", "columns": [{ "field": "save", "align": "left" }, { "field": "cancel" }] }
+```
+
+Width per column is still to come.
 
 Because the field is defined once and the layouts only point at it, a page can have a different arrangement per screen without repeating a single prop; a field left out of a layout is simply not shown on that screen.
 

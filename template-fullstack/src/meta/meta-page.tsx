@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { type CSSProperties, createElement } from 'react';
 
 import { componentFor } from '@/meta/components';
 import {
@@ -7,8 +7,10 @@ import {
   isContainerRef,
   layoutFor,
   type MetaField,
+  type MetaColumn,
   type MetaLayout,
   type MetaPage,
+  type MetaRow,
 } from '@/meta/schema';
 
 function Field({ id, field }: { id: string; field: MetaField }) {
@@ -27,6 +29,19 @@ function Field({ id, field }: { id: string; field: MetaField }) {
   return createElement(componentFor(field.type), { 'data-meta-id': id, ...field.props });
 }
 
+const JUSTIFY = { left: 'start', center: 'center', right: 'end' } as const;
+const ALIGN = { top: 'start', middle: 'center', bottom: 'end' } as const;
+
+/** Inline styles for a row (grid) or a column (grid item): alignment falls through from row to column. */
+function boxStyle(box: MetaRow | MetaColumn, isRow: boolean): CSSProperties {
+  const style: CSSProperties = {};
+  if (box.align) style[isRow ? 'justifyItems' : 'justifySelf'] = JUSTIFY[box.align];
+  if (box.valign) style[isRow ? 'alignItems' : 'alignSelf'] = ALIGN[box.valign];
+  if (box.margin !== undefined) style.margin = box.margin;
+  if (box.padding !== undefined) style.padding = box.padding;
+  return style;
+}
+
 function Grid({ page, layout }: { page: MetaPage; layout: MetaLayout }) {
   return (
     <div className="space-y-4">
@@ -35,13 +50,20 @@ function Grid({ page, layout }: { page: MetaPage; layout: MetaLayout }) {
           key={index}
           data-meta-row={index}
           className="grid gap-4"
-          style={{ gridTemplateColumns: `repeat(${String(row.columns.length)}, minmax(0, 1fr))` }}
+          style={{
+            gridTemplateColumns: `repeat(${String(row.columns.length)}, minmax(0, 1fr))`,
+            ...boxStyle(row, true),
+          }}
         >
           {row.columns.map((column) => {
             // The schema already guarantees every placed id is in fields.
             const field = page.fields[column.field];
             return field ? (
-              <div key={column.field} data-meta-column={column.field}>
+              <div
+                key={column.field}
+                data-meta-column={column.field}
+                style={boxStyle(column, false)}
+              >
                 <Field id={column.field} field={field} />
               </div>
             ) : null;

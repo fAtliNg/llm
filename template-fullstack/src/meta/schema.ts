@@ -23,11 +23,25 @@ export const containerRefSchema = z.strictObject({ type: z.enum(CONTAINER_TYPES)
 
 export const fieldSchema = z.union([containerRefSchema, componentFieldSchema]);
 
-/** One cell of the grid: which field sits here. Width and alignment will be added here. */
-export const columnSchema = z.strictObject({ field: metaId });
+/** Horizontal alignment of content inside a cell; absent means it stretches to the cell width. */
+export const alignSchema = z.enum(['left', 'center', 'right']);
+/** Vertical alignment of content inside a cell; absent means it stretches to the row height. */
+export const valignSchema = z.enum(['top', 'middle', 'bottom']);
+/** A number is pixels on every side; a string is any CSS value, e.g. "8px 16px". */
+export const spacingSchema = z.union([z.number().int().min(0), z.string().trim().min(1)]);
 
-/** One line of the grid: its columns share the width equally. */
-export const rowSchema = z.strictObject({ columns: z.array(columnSchema).min(1) });
+const boxSchema = {
+  align: alignSchema.optional(),
+  valign: valignSchema.optional(),
+  margin: spacingSchema.optional(),
+  padding: spacingSchema.optional(),
+};
+
+/** One cell of the grid: which field sits here, and how it sits. A column's alignment overrides the row's. */
+export const columnSchema = z.strictObject({ field: metaId, ...boxSchema });
+
+/** One line of the grid: its columns share the width equally. Alignment here applies to every column. */
+export const rowSchema = z.strictObject({ columns: z.array(columnSchema).min(1), ...boxSchema });
 
 export const layoutSchema = z.strictObject({ rows: z.array(rowSchema).min(1) });
 
