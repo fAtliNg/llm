@@ -4,8 +4,30 @@
     {
       "name": "template-dev",
       "runtimeExecutable": "/Users/sergey/.nvm/versions/node/v22.23.2/bin/npm",
-      "runtimeArgs": ["run", "dev", "--prefix", "template", "--", "--port", "5173", "--strictPort"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "template",
+        "--",
+        "--port",
+        "5173",
+        "--strictPort"
+      ],
       "port": 5173
+    },
+    {
+      "name": "docs-site",
+      "runtimeExecutable": "/Users/sergey/.nvm/versions/node/v22.23.2/bin/node",
+      "runtimeArgs": [
+        "site/node_modules/vitepress/bin/vitepress.js",
+        "dev",
+        "site",
+        "--port",
+        "5174",
+        "--strictPort"
+      ],
+      "port": 5174
     }
   ]
 }
