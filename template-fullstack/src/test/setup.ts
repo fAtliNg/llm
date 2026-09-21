@@ -8,7 +8,7 @@ import { resetBackend, server } from '@/mocks/server';
 
 // React Testing Library unmounts after each test on its own because `globals: true` is set.
 
-// Elements generated from meta carry their meta id, so tests find them with getByTestId(id).
+// Elements rendered from meta carry their meta id, so tests find them with getByTestId(id).
 configure({ testIdAttribute: 'data-meta-id' });
 
 beforeAll(() => {

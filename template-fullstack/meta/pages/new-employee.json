@@ -1,0 +1,9 @@
+{
+  "type": "page",
+  "id": "new-employee",
+  "name": "New employee",
+  "fields": [
+    { "type": "input", "id": "name", "props": { "placeholder": "Name", "aria-label": "Name" } },
+    { "type": "button", "id": "save", "props": { "children": "Create" } }
+  ]
+}

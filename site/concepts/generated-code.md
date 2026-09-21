@@ -1,5 +1,5 @@
 # Generated code
 
 ::: info Draft
-What is generated, where it lands, and why it is plain code rather than a runtime engine.
+Superseded for pages: meta is read at runtime, nothing is generated (see [Page](/objects/page)). Whether anything is ever generated (the API side, tests) is still to be decided.
 :::

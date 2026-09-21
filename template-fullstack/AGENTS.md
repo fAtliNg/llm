@@ -41,7 +41,7 @@ Full-stack TypeScript app in one package: React 19 SPA (Vite), Hono API, SQLite.
 
 ## Pages: describe them in meta
 
-A page is `meta/pages/<id>.json` with `type`, `id`, `name` (the URL is derived from it) and `fields`: components from `src/components/ui` as `{ "type": "button", "id": "create", "props": { … } }`, where `props` are exactly that component's props. Run `npm run gen:meta`; it writes `src/generated/` (never edit that folder, change the meta) and wires routes and navigation. Then `npm run verify`: a type error in `src/generated` means a prop the component does not accept.
+A page is `meta/pages/<id>.json` with `type`, `id` (= file name), `name` (the URL is derived from it) and `fields`: components from `src/components/ui` as `{ "type": "button", "id": "create", "props": { … } }`, where `props` are that component's props. Nothing to run: the app reads `meta/` at startup (`src/meta/`) and builds the route, the navigation link and the page from it. `npm run verify` opens every page in meta and checks it.
 
 ## New entity: use the generator
 
