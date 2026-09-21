@@ -10,7 +10,13 @@
         "children": "Everything the library builds is described by JSON objects, the meta of the app. Pages, layouts, tables and forms are files under meta/; the app reads them at startup and builds itself from them."
       }
     },
-    "what": { "type": "text", "props": { "children": "What you get", "variant": "heading" } },
+    "what": {
+      "type": "text",
+      "props": {
+        "children": "What you get",
+        "variant": "heading"
+      }
+    },
     "what-text": {
       "type": "text",
       "props": {
@@ -23,21 +29,63 @@
         "children": "This page, its header, sidebar and footer are all meta: meta/layouts/docs.json and meta/pages/introduction.json."
       }
     },
-    "start": { "type": "button", "props": { "children": "Get started" } },
-    "concepts": { "type": "button", "props": { "variant": "outline", "children": "How it works" } }
+    "start": {
+      "type": "button",
+      "props": {
+        "children": "Get started"
+      }
+    },
+    "concepts": {
+      "type": "button",
+      "props": {
+        "variant": "outline",
+        "children": "How it works"
+      }
+    }
   },
   "grid": {
     "desktop": {
       "rows": [
-        { "columns": [{ "field": "lead" }] },
-        { "columns": [{ "field": "note" }] },
-        { "columns": [{ "field": "what" }] },
-        { "columns": [{ "field": "what-text" }] },
+        {
+          "columns": [
+            {
+              "field": "lead"
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "field": "note",
+              "background": "#eef2ff"
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "field": "what"
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "field": "what-text"
+            }
+          ]
+        },
         {
           "align": "left",
           "columns": [
-            { "field": "start", "width": "auto" },
-            { "field": "concepts", "width": "auto" }
+            {
+              "field": "start",
+              "width": "auto"
+            },
+            {
+              "field": "concepts",
+              "width": "auto"
+            }
           ]
         }
       ]

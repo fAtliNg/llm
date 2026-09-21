@@ -65,6 +65,7 @@ function boxStyle(box: MetaRow | MetaColumn, isRow: boolean): CSSProperties {
   if (box.valign) style[isRow ? 'alignItems' : 'alignSelf'] = ALIGN[box.valign];
   if (box.margin !== undefined) style.margin = box.margin;
   if (box.padding !== undefined) style.padding = box.padding;
+  if (box.background !== undefined) style.background = box.background;
   return style;
 }
 
@@ -113,7 +114,7 @@ function Grid({
 /** A page straight from its meta: the heading, then its grid. */
 export function MetaPageView({ page }: { page: MetaPage }) {
   return (
-    <section data-meta-page={page.id} className="space-y-4">
+    <section data-meta-page={page.id} className="space-y-4" style={{ background: page.background }}>
       <h1 className="text-2xl font-semibold">{page.name}</h1>
       <Grid fields={page.fields} grids={page.grid} />
     </section>
@@ -123,7 +124,7 @@ export function MetaPageView({ page }: { page: MetaPage }) {
 /** A layout around whatever it is given: its grid, with the `children` field showing `children`. */
 export function MetaLayoutView({ layout, children }: { layout: MetaLayout; children: ReactNode }) {
   return (
-    <div data-meta-id={`layout:${layout.id}`}>
+    <div data-meta-id={`layout:${layout.id}`} style={{ background: layout.background }}>
       <Grid fields={layout.fields} grids={layout.grid} slot={children} />
     </div>
   );

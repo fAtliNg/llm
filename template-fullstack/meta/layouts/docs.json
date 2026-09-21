@@ -2,12 +2,39 @@
   "type": "layout",
   "id": "docs",
   "fields": {
-    "brand": { "type": "text", "props": { "children": "Blueprint", "variant": "heading" } },
-    "version": { "type": "badge", "props": { "variant": "secondary", "children": "v0.1" } },
-    "menu": { "type": "nav", "props": { "orientation": "horizontal" } },
-    "sidebar": { "type": "nav", "props": { "orientation": "vertical" } },
-    "content": { "type": "children" },
-    "rule": { "type": "separator", "props": {} },
+    "brand": {
+      "type": "text",
+      "props": {
+        "children": "Blueprint",
+        "variant": "heading"
+      }
+    },
+    "version": {
+      "type": "badge",
+      "props": {
+        "variant": "secondary",
+        "children": "v0.1"
+      }
+    },
+    "menu": {
+      "type": "nav",
+      "props": {
+        "orientation": "horizontal"
+      }
+    },
+    "sidebar": {
+      "type": "nav",
+      "props": {
+        "orientation": "vertical"
+      }
+    },
+    "content": {
+      "type": "children"
+    },
+    "rule": {
+      "type": "separator",
+      "props": {}
+    },
     "footer": {
       "type": "text",
       "props": {
@@ -23,20 +50,55 @@
           "valign": "middle",
           "padding": "12px 24px",
           "columns": [
-            { "field": "brand", "width": "160px" },
-            { "field": "version", "width": "60px", "align": "left" },
-            { "field": "menu", "align": "right" }
+            {
+              "field": "brand",
+              "width": "160px"
+            },
+            {
+              "field": "version",
+              "width": "60px",
+              "align": "left"
+            },
+            {
+              "field": "menu",
+              "align": "right"
+            }
+          ],
+          "background": "var(--muted)"
+        },
+        {
+          "padding": "0 24px",
+          "columns": [
+            {
+              "field": "sidebar",
+              "width": "220px",
+              "valign": "top",
+              "background": "var(--muted)",
+              "padding": "8px"
+            },
+            {
+              "field": "content",
+              "padding": "0 0 0 16px"
+            }
           ]
         },
         {
           "padding": "0 24px",
           "columns": [
-            { "field": "sidebar", "width": "220px", "valign": "top" },
-            { "field": "content", "padding": "0 0 0 16px" }
+            {
+              "field": "rule"
+            }
           ]
         },
-        { "padding": "0 24px", "columns": [{ "field": "rule" }] },
-        { "padding": "0 24px 24px", "columns": [{ "field": "footer", "align": "center" }] }
+        {
+          "padding": "0 24px 24px",
+          "columns": [
+            {
+              "field": "footer",
+              "align": "center"
+            }
+          ]
+        }
       ]
     },
     "mobile": {
@@ -44,12 +106,50 @@
         {
           "valign": "middle",
           "padding": "12px 16px",
-          "columns": [{ "field": "brand" }, { "field": "version", "align": "right" }]
+          "columns": [
+            {
+              "field": "brand"
+            },
+            {
+              "field": "version",
+              "align": "right"
+            }
+          ],
+          "background": "var(--muted)"
         },
-        { "padding": "0 16px", "columns": [{ "field": "content" }] },
-        { "padding": "0 16px", "columns": [{ "field": "rule" }] },
-        { "padding": "0 16px", "columns": [{ "field": "sidebar" }] },
-        { "padding": "16px", "columns": [{ "field": "footer", "align": "center" }] }
+        {
+          "padding": "0 16px",
+          "columns": [
+            {
+              "field": "content"
+            }
+          ]
+        },
+        {
+          "padding": "0 16px",
+          "columns": [
+            {
+              "field": "rule"
+            }
+          ]
+        },
+        {
+          "padding": "0 16px",
+          "columns": [
+            {
+              "field": "sidebar"
+            }
+          ]
+        },
+        {
+          "padding": "16px",
+          "columns": [
+            {
+              "field": "footer",
+              "align": "center"
+            }
+          ]
+        }
       ]
     }
   }

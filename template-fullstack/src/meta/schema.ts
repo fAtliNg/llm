@@ -57,11 +57,15 @@ export const valignSchema = z.enum(['top', 'middle', 'bottom']);
 /** A number is pixels on every side; a string is any CSS value, e.g. "8px 16px". */
 export const spacingSchema = z.union([z.number().int().min(0), z.string().trim().min(1)]);
 
+/** Any CSS background: a color ("#f4f4f5", "var(--muted)"), a gradient, an image. */
+export const backgroundSchema = z.string().trim().min(1);
+
 const boxSchema = {
   align: alignSchema.optional(),
   valign: valignSchema.optional(),
   margin: spacingSchema.optional(),
   padding: spacingSchema.optional(),
+  background: backgroundSchema.optional(),
 };
 
 /**
@@ -118,6 +122,7 @@ export const pageSchema = z
     name: z.string().trim().min(1).max(60),
     /** The layout (frame) this page is shown in, by id from `meta/layouts`. None: the page stands alone. */
     layout: metaId.optional(),
+    background: backgroundSchema.optional(),
     /** Every field of the page once, by its id. Where it goes is the grid's business. */
     fields: z.record(metaId, fieldSchema).default({}),
     grid: gridsSchema,
@@ -146,6 +151,7 @@ export const layoutSchema = z
     type: z.literal('layout'),
     id: metaId,
     layout: metaId.optional(),
+    background: backgroundSchema.optional(),
     fields: z.record(metaId, fieldSchema).default({}),
     grid: gridsSchema,
   })

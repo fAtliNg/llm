@@ -10,6 +10,7 @@
 | `id` | string | Unique among pages; equals the file name `meta/pages/<id>.json` |
 | `name` | string | Heading of the page and its label in the navigation. **The URL is derived from it**: `"New employee"` opens at `/new-employee` (lowercase, anything but letters and digits becomes a dash) |
 | `layout` | string | Optional: the [layout](./layout) (frame) the page is shown in, by id from `meta/layouts`. Without it the page stands alone |
+| `background` | string | Optional: background of the whole page, any CSS value |
 | `fields` | object | Every field of the page once, keyed by its id (unique within the file). A field is either a [component](./field), `{ "type": "button", "props": { … } }`, or a reference to another object, `{ "type": "table" }`, whose meta lives in its own folder under the same id |
 | `grid` | object | Where the fields go, per screen size: `desktop` (required), `tablet` and `mobile` (optional). A missing size uses the next wider one: mobile → tablet → desktop |
 
@@ -23,9 +24,10 @@ A grid is `{ "rows": Row[] }`, top to bottom. A **row** is `{ "columns": Column[
 | `valign` | `"top"` \| `"middle"` \| `"bottom"` | Vertical alignment of content in every cell | The same for this cell; overrides the row |
 | `margin` | number \| string | Space around the row | Space around the cell |
 | `padding` | number \| string | Space inside the row, around all cells | Space inside the cell |
+| `background` | string | Background of the row | Background of the cell |
 | `width` | string | — | Any CSS grid track size: `"240px"`, `"25%"`, `"auto"`, `"2fr"`. Columns without it share what is left equally |
 
-All optional. Without `align`/`valign`, content stretches to the cell, which is what inputs and textareas want; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`).
+All optional. Without `align`/`valign`, content stretches to the cell, which is what inputs and textareas want; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`). `background` is any CSS background: a color (`"#f4f4f5"`), a theme variable (`"var(--muted)"`, which follows dark mode), a gradient.
 
 ```json
 { "valign": "middle", "columns": [{ "field": "email" }, { "field": "status", "align": "left" }] }

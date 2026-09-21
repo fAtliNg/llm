@@ -9,6 +9,7 @@
 | `type` | `"layout"` | What this object is |
 | `id` | string | Unique among layouts; equals the file name |
 | `layout` | string | Optional: the layout this one sits in. Layouts nest; the page ends up inside all of them, innermost first |
+| `background` | string | Optional: background of the whole frame, any CSS value |
 | `fields` | object | Every field of the frame once, keyed by id, exactly as on a [page](./page). **Exactly one field must be `{ "type": "children" }`**: that is where the page is shown |
 | `grid` | object | Where the fields go, per screen size, exactly as on a page: `desktop` required, `tablet` and `mobile` optional. The `children` field must be placed in every grid that is defined, otherwise pages would vanish on that screen |
 
@@ -29,7 +30,7 @@ A layout has no `name` and no URL: it never opens by itself.
     "desktop": {
       "rows": [
         { "valign": "middle", "columns": [{ "field": "brand", "width": "160px" }, { "field": "menu", "align": "right" }] },
-        { "columns": [{ "field": "sidebar", "width": "220px", "valign": "top" }, { "field": "content" }] },
+        { "columns": [{ "field": "sidebar", "width": "220px", "valign": "top", "background": "var(--muted)", "padding": 8 }, { "field": "content" }] },
         { "columns": [{ "field": "footer", "align": "center" }] }
       ]
     },
