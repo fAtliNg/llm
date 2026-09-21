@@ -1,17 +1,20 @@
 # Field
 
-The smallest building block; every container is a few keys plus a `fields` list of these. A field is one component from the component library and never contains other objects.
+The smallest building block; every container declares its fields once, in `fields`, keyed by id, and places them through its layout. A field is one component from the component library and never contains other objects.
 
 ## Keys
 
 | Key | Type | Meaning |
 |---|---|---|
 | `type` | string | Name of a component folder in `src/components/ui`: `button`, `input`, `select`… This is how the field is matched to its component |
-| `id` | string | Unique within the description |
 | `props` | object | Props passed to the component. The set of allowed keys is exactly the component's props type; anything else is an error |
 
+The id is the key under `fields`, unique within the file, and is what layouts point at:
+
 ```json
-{ "type": "button", "id": "save", "props": { "variant": "outline", "size": "sm", "children": "Save" } }
+"fields": {
+  "save": { "type": "button", "props": { "variant": "outline", "size": "sm", "children": "Save" } }
+}
 ```
 
 ::: info Draft

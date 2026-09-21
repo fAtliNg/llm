@@ -4,35 +4,35 @@ Everything the library builds is described by JSON objects, the **meta** of the 
 
 | `type` | What it is | Made of |
 |---|---|---|
-| [`page`](./page) | A route in the app with a heading and content | `id`, `name`, `rows` |
+| [`page`](./page) | A route in the app with a heading and content | `id`, `name`, `fields`, `layout` |
 | [`table`](./table) | A list of rows with columns | `id`, `name`, … |
 | [`form`](./form) | Inputs with validation and a submit | `id`, `name`, … |
 | [`panel`](./panel) | A form-like layout without inputs or validation: text, badges, buttons | `id`, `name`, … |
 | [`field`](./field) | The smallest building block: one component from `src/components/ui` | `id`, `props` |
 
-The first four are **containers**. Each has `id` and `name`, and places its fields on a grid of `rows`, each row a list of `columns`, each column holding one `field`. A field is the **atom**; it never contains other objects. Its `type` is the name of a component folder in `src/components/ui`, and its `props` are that component's props.
+The first four are **containers**. Each has `id` and `name`, declares its fields once in `fields` (keyed by id) and places them with a `layout` per screen size: `rows` top to bottom, `columns` left to right, one field id per column. A field is the **atom**; it never contains other objects. Its `type` is the name of a component folder in `src/components/ui`, and its `props` are that component's props.
 
 ```json
 {
   "type": "page",
   "id": "employees",
   "name": "Employees",
-  "rows": [
-    {
-      "columns": [
-        { "field": { "type": "input", "id": "search", "props": { "placeholder": "Search" } } },
-        { "field": { "type": "button", "id": "create", "props": { "children": "New employee" } } }
-      ]
-    }
-  ]
+  "fields": {
+    "search": { "type": "input", "props": { "placeholder": "Search" } },
+    "create": { "type": "button", "props": { "children": "New employee" } }
+  },
+  "layout": {
+    "desktop": { "rows": [{ "columns": [{ "field": "search" }, { "field": "create" }] }] },
+    "mobile": { "rows": [{ "columns": [{ "field": "search" }] }, { "columns": [{ "field": "create" }] }] }
+  }
 }
 ```
 
 ## Conventions
 
 - `type` is always present. For a container it is one of `page`, `table`, `form`, `panel`; for a field it is a component name.
-- `id` is unique within the description; it becomes the stable handle for tests, references and generated names.
-- Containers hold fields on a grid: `rows` top to bottom, `columns` left to right, one field per column.
+- `id` is unique within its folder for containers and within the file for fields; it is the stable handle for layouts, tests and references.
+- Containers define fields once and place them per screen size (`desktop` required, `tablet` and `mobile` optional) on a grid: `rows` top to bottom, `columns` left to right, one field per column.
 - A field's `props` must match the props of its component, no more and no less: the description is checked against the component's TypeScript props before anything is generated.
 - Unknown keys are an error, not ignored.
 

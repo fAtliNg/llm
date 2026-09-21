@@ -2,22 +2,13 @@
   "type": "page",
   "id": "new-employee",
   "name": "New employee",
-  "rows": [
-    {
-      "columns": [
-        {
-          "field": {
-            "type": "input",
-            "id": "name",
-            "props": { "placeholder": "Name", "aria-label": "Name" }
-          }
-        }
-      ]
-    },
-    {
-      "columns": [
-        { "field": { "type": "button", "id": "save", "props": { "children": "Create" } } }
-      ]
+  "fields": {
+    "name": { "type": "input", "props": { "placeholder": "Name", "aria-label": "Name" } },
+    "save": { "type": "button", "props": { "children": "Create" } }
+  },
+  "layout": {
+    "desktop": {
+      "rows": [{ "columns": [{ "field": "name" }] }, { "columns": [{ "field": "save" }] }]
     }
-  ]
+  }
 }

@@ -1,5 +1,5 @@
 import { componentFor } from '@/meta/components';
-import { isContainerRef, type MetaPage, pageFields, pageSchema, pageUrl } from '@/meta/schema';
+import { isContainerRef, type MetaPage, pageSchema, pageUrl } from '@/meta/schema';
 
 /**
  * Every `meta/pages/<id>.json`, read at build time by Vite. A new file is a new page; nothing else
@@ -25,13 +25,13 @@ function load(): MetaPage[] {
       errors.push(`${rel}: id "${parsed.data.id}" must equal the file name`);
       continue;
     }
-    for (const field of pageFields(parsed.data)) {
+    for (const [id, field] of Object.entries(parsed.data.fields)) {
       if (isContainerRef(field)) continue;
       try {
         componentFor(field.type);
       } catch (error) {
         errors.push(
-          `${rel}: field "${field.id}": ${error instanceof Error ? error.message : String(error)}`,
+          `${rel}: fields.${id}: ${error instanceof Error ? error.message : String(error)}`,
         );
       }
     }

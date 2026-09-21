@@ -2,25 +2,27 @@
   "type": "page",
   "id": "employees",
   "name": "Employees",
-  "rows": [
-    {
-      "columns": [
-        {
-          "field": {
-            "type": "input",
-            "id": "search",
-            "props": { "placeholder": "Search employees", "aria-label": "Search" }
-          }
-        },
-        {
-          "field": {
-            "type": "button",
-            "id": "create",
-            "props": { "variant": "outline", "children": "New employee" }
-          }
-        }
+  "fields": {
+    "search": {
+      "type": "input",
+      "props": { "placeholder": "Search employees", "aria-label": "Search" }
+    },
+    "create": { "type": "button", "props": { "variant": "outline", "children": "New employee" } },
+    "employees": { "type": "table" }
+  },
+  "layout": {
+    "desktop": {
+      "rows": [
+        { "columns": [{ "field": "search" }, { "field": "create" }] },
+        { "columns": [{ "field": "employees" }] }
       ]
     },
-    { "columns": [{ "field": { "type": "table", "id": "employees" } }] }
-  ]
+    "mobile": {
+      "rows": [
+        { "columns": [{ "field": "create" }] },
+        { "columns": [{ "field": "search" }] },
+        { "columns": [{ "field": "employees" }] }
+      ]
+    }
+  }
 }

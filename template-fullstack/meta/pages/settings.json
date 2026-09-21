@@ -2,25 +2,32 @@
   "type": "page",
   "id": "settings",
   "name": "Settings",
-  "rows": [
-    {
-      "columns": [
-        {
-          "field": {
-            "type": "input",
-            "id": "company",
-            "props": { "placeholder": "Company name", "aria-label": "Company name" }
-          }
-        },
-        {
-          "field": {
-            "type": "switch",
-            "id": "notifications",
-            "props": { "aria-label": "Email notifications" }
-          }
-        },
-        { "field": { "type": "button", "id": "save", "props": { "children": "Save settings" } } }
+  "fields": {
+    "company": {
+      "type": "input",
+      "props": { "placeholder": "Company name", "aria-label": "Company name" }
+    },
+    "notifications": { "type": "switch", "props": { "aria-label": "Email notifications" } },
+    "save": { "type": "button", "props": { "children": "Save settings" } }
+  },
+  "layout": {
+    "desktop": {
+      "rows": [
+        { "columns": [{ "field": "company" }, { "field": "notifications" }, { "field": "save" }] }
+      ]
+    },
+    "tablet": {
+      "rows": [
+        { "columns": [{ "field": "company" }, { "field": "notifications" }] },
+        { "columns": [{ "field": "save" }] }
+      ]
+    },
+    "mobile": {
+      "rows": [
+        { "columns": [{ "field": "company" }] },
+        { "columns": [{ "field": "notifications" }] },
+        { "columns": [{ "field": "save" }] }
       ]
     }
-  ]
+  }
 }
