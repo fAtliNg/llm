@@ -10,6 +10,8 @@
 | `id` | string | Unique among pages; equals the file name `meta/pages/<id>.json` |
 | `name` | string | Heading of the page and its label in the navigation. **The URL is derived from it**: `"New employee"` opens at `/new-employee` (lowercase, anything but letters and digits becomes a dash) |
 | `layout` | string | Optional: the [layout](./layout) (frame) the page is shown in, by id from `meta/layouts`. Without it the page stands alone |
+| `section` | string | Optional: a group name for navigation (`"Guide"`, `"Objects"`); a `nav` field can show one section, or one link per section |
+| `heading` | boolean | Default `true`: the page draws `name` as its heading. Set `false` when the page draws its own title |
 | `background` | string | Optional: background of the whole page, any CSS value |
 | `fields` | object | Every field of the page once, keyed by its id (unique within the file). A field is either a [component](./field), `{ "type": "button", "props": { … } }`, or a reference to another object, `{ "type": "table" }`, whose meta lives in its own folder under the same id |
 | `grid` | object | Where the fields go, per screen size: `desktop` (required), `tablet` and `mobile` (optional). A missing size uses the next wider one: mobile → tablet → desktop |
@@ -25,7 +27,14 @@ A grid is `{ "rows": Row[] }`, top to bottom. A **row** is `{ "columns": Column[
 | `margin` | number \| string | Space around the row | Space around the cell |
 | `padding` | number \| string | Space inside the row, around all cells | Space inside the cell |
 | `background` | string | Background of the row | Background of the cell |
-| `width` | string | — | Any CSS grid track size: `"240px"`, `"25%"`, `"auto"`, `"2fr"`. Columns without it share what is left equally |
+| `border` | object | `{ "top", "right", "bottom", "left" }`, each any CSS border (`"1px solid var(--border)"`) | The same for the cell |
+| `height` | number \| string | Height of the row | Height of the cell |
+| `maxWidth` | number \| string | Max width of the row; with `"margin": "0 auto"` it is centred | The same for the cell |
+| `sticky` | boolean | The row stays in view while the page scrolls (a header) | The cell stays in view (a sidebar, an outline) |
+| `top` | number \| string | Offset from the top of the window for `sticky`, default 0 | The same; for a sidebar under a 64px header, `64` |
+| `scroll` | boolean | Content taller than `height` scrolls inside | The same |
+| `gap` | number \| string | Space between the columns, default 16 | — |
+| `width` | string | — | Any CSS grid track size: `"240px"`, `"25%"`, `"auto"`, `"minmax(0, 688px)"`. Columns without it share what is left equally |
 
 All optional. Without `align`/`valign`, content stretches to the cell, which is what inputs and textareas want; set them for things with a natural size, like a badge, a switch or a button. A number is pixels on every side; a string is any CSS value (`"8px 16px"`, `"1rem 0 0"`). `background` is any CSS background: a color (`"#f4f4f5"`), a theme variable (`"var(--muted)"`, which follows dark mode), a gradient.
 
@@ -34,6 +43,15 @@ All optional. Without `align`/`valign`, content stretches to the cell, which is 
 ```
 ```json
 { "align": "right", "margin": "16px 0 0", "columns": [{ "field": "save", "align": "left" }, { "field": "cancel" }] }
+```
+
+A sticky header row and a sticky, scrolling sidebar column, as in a documentation site:
+
+```json
+{ "sticky": true, "top": 0, "height": 64, "background": "var(--background)", "border": { "bottom": "1px solid var(--border)" }, "columns": [{ "field": "header" }] }
+```
+```json
+{ "field": "sidebar", "width": "272px", "sticky": true, "top": 64, "height": "calc(100vh - 64px)", "scroll": true }
 ```
 
 

@@ -2,93 +2,27 @@
   "type": "page",
   "id": "introduction",
   "name": "Introduction",
+  "section": "Guide",
   "layout": "docs",
+  "heading": false,
   "fields": {
-    "lead": {
-      "type": "text",
-      "props": {
-        "children": "Everything the library builds is described by JSON objects, the meta of the app. Pages, layouts, tables and forms are files under meta/; the app reads them at startup and builds itself from them."
-      }
-    },
-    "what": {
-      "type": "text",
-      "props": {
-        "children": "What you get",
-        "variant": "heading"
-      }
-    },
-    "what-text": {
-      "type": "text",
-      "props": {
-        "children": "A base app on React, Hono and SQLite, the whole shadcn/ui component set, and a runtime that turns a short description into routes, navigation, pages and grids. A model writes the descriptions; the schema keeps it honest."
-      }
-    },
-    "note": {
-      "type": "alert",
-      "props": {
-        "children": "This page, its header, sidebar and footer are all meta: meta/layouts/docs.json and meta/pages/introduction.json."
-      }
-    },
-    "start": {
-      "type": "button",
-      "props": {
-        "children": "Get started"
-      }
-    },
-    "concepts": {
-      "type": "button",
-      "props": {
-        "variant": "outline",
-        "children": "How it works"
-      }
-    }
+    "introduction-article": { "type": "panel" },
+    "introduction-outline": { "type": "panel" }
   },
   "grid": {
     "desktop": {
       "rows": [
         {
+          "gap": 64,
           "columns": [
-            {
-              "field": "lead"
-            }
-          ]
-        },
-        {
-          "columns": [
-            {
-              "field": "note",
-              "background": "#eef2ff"
-            }
-          ]
-        },
-        {
-          "columns": [
-            {
-              "field": "what"
-            }
-          ]
-        },
-        {
-          "columns": [
-            {
-              "field": "what-text"
-            }
-          ]
-        },
-        {
-          "align": "left",
-          "columns": [
-            {
-              "field": "start",
-              "width": "auto"
-            },
-            {
-              "field": "concepts",
-              "width": "auto"
-            }
+            { "field": "introduction-article", "width": "minmax(0, 688px)" },
+            { "field": "introduction-outline", "width": "224px", "sticky": true, "top": 96 }
           ]
         }
       ]
+    },
+    "tablet": {
+      "rows": [{ "columns": [{ "field": "introduction-article", "width": "minmax(0, 688px)" }] }]
     }
   }
 }

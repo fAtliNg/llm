@@ -1,0 +1,23 @@
+{
+  "type": "panel",
+  "id": "overview-article",
+  "fields": {
+    "h1": { "type": "text", "props": { "children": "Overview", "variant": "title" } },
+    "p1": {
+      "type": "text",
+      "props": {
+        "children": "Base app, entity descriptions, generated code, hooks and the model: how the parts fit."
+      }
+    },
+    "info": { "type": "alert", "props": { "children": "Draft." } }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "info" }], "margin": "0" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "panel",
+  "id": "sidebar",
+  "fields": {
+    "guide-h": { "type": "text", "props": { "children": "Guide", "variant": "small" } },
+    "guide": {
+      "type": "nav",
+      "props": { "orientation": "vertical", "variant": "plain", "section": "Guide" }
+    },
+    "concepts-h": { "type": "text", "props": { "children": "Concepts", "variant": "small" } },
+    "concepts": {
+      "type": "nav",
+      "props": { "orientation": "vertical", "variant": "plain", "section": "Concepts" }
+    },
+    "objects-h": { "type": "text", "props": { "children": "Objects", "variant": "small" } },
+    "objects": {
+      "type": "nav",
+      "props": { "orientation": "vertical", "variant": "plain", "section": "Objects" }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        { "gap": 0, "columns": [{ "field": "guide-h" }] },
+        { "gap": 0, "columns": [{ "field": "guide" }], "margin": "8px 0 24px" },
+        { "gap": 0, "columns": [{ "field": "concepts-h" }] },
+        { "gap": 0, "columns": [{ "field": "concepts" }], "margin": "8px 0 24px" },
+        { "gap": 0, "columns": [{ "field": "objects-h" }] },
+        { "gap": 0, "columns": [{ "field": "objects" }], "margin": "8px 0 24px" }
+      ]
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { type CSSProperties, createElement, type ReactNode } from 'react';
 
 import { componentFor } from '@/meta/components';
 import { useDevice } from '@/meta/device';
+import { findPanel } from '@/meta/load';
 import { MetaNav } from '@/meta/nav';
 import {
   type ComponentField,
@@ -14,28 +15,56 @@ import {
   type MetaGrids,
   type MetaLayout,
   type MetaPage,
+  type MetaPanel,
   type MetaRow,
+  type TextField,
 } from '@/meta/schema';
 
-const TEXT_CLASS = {
-  title: 'text-2xl font-semibold',
-  heading: 'text-lg font-semibold',
-  body: 'text-sm leading-6',
-  muted: 'text-sm text-muted-foreground',
-} as const;
+const TEXT_CLASS: Record<TextField['props']['variant'], string> = {
+  title: 'text-[32px] leading-10 font-bold tracking-tight',
+  heading: 'text-2xl leading-8 font-semibold tracking-tight',
+  subheading: 'text-lg leading-7 font-semibold',
+  body: 'text-base leading-7',
+  muted: 'text-sm leading-6 text-muted-foreground',
+  small: 'text-xs leading-5 font-semibold tracking-wide text-foreground',
+  code: 'rounded-lg bg-muted px-5 py-4 font-mono text-sm leading-6 whitespace-pre overflow-x-auto',
+  link: 'text-sm font-medium text-primary hover:underline',
+};
 
-/** One field: a component from the library, a built-in, or a placeholder for what is not rendered yet. */
+function Text({ id, field }: { id: string; field: TextField }) {
+  const { variant, children, href } = field.props;
+  if (variant === 'link') {
+    return (
+      <a data-meta-id={id} href={href ?? '#'} className={TEXT_CLASS.link}>
+        {children}
+      </a>
+    );
+  }
+  const Tag =
+    variant === 'title'
+      ? 'h1'
+      : variant === 'heading'
+        ? 'h2'
+        : variant === 'subheading'
+          ? 'h3'
+          : variant === 'code'
+            ? 'pre'
+            : 'p';
+  return (
+    <Tag data-meta-id={id} className={TEXT_CLASS[variant]}>
+      {children}
+    </Tag>
+  );
+}
+
+/** One field: a component from the library, a built-in, a panel, or a placeholder for what is not rendered yet. */
 function Field({ id, field, slot }: { id: string; field: MetaField; slot: ReactNode }) {
   if (field.type === 'children') return <div data-meta-id={id}>{slot}</div>;
-  if (isNav(field)) return <MetaNav id={id} orientation={field.props.orientation} />;
-  if (isText(field)) {
-    const Tag =
-      field.props.variant === 'title' ? 'h1' : field.props.variant === 'heading' ? 'h2' : 'p';
-    return (
-      <Tag data-meta-id={id} className={TEXT_CLASS[field.props.variant]}>
-        {field.props.children}
-      </Tag>
-    );
+  if (isNav(field)) return <MetaNav id={id} {...field.props} />;
+  if (isText(field)) return <Text id={id} field={field} />;
+  if (field.type === 'panel') {
+    const panel = findPanel(id);
+    return panel ? <MetaPanelView panel={panel} slot={slot} /> : null;
   }
   if (isContainerRef(field)) {
     // Rendered by a later step; until then the page shows where it goes.
@@ -66,6 +95,22 @@ function boxStyle(box: MetaRow | MetaColumn, isRow: boolean): CSSProperties {
   if (box.margin !== undefined) style.margin = box.margin;
   if (box.padding !== undefined) style.padding = box.padding;
   if (box.background !== undefined) style.background = box.background;
+  if (box.border) {
+    if (box.border.top) style.borderTop = box.border.top;
+    if (box.border.right) style.borderRight = box.border.right;
+    if (box.border.bottom) style.borderBottom = box.border.bottom;
+    if (box.border.left) style.borderLeft = box.border.left;
+  }
+  if (box.height !== undefined) style.height = box.height;
+  if (box.maxWidth !== undefined) style.maxWidth = box.maxWidth;
+  if (box.sticky) {
+    style.position = 'sticky';
+    style.top = box.top ?? 0;
+    style.zIndex = 10;
+    // A sticky grid item must not stretch to the row height, or it has nowhere to stick.
+    if (!isRow && !box.valign) style.alignSelf = 'start';
+  }
+  if (box.scroll) style.overflowY = 'auto';
   return style;
 }
 
@@ -81,14 +126,15 @@ function Grid({
 }) {
   const grid = gridFor(grids, useDevice());
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col">
       {grid.rows.map((row, index) => (
         <div
           key={index}
           data-meta-row={index}
-          className="grid gap-4"
+          className="grid"
           style={{
             gridTemplateColumns: row.columns.map((c) => c.width ?? 'minmax(0, 1fr)').join(' '),
+            gap: row.gap ?? 16,
             ...boxStyle(row, true),
           }}
         >
@@ -111,13 +157,22 @@ function Grid({
   );
 }
 
-/** A page straight from its meta: the heading, then its grid. */
+/** A page straight from its meta: the heading (unless the page draws its own), then its grid. */
 export function MetaPageView({ page }: { page: MetaPage }) {
   return (
-    <section data-meta-page={page.id} className="space-y-4" style={{ background: page.background }}>
-      <h1 className="text-2xl font-semibold">{page.name}</h1>
+    <section data-meta-page={page.id} style={{ background: page.background }}>
+      {page.heading && <h1 className="mb-4 text-2xl font-semibold">{page.name}</h1>}
       <Grid fields={page.fields} grids={page.grid} />
     </section>
+  );
+}
+
+/** A panel placed in a column: its own fields and grid; `slot` passes through to a nested `children`. */
+export function MetaPanelView({ panel, slot }: { panel: MetaPanel; slot?: ReactNode }) {
+  return (
+    <div data-meta-id={panel.id} style={{ background: panel.background }}>
+      <Grid fields={panel.fields} grids={panel.grid} slot={slot} />
+    </div>
   );
 }
 

@@ -8,7 +8,7 @@ Everything the library builds is described by JSON objects, the **meta** of the 
 | [`layout`](./layout) | A frame around pages: header, menu, footer and the place for the page | `id`, `fields`, `grid` |
 | [`table`](./table) | A list of rows with columns | `id`, `name`, … |
 | [`form`](./form) | Inputs with validation and a submit | `id`, `name`, … |
-| [`panel`](./panel) | A form-like layout without inputs or validation: text, badges, buttons | `id`, `name`, … |
+| [`panel`](./panel) | Fields and a grid without a URL, placed in a column so it can hold many fields | `id`, `fields`, `grid` |
 | [`field`](./field) | The smallest building block: one component from `src/components/ui` | `id`, `props` |
 
 The first four are **containers**. Each has `id` and `name`, declares its fields once in `fields` (keyed by id) and places them with a `grid` per screen size: `rows` top to bottom, `columns` left to right, one field id per column. A field is the **atom**; it never contains other objects. Its `type` is the name of a component folder in `src/components/ui`, and its `props` are that component's props.

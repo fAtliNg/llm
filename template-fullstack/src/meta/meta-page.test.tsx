@@ -40,9 +40,10 @@ describe('meta pages', () => {
     if (!withNav) return;
     renderApp([`/${pageUrl(withNav.name)}`]);
 
-    const [nav] = screen.getAllByRole('navigation', { name: 'Main' });
-    if (!nav) throw new Error('no navigation rendered');
+    // Every page is linked from some nav on the screen: the main one or its section's.
     for (const page of metaPages) {
+      const nav = screen.getAllByRole('navigation', { name: page.section ?? 'Main' })[0];
+      if (!nav) throw new Error(`no navigation for ${page.section ?? 'Main'}`);
       expect(within(nav).getByRole('link', { name: page.name })).toBeInTheDocument();
     }
   });

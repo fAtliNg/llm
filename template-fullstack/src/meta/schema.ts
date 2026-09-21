@@ -30,14 +30,26 @@ export const childrenFieldSchema = z.strictObject({ type: z.literal('children') 
 export const navFieldSchema = z.strictObject({
   type: z.literal('nav'),
   props: z
-    .strictObject({ orientation: z.enum(['horizontal', 'vertical']).default('horizontal') })
-    .default({ orientation: 'horizontal' }),
+    .strictObject({
+      orientation: z.enum(['horizontal', 'vertical']).default('horizontal'),
+      /** `pills`: the active link gets a filled background; `plain`: text links, the active one in the brand colour. */
+      variant: z.enum(['pills', 'plain']).default('pills'),
+      /** Only pages whose `section` is this; absent: every page. */
+      section: z.string().trim().min(1).optional(),
+      /** One link per section, to its first page, labelled with the section name (a top menu). */
+      sections: z.boolean().default(false),
+    })
+    .default({ orientation: 'horizontal', variant: 'pills', sections: false }),
 });
 export const textFieldSchema = z.strictObject({
   type: z.literal('text'),
   props: z.strictObject({
     children: z.string(),
-    variant: z.enum(['title', 'heading', 'body', 'muted']).default('body'),
+    /** `code` is a preformatted block; `link` needs `href`. */
+    variant: z
+      .enum(['title', 'heading', 'subheading', 'body', 'muted', 'small', 'code', 'link'])
+      .default('body'),
+    href: z.string().optional(),
   }),
 });
 export const BUILTIN_TYPES = ['children', 'nav', 'text'] as const;
@@ -59,6 +71,14 @@ export const spacingSchema = z.union([z.number().int().min(0), z.string().trim()
 
 /** Any CSS background: a color ("#f4f4f5", "var(--muted)"), a gradient, an image. */
 export const backgroundSchema = z.string().trim().min(1);
+const cssSize = z.union([z.number().int().min(0), z.string().trim().min(1)]);
+/** Borders per side, each any CSS border ("1px solid var(--border)"). */
+export const borderSchema = z.strictObject({
+  top: z.string().optional(),
+  right: z.string().optional(),
+  bottom: z.string().optional(),
+  left: z.string().optional(),
+});
 
 const boxSchema = {
   align: alignSchema.optional(),
@@ -66,6 +86,14 @@ const boxSchema = {
   margin: spacingSchema.optional(),
   padding: spacingSchema.optional(),
   background: backgroundSchema.optional(),
+  border: borderSchema.optional(),
+  height: cssSize.optional(),
+  maxWidth: cssSize.optional(),
+  /** Stays in view while the page scrolls; `top` is the offset from the viewport top (default 0). */
+  sticky: z.boolean().optional(),
+  top: cssSize.optional(),
+  /** Content taller than `height` scrolls inside instead of overflowing. */
+  scroll: z.boolean().optional(),
 };
 
 /**
@@ -79,8 +107,12 @@ export const columnSchema = z.strictObject({
   ...boxSchema,
 });
 
-/** One line of the grid. Alignment here applies to every column. */
-export const rowSchema = z.strictObject({ columns: z.array(columnSchema).min(1), ...boxSchema });
+/** One line of the grid. Alignment here applies to every column; `gap` is the space between them (default 16). */
+export const rowSchema = z.strictObject({
+  columns: z.array(columnSchema).min(1),
+  gap: cssSize.optional(),
+  ...boxSchema,
+});
 
 export const gridSchema = z.strictObject({ rows: z.array(rowSchema).min(1) });
 
@@ -122,6 +154,10 @@ export const pageSchema = z
     name: z.string().trim().min(1).max(60),
     /** The layout (frame) this page is shown in, by id from `meta/layouts`. None: the page stands alone. */
     layout: metaId.optional(),
+    /** A group name for navigation: a `nav` field can show one section only. */
+    section: z.string().trim().min(1).optional(),
+    /** Hide the automatic heading (when the page draws its own title). */
+    heading: z.boolean().default(true),
     background: backgroundSchema.optional(),
     /** Every field of the page once, by its id. Where it goes is the grid's business. */
     fields: z.record(metaId, fieldSchema).default({}),
@@ -177,6 +213,22 @@ export const layoutSchema = z
     }
   });
 
+/**
+ * A panel: fields and a grid, like a page but without a name or a URL. It is placed in a column of a
+ * page, a layout or another panel as `{ "type": "panel" }` under the panel's id, so a column can hold
+ * many fields.
+ */
+export const panelSchema = z
+  .strictObject({
+    type: z.literal('panel'),
+    id: metaId,
+    background: backgroundSchema.optional(),
+    fields: z.record(metaId, fieldSchema).default({}),
+    grid: gridsSchema,
+  })
+  .superRefine(checkGrids);
+
+export type MetaPanel = z.infer<typeof panelSchema>;
 export type MetaColumn = z.infer<typeof columnSchema>;
 export type MetaRow = z.infer<typeof rowSchema>;
 export type MetaGrid = z.infer<typeof gridSchema>;

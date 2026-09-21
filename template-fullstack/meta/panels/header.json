@@ -1,0 +1,101 @@
+{
+  "type": "panel",
+  "id": "header",
+  "fields": {
+    "logo": {
+      "type": "badge",
+      "props": {
+        "children": "≡"
+      }
+    },
+    "brand": {
+      "type": "text",
+      "props": {
+        "children": "Blueprint",
+        "variant": "subheading"
+      }
+    },
+    "search": {
+      "type": "input",
+      "props": {
+        "placeholder": "Search",
+        "aria-label": "Search"
+      }
+    },
+    "menu": {
+      "type": "nav",
+      "props": {
+        "orientation": "horizontal",
+        "variant": "plain",
+        "sections": true
+      }
+    },
+    "github": {
+      "type": "button",
+      "props": {
+        "variant": "ghost",
+        "size": "sm",
+        "children": "GitHub"
+      }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        {
+          "valign": "middle",
+          "maxWidth": 1440,
+          "margin": "0 auto",
+          "padding": "0 32px",
+          "gap": 12,
+          "columns": [
+            {
+              "field": "logo",
+              "width": "auto"
+            },
+            {
+              "field": "brand",
+              "width": "auto"
+            },
+            {
+              "field": "search",
+              "width": "220px",
+              "margin": "0 0 0 32px"
+            },
+            {
+              "field": "menu",
+              "align": "right"
+            },
+            {
+              "field": "github",
+              "width": "auto"
+            }
+          ]
+        }
+      ]
+    },
+    "mobile": {
+      "rows": [
+        {
+          "valign": "middle",
+          "padding": "0 16px",
+          "gap": 8,
+          "columns": [
+            {
+              "field": "logo",
+              "width": "auto"
+            },
+            {
+              "field": "brand"
+            },
+            {
+              "field": "github",
+              "width": "auto",
+              "align": "right"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

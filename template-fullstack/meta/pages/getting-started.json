@@ -2,50 +2,27 @@
   "type": "page",
   "id": "getting-started",
   "name": "Getting started",
+  "section": "Guide",
   "layout": "docs",
+  "heading": false,
   "fields": {
-    "step1": {
-      "type": "text",
-      "props": { "children": "1. Clone and install", "variant": "heading" }
-    },
-    "step1-text": {
-      "type": "text",
-      "props": {
-        "children": "git clone the repository, then npm install in the app folder. Node 22 is required."
-      }
-    },
-    "step2": { "type": "text", "props": { "children": "2. Run", "variant": "heading" } },
-    "step2-text": {
-      "type": "text",
-      "props": {
-        "children": "npm run dev starts the API and the web app. Open http://localhost:5173."
-      }
-    },
-    "step3": { "type": "text", "props": { "children": "3. Add a page", "variant": "heading" } },
-    "step3-text": {
-      "type": "text",
-      "props": {
-        "children": "Create meta/pages/hello.json with a name, a few fields and a desktop grid. The page is live at /hello as soon as the file is saved."
-      }
-    },
-    "tip": {
-      "type": "alert",
-      "props": {
-        "children": "Run npm run verify before committing: it opens every page in meta and checks it."
-      }
-    }
+    "getting-started-article": { "type": "panel" },
+    "getting-started-outline": { "type": "panel" }
   },
   "grid": {
     "desktop": {
       "rows": [
-        { "columns": [{ "field": "step1" }] },
-        { "columns": [{ "field": "step1-text" }] },
-        { "columns": [{ "field": "step2" }] },
-        { "columns": [{ "field": "step2-text" }] },
-        { "columns": [{ "field": "step3" }] },
-        { "columns": [{ "field": "step3-text" }] },
-        { "columns": [{ "field": "tip" }] }
+        {
+          "gap": 64,
+          "columns": [
+            { "field": "getting-started-article", "width": "minmax(0, 688px)" },
+            { "field": "getting-started-outline", "width": "224px", "sticky": true, "top": 96 }
+          ]
+        }
       ]
+    },
+    "tablet": {
+      "rows": [{ "columns": [{ "field": "getting-started-article", "width": "minmax(0, 688px)" }] }]
     }
   }
 }

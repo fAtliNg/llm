@@ -1,0 +1,63 @@
+{
+  "type": "panel",
+  "id": "page-article",
+  "fields": {
+    "h1": { "type": "text", "props": { "children": "Page", "variant": "title" } },
+    "p1": {
+      "type": "text",
+      "props": {
+        "children": "type: \"page\". A route in the app: a heading, content, a link in the main navigation. Pages are the top of the tree; everything else is reached from one."
+      }
+    },
+    "h2": { "type": "text", "props": { "children": "Keys", "variant": "heading" } },
+    "k1": {
+      "type": "text",
+      "props": {
+        "children": "name — heading of the page and its label in the navigation. The URL is derived from it: \"New employee\" opens at /new-employee."
+      }
+    },
+    "k2": {
+      "type": "text",
+      "props": {
+        "children": "layout — the frame the page is shown in, by id from meta/layouts. Without it the page stands alone."
+      }
+    },
+    "k3": {
+      "type": "text",
+      "props": {
+        "children": "fields — every field of the page once, keyed by its id. grid — where the fields go, per screen size: desktop (required), tablet and mobile (optional)."
+      }
+    },
+    "h3": {
+      "type": "text",
+      "props": { "children": "How a page becomes a route", "variant": "heading" }
+    },
+    "p3": {
+      "type": "text",
+      "props": {
+        "children": "Nothing is generated and the router knows no page by name. One universal route takes the URL, looks for a page in meta/pages whose name maps to it, and renders that page, or the 404 page when there is none. Add a file, and its URL answers."
+      }
+    },
+    "tip": {
+      "type": "alert",
+      "props": {
+        "children": "Props are unchecked at load: a typo in a prop reaches the DOM as an unknown attribute. A check against the component types is on the roadmap."
+      }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "h2" }], "margin": "24px 0 16px" },
+        { "gap": 0, "columns": [{ "field": "k1" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "k2" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "k3" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "h3" }], "margin": "24px 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p3" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "tip" }], "margin": "0" }
+      ]
+    }
+  }
+}

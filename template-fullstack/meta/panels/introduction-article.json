@@ -1,0 +1,37 @@
+{
+  "type": "panel",
+  "id": "introduction-article",
+  "fields": {
+    "h1": { "type": "text", "props": { "children": "Introduction", "variant": "title" } },
+    "p1": {
+      "type": "text",
+      "props": {
+        "children": "A starter app, an entity generator and a model that drives it. Clone, describe a feature, get working code with tests."
+      }
+    },
+    "h2": { "type": "text", "props": { "children": "What you get", "variant": "heading" } },
+    "p2": {
+      "type": "text",
+      "props": {
+        "children": "A base app on React, Hono and SQLite, the whole shadcn/ui component set, and a runtime that turns a short description into routes, navigation, pages and grids. A model writes the descriptions; the schema keeps it honest."
+      }
+    },
+    "note": {
+      "type": "alert",
+      "props": {
+        "children": "This page, its header, sidebar and outline are all meta: meta/layouts/docs.json, meta/panels/*.json and meta/pages/introduction.json."
+      }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "h2" }], "margin": "24px 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p2" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "note" }], "margin": "0" }
+      ]
+    }
+  }
+}

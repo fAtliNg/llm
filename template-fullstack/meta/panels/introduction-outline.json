@@ -1,0 +1,30 @@
+{
+  "type": "panel",
+  "id": "introduction-outline",
+  "fields": {
+    "title": { "type": "text", "props": { "children": "On this page", "variant": "small" } },
+    "l1": {
+      "type": "text",
+      "props": { "children": "What you get", "variant": "link", "href": "#what" }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        {
+          "gap": 0,
+          "columns": [{ "field": "title" }],
+          "margin": "0 0 8px",
+          "padding": "0 0 0 16px",
+          "border": { "left": "1px solid var(--border)" }
+        },
+        {
+          "gap": 0,
+          "columns": [{ "field": "l1" }],
+          "padding": "0 0 0 16px",
+          "border": { "left": "1px solid var(--border)" }
+        }
+      ]
+    }
+  }
+}

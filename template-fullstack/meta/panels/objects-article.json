@@ -1,0 +1,66 @@
+{
+  "type": "panel",
+  "id": "objects-article",
+  "fields": {
+    "h1": { "type": "text", "props": { "children": "Objects", "variant": "title" } },
+    "p1": {
+      "type": "text",
+      "props": {
+        "children": "Everything the library builds is described by JSON objects, the meta of the app. There are six kinds, told apart by the type field, which every object must have: page, layout, panel, table, form and field."
+      }
+    },
+    "p2": {
+      "type": "text",
+      "props": {
+        "children": "The containers declare their fields once, keyed by id, and place them with a grid per screen size: rows top to bottom, columns left to right, one field id per column. A field is the atom; it never contains other objects. Its type is the name of a component folder in src/components/ui, and its props are that component's props."
+      }
+    },
+    "code": {
+      "type": "text",
+      "props": {
+        "variant": "code",
+        "children": "{\n  \"type\": \"page\",\n  \"id\": \"employees\",\n  \"name\": \"Employees\",\n  \"layout\": \"docs\",\n  \"fields\": {\n    \"search\": { \"type\": \"input\", \"props\": { \"placeholder\": \"Search\" } },\n    \"create\": { \"type\": \"button\", \"props\": { \"children\": \"New employee\" } }\n  },\n  \"grid\": {\n    \"desktop\": { \"rows\": [{ \"columns\": [{ \"field\": \"search\" }, { \"field\": \"create\" }] }] }\n  }\n}"
+      }
+    },
+    "h2": { "type": "text", "props": { "children": "Conventions", "variant": "heading" } },
+    "c1": {
+      "type": "text",
+      "props": {
+        "children": "type is always present. For a container it is one of page, layout, panel, table, form; for a field it is a component name or a built-in (children, nav, text)."
+      }
+    },
+    "c2": {
+      "type": "text",
+      "props": {
+        "children": "id is unique within its folder for containers and within the file for fields; it is the stable handle for grids, tests and references."
+      }
+    },
+    "c3": {
+      "type": "text",
+      "props": {
+        "children": "A field's props must match the props of its component, no more and no less. Unknown keys are an error, not ignored."
+      }
+    },
+    "info": {
+      "type": "alert",
+      "props": {
+        "children": "Draft: more keys will be added to both containers and fields as they are decided."
+      }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p2" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "code" }], "margin": "0 0 24px" },
+        { "gap": 0, "columns": [{ "field": "h2" }], "margin": "24px 0 16px" },
+        { "gap": 0, "columns": [{ "field": "c1" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "c2" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "c3" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "info" }], "margin": "0" }
+      ]
+    }
+  }
+}

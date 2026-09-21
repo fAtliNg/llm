@@ -1,0 +1,59 @@
+{
+  "type": "panel",
+  "id": "the-meta-folder-article",
+  "fields": {
+    "h1": { "type": "text", "props": { "children": "The meta folder", "variant": "title" } },
+    "p1": {
+      "type": "text",
+      "props": {
+        "children": "The JSON objects are meta: data about the app, from which the app is built. They live in the app itself, in meta/, one file per object, one folder per object type."
+      }
+    },
+    "code": {
+      "type": "text",
+      "props": {
+        "variant": "code",
+        "children": "meta/\n├── pages/\n│   ├── objects.json\n│   └── page.json\n├── layouts/\n│   └── docs.json\n└── panels/\n    ├── header.json\n    └── sidebar.json"
+      }
+    },
+    "h2": { "type": "text", "props": { "children": "Rules", "variant": "heading" } },
+    "r1": {
+      "type": "text",
+      "props": {
+        "children": "File name is the id. meta/pages/objects.json is the object with id objects, and a reference from another object is just that id."
+      }
+    },
+    "r2": {
+      "type": "text",
+      "props": {
+        "children": "One object per file. Small files are what the model reads and edits reliably."
+      }
+    },
+    "r3": {
+      "type": "text",
+      "props": {
+        "children": "The folder tells the type. type inside the file must agree with the folder it is in."
+      }
+    },
+    "r4": {
+      "type": "text",
+      "props": {
+        "children": "Meta is read, not compiled. The app loads meta/ at startup and builds routes, navigation and pages from it; there is no generation step."
+      }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "p1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "code" }], "margin": "0 0 24px" },
+        { "gap": 0, "columns": [{ "field": "h2" }], "margin": "24px 0 16px" },
+        { "gap": 0, "columns": [{ "field": "r1" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "r2" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "r3" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "r4" }], "margin": "0" }
+      ]
+    }
+  }
+}

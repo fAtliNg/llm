@@ -1,0 +1,40 @@
+{
+  "type": "panel",
+  "id": "getting-started-article",
+  "fields": {
+    "h1": { "type": "text", "props": { "children": "Getting started", "variant": "title" } },
+    "s1": {
+      "type": "text",
+      "props": {
+        "children": "1. Clone the repository and run npm install in the app folder. Node 22 is required."
+      }
+    },
+    "s2": {
+      "type": "text",
+      "props": {
+        "children": "2. npm run dev starts the API and the web app at http://localhost:5173."
+      }
+    },
+    "s3": {
+      "type": "text",
+      "props": {
+        "children": "3. Create meta/pages/hello.json with a name, a few fields and a desktop grid. The page is live at /hello as soon as the file is saved."
+      }
+    },
+    "code": {
+      "type": "text",
+      "props": { "variant": "code", "children": "npm install\nnpm run dev\nnpm run verify" }
+    }
+  },
+  "grid": {
+    "desktop": {
+      "rows": [
+        { "gap": 0, "columns": [{ "field": "h1" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "s1" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "s2" }], "margin": "0 0 8px" },
+        { "gap": 0, "columns": [{ "field": "s3" }], "margin": "0 0 16px" },
+        { "gap": 0, "columns": [{ "field": "code" }], "margin": "0" }
+      ]
+    }
+  }
+}

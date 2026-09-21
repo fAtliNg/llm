@@ -5,8 +5,10 @@ import {
   layoutSchema,
   type MetaLayout,
   type MetaPage,
+  type MetaPanel,
   pageSchema,
   pageUrl,
+  panelSchema,
 } from '@/meta/schema';
 import type { z } from 'zod';
 
@@ -20,6 +22,7 @@ const layoutFiles = import.meta.glob('../../meta/layouts/*.json', {
   eager: true,
   import: 'default',
 });
+const panelFiles = import.meta.glob('../../meta/panels/*.json', { eager: true, import: 'default' });
 
 function parseFolder<T extends { id: string; fields: Record<string, { type: string }> }>(
   files: Record<string, unknown>,
@@ -58,11 +61,29 @@ function parseFolder<T extends { id: string; fields: Record<string, { type: stri
   return items;
 }
 
-function load(): { pages: MetaPage[]; layouts: MetaLayout[] } {
+function load(): { pages: MetaPage[]; layouts: MetaLayout[]; panels: MetaPanel[] } {
   const errors: string[] = [];
   const pages = parseFolder(pageFiles, 'pages', pageSchema, errors);
   const layouts = parseFolder(layoutFiles, 'layouts', layoutSchema, errors);
+  const panels = parseFolder(panelFiles, 'panels', panelSchema, errors);
   const layoutIds = new Set(layouts.map((l) => l.id));
+  const panelIds = new Set(panels.map((p) => p.id));
+
+  // A `{ "type": "panel" }` field must name a panel that exists; a panel must not contain itself.
+  const holders = [
+    ...pages.map((p) => ({ file: `meta/pages/${p.id}.json`, self: '', fields: p.fields })),
+    ...layouts.map((l) => ({ file: `meta/layouts/${l.id}.json`, self: '', fields: l.fields })),
+    ...panels.map((p) => ({ file: `meta/panels/${p.id}.json`, self: p.id, fields: p.fields })),
+  ];
+  for (const holder of holders) {
+    for (const [id, field] of Object.entries(holder.fields)) {
+      if (field.type !== 'panel') continue;
+      if (!panelIds.has(id))
+        errors.push(`${holder.file}: fields.${id}: no panel "${id}" in meta/panels`);
+      if (id === holder.self)
+        errors.push(`${holder.file}: fields.${id}: a panel cannot contain itself`);
+    }
+  }
 
   const urls = pages.map((p) => pageUrl(p.name));
   for (const dup of urls.filter((x, i) => urls.indexOf(x) !== i)) {
@@ -93,13 +114,18 @@ function load(): { pages: MetaPage[]; layouts: MetaLayout[] } {
   }
 
   if (errors.length > 0) throw new Error(`invalid meta:\n  ${errors.join('\n  ')}`);
-  return { pages, layouts };
+  return { pages, layouts, panels };
 }
 
 const loaded = load();
 
 export const metaPages: MetaPage[] = loaded.pages;
 export const metaLayouts: MetaLayout[] = loaded.layouts;
+export const metaPanels: MetaPanel[] = loaded.panels;
+
+export function findPanel(id: string): MetaPanel | undefined {
+  return metaPanels.find((panel) => panel.id === id);
+}
 
 /** The page that opens at a URL path (without the leading slash), if meta has one. */
 export function findPage(urlPath: string): MetaPage | undefined {

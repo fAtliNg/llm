@@ -48,6 +48,8 @@ A layout has no `name` and no URL: it never opens by itself.
 
 On desktop: a header line, then a 220px sidebar next to the page, then the footer. On mobile: the header, the page, the menu below it, the footer. The `children` field moves like any other, so the page can sit anywhere on any screen.
 
+For a frame with many fields per area, put a [panel](./panel) in the column: the base app's `meta/layouts/docs.json` is a documentation site (sticky 64px header with brand, search and section menu; a sticky 272px sidebar with grouped menus; the page with an outline column) built from one layout and a few panels.
+
 ## Built-in fields
 
 Three field types come from the app, not from the component library. They are what a frame is made of:
@@ -55,8 +57,8 @@ Three field types come from the app, not from the component library. They are wh
 | `type` | Props | What it is |
 |---|---|---|
 | `children` | none | Where the page is shown. Layouts only; exactly one per layout |
-| `nav` | `orientation`: `"horizontal"` (default) or `"vertical"` | Links to every page in `meta/pages`, in file order, the current one highlighted |
-| `text` | `children` (the text), `variant`: `"title"`, `"heading"`, `"body"` (default), `"muted"` | A heading or a paragraph; the component library has no plain-text component |
+| `nav` | `orientation`: `"horizontal"` (default) or `"vertical"`; `variant`: `"pills"` (default, the active link has a filled background) or `"plain"` (text links, the active one in the brand colour); `section`: only pages of that section; `sections: true`: one link per section, to its first page (a top menu) | Links to pages, the current one highlighted |
+| `text` | `children` (the text); `variant`: `"title"` (h1), `"heading"` (h2), `"subheading"` (h3), `"body"` (default), `"muted"`, `"small"` (a group label), `"code"` (a preformatted block), `"link"` (with `href`) | A heading, a paragraph, a code block, a link; the component library has no plain-text component |
 
 `nav` and `text` work on pages too.
 
