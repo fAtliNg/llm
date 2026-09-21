@@ -1,19 +1,42 @@
-import { type CSSProperties, createElement } from 'react';
+import { type CSSProperties, createElement, type ReactNode } from 'react';
 
 import { componentFor } from '@/meta/components';
+import { useDevice } from '@/meta/device';
+import { MetaNav } from '@/meta/nav';
 import {
-  type Device,
-  DEVICES,
+  type ComponentField,
+  gridFor,
   isContainerRef,
-  layoutFor,
-  type MetaField,
+  isNav,
+  isText,
   type MetaColumn,
+  type MetaField,
+  type MetaGrids,
   type MetaLayout,
   type MetaPage,
   type MetaRow,
 } from '@/meta/schema';
 
-function Field({ id, field }: { id: string; field: MetaField }) {
+const TEXT_CLASS = {
+  title: 'text-2xl font-semibold',
+  heading: 'text-lg font-semibold',
+  body: 'text-sm leading-6',
+  muted: 'text-sm text-muted-foreground',
+} as const;
+
+/** One field: a component from the library, a built-in, or a placeholder for what is not rendered yet. */
+function Field({ id, field, slot }: { id: string; field: MetaField; slot: ReactNode }) {
+  if (field.type === 'children') return <div data-meta-id={id}>{slot}</div>;
+  if (isNav(field)) return <MetaNav id={id} orientation={field.props.orientation} />;
+  if (isText(field)) {
+    const Tag =
+      field.props.variant === 'title' ? 'h1' : field.props.variant === 'heading' ? 'h2' : 'p';
+    return (
+      <Tag data-meta-id={id} className={TEXT_CLASS[field.props.variant]}>
+        {field.props.children}
+      </Tag>
+    );
+  }
   if (isContainerRef(field)) {
     // Rendered by a later step; until then the page shows where it goes.
     return (
@@ -26,7 +49,10 @@ function Field({ id, field }: { id: string; field: MetaField }) {
       </section>
     );
   }
-  return createElement(componentFor(field.type), { 'data-meta-id': id, ...field.props });
+  return createElement(componentFor(field.type), {
+    'data-meta-id': id,
+    ...(field as ComponentField).props,
+  });
 }
 
 const JUSTIFY = { left: 'start', center: 'center', right: 'end' } as const;
@@ -42,29 +68,39 @@ function boxStyle(box: MetaRow | MetaColumn, isRow: boolean): CSSProperties {
   return style;
 }
 
-function Grid({ page, layout }: { page: MetaPage; layout: MetaLayout }) {
+/** The rows of the grid for the current screen size; `slot` is what a `children` field shows. */
+function Grid({
+  fields,
+  grids,
+  slot,
+}: {
+  fields: Record<string, MetaField>;
+  grids: MetaGrids;
+  slot?: ReactNode;
+}) {
+  const grid = gridFor(grids, useDevice());
   return (
     <div className="space-y-4">
-      {layout.rows.map((row, index) => (
+      {grid.rows.map((row, index) => (
         <div
           key={index}
           data-meta-row={index}
           className="grid gap-4"
           style={{
-            gridTemplateColumns: `repeat(${String(row.columns.length)}, minmax(0, 1fr))`,
+            gridTemplateColumns: row.columns.map((c) => c.width ?? 'minmax(0, 1fr)').join(' '),
             ...boxStyle(row, true),
           }}
         >
           {row.columns.map((column) => {
             // The schema already guarantees every placed id is in fields.
-            const field = page.fields[column.field];
+            const field = fields[column.field];
             return field ? (
               <div
                 key={column.field}
                 data-meta-column={column.field}
                 style={boxStyle(column, false)}
               >
-                <Field id={column.field} field={field} />
+                <Field id={column.field} field={field} slot={slot} />
               </div>
             ) : null;
           })}
@@ -74,40 +110,21 @@ function Grid({ page, layout }: { page: MetaPage; layout: MetaLayout }) {
   );
 }
 
-// Tailwind only ships classes it can see, so every combination of screens a grid may serve is spelled
-// out. Breakpoints: mobile below md (768px), tablet from md to below lg (1024px), desktop from lg.
-const VISIBLE: Record<string, string> = {
-  'desktop,tablet,mobile': '',
-  'desktop,tablet': 'hidden md:block',
-  'tablet,mobile': 'lg:hidden',
-  desktop: 'hidden lg:block',
-  tablet: 'hidden md:block lg:hidden',
-  mobile: 'md:hidden',
-};
-
-/**
- * Renders a page straight from its meta: the heading, then the grid for the current screen size.
- * Every distinct layout is in the DOM once and CSS shows the one that applies, so resizing the window
- * switches layouts without a re-render.
- */
-export function MetaPage({ page }: { page: MetaPage }) {
-  const groups = new Map<MetaLayout, Device[]>();
-  for (const device of DEVICES) {
-    const layout = layoutFor(page, device);
-    groups.set(layout, [...(groups.get(layout) ?? []), device]);
-  }
+/** A page straight from its meta: the heading, then its grid. */
+export function MetaPageView({ page }: { page: MetaPage }) {
   return (
-    <section className="space-y-4">
+    <section data-meta-page={page.id} className="space-y-4">
       <h1 className="text-2xl font-semibold">{page.name}</h1>
-      {[...groups.entries()].map(([layout, devices]) => (
-        <div
-          key={devices.join(',')}
-          data-meta-layout={devices.join(',')}
-          className={VISIBLE[devices.join(',')]}
-        >
-          <Grid page={page} layout={layout} />
-        </div>
-      ))}
+      <Grid fields={page.fields} grids={page.grid} />
     </section>
+  );
+}
+
+/** A layout around whatever it is given: its grid, with the `children` field showing `children`. */
+export function MetaLayoutView({ layout, children }: { layout: MetaLayout; children: ReactNode }) {
+  return (
+    <div data-meta-id={`layout:${layout.id}`}>
+      <Grid fields={layout.fields} grids={layout.grid} slot={children} />
+    </div>
   );
 }

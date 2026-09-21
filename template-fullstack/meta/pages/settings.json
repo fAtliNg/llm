@@ -2,31 +2,90 @@
   "type": "page",
   "id": "settings",
   "name": "Settings",
+  "layout": "docs",
   "fields": {
     "company": {
       "type": "input",
-      "props": { "placeholder": "Company name", "aria-label": "Company name" }
+      "props": {
+        "placeholder": "Company name",
+        "aria-label": "Company name"
+      }
     },
-    "notifications": { "type": "switch", "props": { "aria-label": "Email notifications" } },
-    "save": { "type": "button", "props": { "children": "Save settings" } }
+    "notifications": {
+      "type": "switch",
+      "props": {
+        "aria-label": "Email notifications"
+      }
+    },
+    "save": {
+      "type": "button",
+      "props": {
+        "children": "Save settings"
+      }
+    }
   },
-  "layout": {
+  "grid": {
     "desktop": {
       "rows": [
-        { "columns": [{ "field": "company" }, { "field": "notifications" }, { "field": "save" }] }
+        {
+          "columns": [
+            {
+              "field": "company"
+            },
+            {
+              "field": "notifications"
+            },
+            {
+              "field": "save"
+            }
+          ]
+        }
       ]
     },
     "tablet": {
       "rows": [
-        { "columns": [{ "field": "company" }, { "field": "notifications" }] },
-        { "columns": [{ "field": "save" }] }
+        {
+          "columns": [
+            {
+              "field": "company"
+            },
+            {
+              "field": "notifications"
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "field": "save"
+            }
+          ]
+        }
       ]
     },
     "mobile": {
       "rows": [
-        { "columns": [{ "field": "company" }] },
-        { "columns": [{ "field": "notifications" }] },
-        { "columns": [{ "field": "save" }] }
+        {
+          "columns": [
+            {
+              "field": "company"
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "field": "notifications"
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "field": "save"
+            }
+          ]
+        }
       ]
     }
   }

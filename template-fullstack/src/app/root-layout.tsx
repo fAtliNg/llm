@@ -1,30 +1,10 @@
-import { NavLink, Outlet } from 'react-router';
+import { Outlet } from 'react-router';
 
-import { metaNav } from '@/meta/nav';
-import { cn } from '@/lib/utils';
-
-const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  cn(
-    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-    isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground',
-  );
-
+/** The document shell. Header, menu and footer come from `meta/layouts`, not from here. */
 export function RootLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b">
-        <nav aria-label="Main" className="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3">
-          <span className="mr-4 font-semibold">Template</span>
-          {metaNav.map((link) => (
-            <NavLink key={link.to} to={link.to} className={navLinkClass}>
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
-      </header>
-      <main className="mx-auto max-w-4xl px-4 py-6">
-        <Outlet />
-      </main>
+      <Outlet />
     </div>
   );
 }

@@ -2,13 +2,40 @@
   "type": "page",
   "id": "new-employee",
   "name": "New employee",
+  "layout": "docs",
   "fields": {
-    "name": { "type": "input", "props": { "placeholder": "Name", "aria-label": "Name" } },
-    "save": { "type": "button", "props": { "children": "Create" } }
+    "name": {
+      "type": "input",
+      "props": {
+        "placeholder": "Name",
+        "aria-label": "Name"
+      }
+    },
+    "save": {
+      "type": "button",
+      "props": {
+        "children": "Create"
+      }
+    }
   },
-  "layout": {
+  "grid": {
     "desktop": {
-      "rows": [{ "columns": [{ "field": "name" }] }, { "columns": [{ "field": "save" }] }]
+      "rows": [
+        {
+          "columns": [
+            {
+              "field": "name"
+            }
+          ]
+        },
+        {
+          "columns": [
+            {
+              "field": "save"
+            }
+          ]
+        }
+      ]
     }
   }
 }

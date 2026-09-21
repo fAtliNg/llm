@@ -7,6 +7,8 @@ meta/
 ├── pages/
 │   ├── employees.json
 │   └── employee-new.json
+├── layouts/
+│   └── docs.json
 ├── tables/
 │   └── employees.json
 ├── forms/

@@ -2,6 +2,7 @@
   "type": "page",
   "id": "employee-profile",
   "name": "Employee profile",
+  "layout": "docs",
   "fields": {
     "first-name": {
       "type": "input",
@@ -125,7 +126,7 @@
       }
     }
   },
-  "layout": {
+  "grid": {
     "desktop": {
       "rows": [
         {

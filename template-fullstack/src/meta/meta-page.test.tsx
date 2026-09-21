@@ -1,19 +1,19 @@
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { metaPages } from '@/meta/pages';
+import { layoutChain, metaPages } from '@/meta/load';
 import { pageUrl } from '@/meta/schema';
 import { renderApp } from '@/test/render';
 
-/** Every page under meta/pages opens at its URL with its heading and each field in place. */
+/** Every page under meta/pages opens at its URL, inside its layouts, with its heading and each field in place. */
 describe('meta pages', () => {
   it.each(metaPages.map((page) => [page.id, page] as const))('%s opens from meta', (_, page) => {
     renderApp([`/${pageUrl(page.name)}`]);
 
     expect(screen.getByRole('heading', { name: page.name })).toBeInTheDocument();
-    // A field placed in several layouts is in the DOM once per layout; CSS shows one of them.
-    for (const id of Object.keys(page.fields)) {
-      expect(screen.getAllByTestId(id).length).toBeGreaterThan(0);
+    for (const id of Object.keys(page.fields)) expect(screen.getByTestId(id)).toBeInTheDocument();
+    for (const layout of layoutChain(page)) {
+      expect(screen.getByTestId(`layout:${layout.id}`)).toBeInTheDocument();
     }
   });
 
@@ -31,12 +31,19 @@ describe('meta pages', () => {
     expect(await screen.findByRole('heading', { name: first.name })).toBeInTheDocument();
   });
 
-  it('links every page from the main navigation', () => {
-    renderApp(['/']);
+  it('links every page from a nav field', () => {
+    const withNav = metaPages.find((page) =>
+      layoutChain(page).some((layout) =>
+        Object.values(layout.fields).some((f) => f.type === 'nav'),
+      ),
+    );
+    if (!withNav) return;
+    renderApp([`/${pageUrl(withNav.name)}`]);
 
-    const nav = screen.getByRole('navigation', { name: 'Main' });
+    const [nav] = screen.getAllByRole('navigation', { name: 'Main' });
+    if (!nav) throw new Error('no navigation rendered');
     for (const page of metaPages) {
-      expect(nav).toContainElement(screen.getByRole('link', { name: page.name }));
+      expect(within(nav).getByRole('link', { name: page.name })).toBeInTheDocument();
     }
   });
 });
