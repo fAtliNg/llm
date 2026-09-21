@@ -2,17 +2,25 @@
   "type": "page",
   "id": "employees",
   "name": "Employees",
-  "fields": [
+  "rows": [
     {
-      "type": "input",
-      "id": "search",
-      "props": { "placeholder": "Search employees", "aria-label": "Search" }
+      "columns": [
+        {
+          "field": {
+            "type": "input",
+            "id": "search",
+            "props": { "placeholder": "Search employees", "aria-label": "Search" }
+          }
+        },
+        {
+          "field": {
+            "type": "button",
+            "id": "create",
+            "props": { "variant": "outline", "children": "New employee" }
+          }
+        }
+      ]
     },
-    {
-      "type": "button",
-      "id": "create",
-      "props": { "variant": "outline", "children": "New employee" }
-    },
-    { "type": "table", "id": "employees" }
+    { "columns": [{ "field": { "type": "table", "id": "employees" } }] }
   ]
 }

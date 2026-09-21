@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { metaPages } from '@/meta/pages';
-import { pageUrl } from '@/meta/schema';
+import { pageFields, pageUrl } from '@/meta/schema';
 import { renderApp } from '@/test/render';
 
 /** Every page under meta/pages opens at its URL with its heading and each field in place. */
@@ -11,7 +11,7 @@ describe('meta pages', () => {
     renderApp([`/${pageUrl(page.name)}`]);
 
     expect(screen.getByRole('heading', { name: page.name })).toBeInTheDocument();
-    for (const field of page.fields) expect(screen.getByTestId(field.id)).toBeInTheDocument();
+    for (const field of pageFields(page)) expect(screen.getByTestId(field.id)).toBeInTheDocument();
   });
 
   it('shows the 404 page for a URL that no meta page has', () => {

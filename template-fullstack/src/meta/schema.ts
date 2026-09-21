@@ -20,15 +20,21 @@ export const containerRefSchema = z.strictObject({ type: z.enum(CONTAINER_TYPES)
 
 export const fieldSchema = z.union([containerRefSchema, componentFieldSchema]);
 
+/** One cell of the grid: holds one field. Width and alignment will be added here. */
+export const columnSchema = z.strictObject({ field: fieldSchema });
+
+/** One line of the grid: its columns share the width equally. */
+export const rowSchema = z.strictObject({ columns: z.array(columnSchema).min(1) });
+
 export const pageSchema = z
   .strictObject({
     type: z.literal('page'),
     id: metaId,
     name: z.string().trim().min(1).max(60),
-    fields: z.array(fieldSchema).default([]),
+    rows: z.array(rowSchema).default([]),
   })
   .superRefine((page, ctx) => {
-    const ids = page.fields.map((f) => f.id);
+    const ids = pageFields(page).map((f) => f.id);
     for (const dup of ids.filter((x, i) => ids.indexOf(x) !== i)) {
       ctx.addIssue({ code: 'custom', message: `fields: id "${dup}" is used twice` });
     }
@@ -37,6 +43,8 @@ export const pageSchema = z
     }
   });
 
+export type MetaColumn = z.infer<typeof columnSchema>;
+export type MetaRow = z.infer<typeof rowSchema>;
 export type ComponentField = z.infer<typeof componentFieldSchema>;
 export type ContainerRef = z.infer<typeof containerRefSchema>;
 export type MetaField = z.infer<typeof fieldSchema>;
@@ -48,6 +56,11 @@ export function pageUrl(name: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+/** Every field of a page, in reading order: row by row, column by column. */
+export function pageFields(page: { rows: MetaRow[] }): MetaField[] {
+  return page.rows.flatMap((row) => row.columns.map((column) => column.field));
 }
 
 export function isContainerRef(field: MetaField): field is ContainerRef {

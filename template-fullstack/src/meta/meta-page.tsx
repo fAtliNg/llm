@@ -19,13 +19,24 @@ function Field({ field }: { field: MetaField }) {
   return createElement(componentFor(field.type), { 'data-meta-id': field.id, ...field.props });
 }
 
-/** Renders a page straight from its meta: the heading, then the fields in order. */
+/** Renders a page straight from its meta: the heading, then the grid, row by row, column by column. */
 export function MetaPage({ page }: { page: MetaPage }) {
   return (
     <section className="space-y-4">
       <h1 className="text-2xl font-semibold">{page.name}</h1>
-      {page.fields.map((field) => (
-        <Field key={field.id} field={field} />
+      {page.rows.map((row, index) => (
+        <div
+          key={index}
+          data-meta-row={index}
+          className="grid gap-4"
+          style={{ gridTemplateColumns: `repeat(${String(row.columns.length)}, minmax(0, 1fr))` }}
+        >
+          {row.columns.map((column) => (
+            <div key={column.field.id} data-meta-column={column.field.id}>
+              <Field field={column.field} />
+            </div>
+          ))}
+        </div>
       ))}
     </section>
   );
