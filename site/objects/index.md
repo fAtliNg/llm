@@ -1,6 +1,6 @@
 # Objects
 
-Everything the library builds is described by JSON objects. There are five kinds, told apart by the `type` field, which every object must have:
+Everything the library builds is described by JSON objects, the **meta** of the app (see [where they live](./meta)). There are five kinds, told apart by the `type` field, which every object must have:
 
 | `type` | What it is | Made of |
 |---|---|---|
