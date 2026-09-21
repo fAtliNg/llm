@@ -7,7 +7,7 @@ export function NotFoundPage() {
     <section className="space-y-4">
       <h1 className="text-2xl font-semibold">Page not found</h1>
       <Button asChild variant="outline">
-        <Link to="/">Back to tasks</Link>
+        <Link to="/">Back to the start</Link>
       </Button>
     </section>
   );

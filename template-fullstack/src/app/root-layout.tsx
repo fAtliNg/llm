@@ -15,12 +15,6 @@ export function RootLayout() {
       <header className="border-b">
         <nav aria-label="Main" className="mx-auto flex max-w-4xl items-center gap-2 px-4 py-3">
           <span className="mr-4 font-semibold">Template</span>
-          <NavLink to="/" end className={navLinkClass}>
-            Tasks
-          </NavLink>
-          <NavLink to="/tasks/new" className={navLinkClass}>
-            New task
-          </NavLink>
           {metaNav.map((link) => (
             <NavLink key={link.to} to={link.to} className={navLinkClass}>
               {link.label}

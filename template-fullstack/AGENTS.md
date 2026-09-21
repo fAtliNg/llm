@@ -19,7 +19,7 @@ Full-stack TypeScript app in one package: React 19 SPA (Vite), Hono API, SQLite.
 - `server/features/<name>/routes.ts` one router per feature, registered in `server/app.ts`. Tests next to code.
 - `server/http.ts` error helpers: `notFound`, `conflict`, `invalid`.
 - `src/features/<name>` model (re-exports the contract + UI labels), api (RTK Query endpoints), components, tests.
-- `src/pages` route components; they fetch data, feature components stay presentational.
+- `src/pages` only the 404 page. Every other page is `meta/pages/<id>.json`, rendered by `src/meta/` (see below).
 - `src/mocks/server.ts` MSW bridge: web tests hit the real API in process with an in-memory database. There are no hand-written mock handlers.
 - `src/app` store, router, layout, providers. `src/test` render helpers and setup.
 

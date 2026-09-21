@@ -23,6 +23,14 @@ describe('meta pages', () => {
     expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
   });
 
+  it('opens the first page from the root URL', async () => {
+    renderApp(['/']);
+
+    const first = metaPages[0];
+    if (!first) return;
+    expect(await screen.findByRole('heading', { name: first.name })).toBeInTheDocument();
+  });
+
   it('links every page from the main navigation', () => {
     renderApp(['/']);
 

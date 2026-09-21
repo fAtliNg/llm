@@ -2,19 +2,14 @@ import { createBrowserRouter, type RouteObject } from 'react-router';
 
 import { RootLayout } from '@/app/root-layout';
 import { MetaRoute } from '@/meta/meta-route';
-import { TaskEditPage } from '@/pages/task-edit-page';
-import { TaskNewPage } from '@/pages/task-new-page';
-import { TasksPage } from '@/pages/tasks-page';
 
+/** Every page comes from meta/pages: MetaRoute looks the URL up there and shows the page or the 404. */
 export const routes: RouteObject[] = [
   {
     path: '/',
     Component: RootLayout,
     children: [
-      { index: true, Component: TasksPage },
-      { path: 'tasks/new', Component: TaskNewPage },
-      { path: 'tasks/:taskId/edit', Component: TaskEditPage },
-      // Everything else is looked up in meta/pages by URL; MetaRoute shows the page or the 404.
+      { index: true, Component: MetaRoute },
       { path: '*', Component: MetaRoute },
     ],
   },

@@ -76,7 +76,7 @@ Desktop and tablet (no `tablet` layout, so it uses desktop): search and the butt
 
 ## How a page becomes a route
 
-Nothing is generated and the router knows no page by name. `src/app/router.tsx` has the hand-written routes and then **one universal route**, `*`, handled by `src/meta/meta-route.tsx`: it takes the URL, looks for a page in `meta/pages` whose `name` maps to it, and renders that page, or the 404 page when there is none.
+Nothing is generated and the router knows no page by name. `src/app/router.tsx` has **one universal route**, `*`, handled by `src/meta/meta-route.tsx`: it takes the URL, looks for a page in `meta/pages` whose `name` maps to it, and renders that page, or the 404 page when there is none. The root URL `/` opens the first page in the navigation (file order). There are no hand-written pages: what is in `meta/pages` is the app.
 
 - `src/meta/pages.ts` loads `meta/pages/*.json` (Vite's `import.meta.glob`), validates them and answers `findPage(url)`.
 - `src/meta/meta-page.tsx` renders a page: the heading, then every distinct layout once, each in a wrapper that CSS shows only on its screen sizes (`hidden lg:block` and so on), so resizing the window switches layouts without a re-render. A row is a CSS grid with one equal column per `columns` entry. A component field is the component from `src/components/ui/<type>` with `props` spread onto it and `data-meta-id` set to the field id; a reference to an object that has no renderer yet shows a placeholder in its place.

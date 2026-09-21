@@ -34,7 +34,7 @@
       "runtimeExecutable": "/bin/sh",
       "runtimeArgs": [
         "-c",
-        "export PATH=/Users/sergey/.nvm/versions/node/v22.23.2/bin:$PATH; cd template-fullstack && npm run dev"
+        "export PATH=/Users/sergey/.nvm/versions/node/v22.23.2/bin:$PATH; cd template-fullstack && PORT=3000 npm run dev"
       ],
       "port": 5173
     }
